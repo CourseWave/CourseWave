@@ -1,72 +1,133 @@
 {
+  "student":[
+   {
+    "id":1,
+    "firstname":"haitham",
+    "lastname":"alzyoud",
+    "email":"lololol@gmail.com",
+    "password":"123Ha456*"
+   }
+  ],
+  "teacher":[
+    {
+      "id":1,
+      "firstname":"Mutaz",
+      "lastname":"Ashab",
+      "email":"wasup@gmail.com",
+      "password":"123It456*"
+    },
+    {
+      "id":2,
+      "firstname":"Mohammad",
+      "lastname":"Ashab",
+      "email":"wasup@gmail.com",
+      "password":"123It456*"
+    }
+  ],
+
   "course": [
     {
       "id": 1,
       "title": "sss",
       "description": "1",
-      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg"
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Development",
+      "price": "50" ,
+      "Requirements":""
     },
     {
+      "id": 2,
       "title": "sss",
       "description": "2",
       "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
-      "id": 2
+      "type": "Design",
+      "price": "50" 
     },
     {
+      "id": 3,
       "title": "asdwdasd",
       "description": "3",
       "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
-      "id": 3
+      "type": "IT and Software",
+      "price": "50" 
     },
     {
+      "id": 4,
       "title": "js",
       "description": "4",
       "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
-      "id": 4
+      "type": "Online Classes",
+      "price": "50" 
     },
     {
+      "id": 5,
       "title": "css",
       "description": "5",
       "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
-      "id": 5
+      "type": "Self Development",
+      "price": "50" 
     },
     {
+      "id": 6,
       "title": "java",
       "description": "6",
       "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
-      "id": 6
+      "type": "Marketing",
+      "price": "50" 
+    },
+    {
+      "id": 7,
+      "title": "java",
+      "description": "7",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Marketing",
+      "price": "50" 
+    },
+    {
+      "id": 8,
+      "title": "java",
+      "description": "8",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Marketing",
+      "price": "50" 
     }
   ],
   "categories": [
     {
       "id": 1,
       "title": "Development",
-      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg"
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Development"
     },
     {
       "id": 2,
       "title": "Design",
-      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg"
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Design"
     },
     {
+      "id": 3,
       "title": "IT and Software",
       "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
-      "id": 3
+      "type": "IT and Software"
     },
     {
+      "id": 4,
       "title": "Online Classes",
       "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
-      "id": 4
+      "type": "Online Classes"
     },
     {
+      "id": 5,
       "title": "Self Development ",
       "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
-      "id": 5
+      "type": "Self Development"
     },
     {
+      "id": 6,
       "title": "Marketing",
       "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
-      "id": 6
+      "type": "Marketing"
     }
   ]
 }

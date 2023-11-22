@@ -7,6 +7,10 @@ import Home from "./Pages/Home";
 import AboutUsPage from "./Pages/AboutUsPage";
 import ContactUsPage from "./Pages/ContactUsPage";
 import CategoryPage from "./Pages/Categories";
+import LoginPage from "./Pages/LoginPage";
+import CourseDetailPage from "./Pages/CourseDetailPage";
+import StudentProfile from "./Pages/StudentProfile";
+import TeacherProfile from "./Pages/TeacherProfile";
 
 function App() {
   return (
@@ -16,12 +20,17 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="RegistrationPage" element={<RegistrationPage />} />
+          <Route path="LoginPage" element={<LoginPage/>} />
           <Route path="CategoryPage" element={< CategoryPage/>} />
           <Route path="AboutUsPage" element={<AboutUsPage />} />
           <Route path="ContactUsPage" element={<ContactUsPage />} />
+          <Route path="/CourseDetailPage/:courseId" element={<CourseDetailPage />} />
+          <Route path="StudentProfile" element={<StudentProfile />} />
+          <Route path="TeacherProfile" element={<TeacherProfile />} />
         </Routes>
         {/* <Footer /> */}
       </BrowserRouter>
+
     </>
   );
 }

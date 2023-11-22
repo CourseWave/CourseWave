@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from "react";
 import {useDispatch ,useSelector} from 'react-redux'
 import { fetchCourses } from "../Redux/CoursesSlice";
+import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const Courses = () => {
   const dispatch = useDispatch();
+  const { courseId } = useParams();
   const Courses = useSelector((state) => state.Courses.Courses);
+  // const courses = useSelector((state) => state.Courses.Courses);
+  const Course = Courses.find((c) => c.id === parseInt(courseId));
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
-
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(fetchCourses());
   }, [dispatch]);
 
+  
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = Courses.slice(indexOfFirstItem, indexOfLastItem);
@@ -26,6 +33,10 @@ const Courses = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
+
+  };  const handleCourseClick = (courseId) => {
+    // Navigate to the CourseDetailPage with the course ID
+    navigate(`/CourseDetailPage/${courseId}`);
   };
 
   return (
@@ -36,7 +47,7 @@ const Courses = () => {
           <div
             key={course.id}
             className="bg-white p-4 rounded-lg shadow-md cursor-pointer"
-            // onClick={() => setSelectedCourse(course)}
+            onClick={() => handleCourseClick(course.id)}
           >
             <img
               src={course.image}

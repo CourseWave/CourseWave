@@ -1,21 +1,59 @@
-require("dotenv").config();
+const express = require("express");
+const app = express();
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+require("dotenv").config();
+app.use(cookieParser());
 
-// fetch("http............/login") {
-//      header: {
-//       authorization : document.cookies.get(token)
-//      }
-// }
+async function authorize(req, res, next) {
+  try {
+    if (!req.user) {
+      const tokenCookie = req.headers.cookie;
+      if (tokenCookie) {
+        const cookiesArray = tokenCookie.split(";");
+        const accessTokenCookie = cookiesArray.find((cookie) =>
+          cookie.trim().startsWith("accessToken=")
+        );
+        if (accessTokenCookie) {
+          const accessToken = accessTokenCookie.split("=")[1].trim();
+          const user = jwt.verify(accessToken, process.env.SECRET_KEY);
+          console.log(user);
+          if (user.role_id) {
+            req.user = user;
+            next();
+          } else {
+            res.status(401).json("Unauthorized user");
+          }
+          console.log(user);
+        }
+      } else {
+        res.status(401).json("You need to login first");
+      }
+    } else {
+      next();
+    }
+  } catch (error) {
+    res.status(400).json(error);
+  }
+}
 
-const vertify = (req, res, next) => {
-  const token = req.headers.authorization;
+function hasRole(roleId) {
+  return async (req, res, next) => {
+    try {
+      const userRoleId = req.user.role_id;
 
-  if (!token) return res.sendStatus(401);
+      if (userRoleId === roleId) {
+        next();
+      } else {
+        res.status(403).json("Forbidden: Insufficient permissions");
+      }
+    } catch (error) {
+      res.status(400).json(error);
+    }
+  };
+}
 
-  jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
-    if (err) return res.sendStatus(403);
-    req.user = decoded;
-    next();
-  });
+module.exports = {
+  authorize,
+  hasRole,
 };
-module.exports = vertify;

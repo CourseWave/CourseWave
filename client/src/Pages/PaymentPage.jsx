@@ -1,60 +1,42 @@
-// PaymentPage.jsx
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import CheckoutForm from "../Components/CheckoutForm";
 
-const PaymentPage = () => {
-  // Assuming you have a Redux store with courses
-  const { courseId } = useParams();
-  const courses = useSelector((state) => state.Courses.Courses);
-  const course = courses.find((c) => c.id === parseInt(courseId));
+const stripePromise = loadStripe("sss");
 
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvc, setCVC] = useState('');
+export default function StripeCheckout() {
+  const [clientSecret, setClientSecret] = useState("");
 
-  const handlePayment = () => {
-    // Add logic to handle payment processing here
-    console.log('Payment processed successfully!');
+  useEffect(() => {
+    fetch("{{EDUCATIVE_LIVE_VM_URL}}/create-payment-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: [{}] }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return res.json();
+      })
+      .then((data) => setClientSecret(data.clientSecret))
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  const options = {
+    clientSecret,
   };
-
-  if (!course) {
-    return <div>Course not found</div>;
-  }
 
   return (
     <div>
-      <h1>Payment for {course.title}</h1>
-      <div>
-        <label htmlFor="cardNumber">Card Number:</label>
-        <input
-          type="text"
-          id="cardNumber"
-          value={cardNumber}
-          onChange={(e) => setCardNumber(e.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="expiryDate">Expiry Date:</label>
-        <input
-          type="text"
-          id="expiryDate"
-          value={expiryDate}
-          onChange={(e) => setExpiryDate(e.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="cvc">CVC:</label>
-        <input
-          type="text"
-          id="cvc"
-          value={cvc}
-          onChange={(e) => setCVC(e.target.value)}
-        />
-      </div>
-      <button onClick={handlePayment}>Process Payment</button>
+      {clientSecret && (
+        <Elements options={options} stripe={stripePromise}>
+          <CheckoutForm />
+        </Elements>
+      )}
     </div>
   );
-};
-
-export default PaymentPage;
+}

@@ -1,8 +1,42 @@
-
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import forhero from '../Assets/forhero.png'
+import SearchBar from './SearchBar';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCourses } from '../Redux/CoursesSlice';
+import { useNavigate } from 'react-router-dom'; 
 
  const HeroSection = () => {
+  const [filteredCourses, setFilteredCourses] = useState([]);
+  const courses = useSelector((state) => state.Courses.Courses);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const fetchData = () => {
+    dispatch(fetchCourses());
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleSearch = (searchTerm) => {
+    if (!searchTerm) {
+      return;
+    }
+
+    // Filter courses based on the search term
+    const filtered = courses.filter((course) => {
+      const titleIncludesTerm = course.title?.toLowerCase().includes(searchTerm.toLowerCase());
+      const categoryIncludesTerm = course.category?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      return titleIncludesTerm || categoryIncludesTerm;
+    });
+
+    setFilteredCourses(filtered);
+
+    // Redirect to the category page with the filtered courses
+    navigate('/CategoryPage', { state: filteredCourses });
+  };
   return (
     <div className="relative bg-[#0F2355] h-[600px] md:h-[400px] lg:h-[550px] flex items-center justify-center">
         <div className=" ">
@@ -17,12 +51,10 @@ import forhero from '../Assets/forhero.png'
             Join <span className="text-[#00FFC2]">CourseWave</span> and start
             your journey with our amazing tutors across the world
           </h1>
-          <div className="flex items-center ml-[6rem]">
-            <input
-              className="w-[80%] md:w-[18rem] lg:w-[33rem] h-[3rem] rounded-full bg-white text-[#0F2355] pl-4"
-              placeholder="Search"
-            />
+          <div className="flex items-center ml-[6rem] ">
+          <SearchBar onSearch={handleSearch}/>
           </div>
+         
         </div>
       </div>
   )

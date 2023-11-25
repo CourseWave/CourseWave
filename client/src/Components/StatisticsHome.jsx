@@ -1,40 +1,45 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchStudents, fetchTeachers } from "../Redux/UsersSlice";
+import { fetchCourses } from "../Redux/CoursesSlice";
 
- const StatisticsHome = () => {
-    const [data, setData] = useState({
-        courses: 0,
-        tutors: 0,
-        students: 0,
-      });
-      const fetchData = async () => {
-        try {
-          // Replace with your actual API endpoint
-          const response = await fetch("your-api-endpoint");
-          const result = await response.json();
-    
-          // Update state with fetched data
-          setData({
-            courses: result.courses,
-            tutors: result.tutors,
-            students: result.students,
-          });
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        }
-      };
-    
-      // Fetch data when the component mounts
-      useEffect(() => {
-        fetchData();
-      }, []);
+const StatisticsHome = () => {
+  const dispatch = useDispatch();
+  const { students, teachers, status: userStatus, error: userError } = useSelector((state) => state.user);
+  const { courses, status: coursesStatus, error: coursesError } = useSelector((state) => state.Courses);
+
+  useEffect(() => {
+    // Dispatch the actions to fetch students, teachers, and courses
+    dispatch(fetchStudents());
+    dispatch(fetchTeachers());
+    dispatch(fetchCourses());
+  }, [dispatch]);
+
   return (
     <>
       <div className="bg-[#6F97FF] p-4 text-center text-white flex justify-around">
-        <p>Courses: {data.courses.lenght}</p>
-        <p>Tutors: {data.tutors.lenght}</p>
-        <p>Students: {data.students.lenght}</p>
+        {/* Display user-related information */}
+        {userStatus === "loading" && <p>Loading user data...</p>}
+        {userStatus === "failed" && <p>Error fetching user data: {userError}</p>}
+
+        {userStatus === "succeeded" && (
+          <>
+            <p>Students: {students.length}</p>
+            <p>Tutors: {teachers.length}</p>
+          </>
+        )}
+
+        {/* Display course-related information */}
+        {coursesStatus === "loading" && <p>Loading course data...</p>}
+        {coursesStatus === "failed" && <p>Error fetching course data: {coursesError}</p>}
+
+        {/* Check if courses is defined before accessing its length property */}
+        {coursesStatus === "succeeded" && courses && (
+          <p>Total Courses: {courses.length}</p>
+        )}
       </div>
     </>
-  )
-}
+  );
+};
+
 export default StatisticsHome;

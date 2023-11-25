@@ -11,6 +11,9 @@ import LoginPage from "./Pages/LoginPage";
 import CourseDetailPage from "./Pages/CourseDetailPage";
 import StudentProfile from "./Pages/StudentProfile";
 import TeacherProfile from "./Pages/TeacherProfile";
+import { CartsPage } from "./Pages/CartPage";
+import PaymentPage from "./Pages/PaymentPage";
+import Dashboard from "./Pages/Dashboard";
 
 function App() {
   return (
@@ -27,6 +30,9 @@ function App() {
           <Route path="/CourseDetailPage/:courseId" element={<CourseDetailPage />} />
           <Route path="StudentProfile" element={<StudentProfile />} />
           <Route path="TeacherProfile" element={<TeacherProfile />} />
+          <Route path="CartsPage" element={<CartsPage />} />
+          <Route path="Dashboard" element={<Dashboard />} />
+          {/* <Route path="PaymentPage" element={<PaymentPage />} /> */}
         </Routes>
         {/* <Footer /> */}
       </BrowserRouter>

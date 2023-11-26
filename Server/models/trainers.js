@@ -65,10 +65,15 @@ async function findTrainerByEmail(email) {
   return result.rows[0];
 }
 
-async function updateTrainer(
+async function updateTrainer({
+  firstname,
+  lastname,
+  email,
+  password,
+  field,
+  degree,
   trainer_id,
-  { firstname, lastname, email, password, field, degree }
-) {
+}) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const query = {
@@ -108,12 +113,29 @@ async function softDeleteTrainer(trainer_id) {
   return result.rows.length > 0;
 }
 
+const getTrainers = async (page, pageSize) => {
+  const offset = (page - 1) * pageSize;
+
+  const query = {
+    text: `
+      SELECT * FROM trainers
+      ORDER BY trainer_id
+      LIMIT $1 OFFSET $2;
+    `,
+    values: [pageSize, offset],
+  };
+
+  const result = await db.query(query);
+  return result.rows;
+};
+
 module.exports = {
   createTrainersTable,
   createTrainer,
   findTrainerByEmail,
   updateTrainer,
   softDeleteTrainer,
+  getTrainers,
 };
 
 // const { DataTypes } = require("sequelize");

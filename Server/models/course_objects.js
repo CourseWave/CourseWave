@@ -51,7 +51,8 @@ async function updateCourseObject({ object_id, object }) {
 async function deleteCourseObject(object_id) {
   const query = {
     text: `
-      DELETE FROM course_objects
+      UPDATE course_objects
+      SET is_deleted = true
       WHERE object_id = $1
       RETURNING object_id;
     `,
@@ -82,7 +83,6 @@ module.exports = {
   deleteCourseObject,
   getCourseObjectDetails,
 };
-
 
 // const { DataTypes } = require("sequelize");
 // const sequelize = require("../db/db");

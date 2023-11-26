@@ -55,7 +55,7 @@ async function findUserByEmail(email) {
 
 async function updateUser({ firstname, lastname, email, password, user_id }) {
   const hashedPassword = await bcrypt.hash(password, 10);
-  const defaultRoleId = 2; // Set the default role_id
+  const defaultRoleId = 2;
 
   const query = {
     text: `
@@ -98,12 +98,29 @@ async function softDeleteUser(user_id) {
   return result.rows.length > 0;
 }
 
+const getUsers = async (page, pageSize) => {
+  const offset = (page - 1) * pageSize;
+
+  const query = {
+    text: `
+      SELECT * FROM users
+      ORDER BY user_id
+      LIMIT $1 OFFSET $2;
+    `,
+    values: [pageSize, offset],
+  };
+
+  const result = await db.query(query);
+  return result.rows;
+};
+
 module.exports = {
   createUsersTable,
   createUser,
   findUserByEmail,
   updateUser,
   softDeleteUser,
+  getUsers,
 };
 
 // const { DataTypes } = require("sequelize");

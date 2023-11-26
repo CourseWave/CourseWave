@@ -33,23 +33,11 @@ async function addSectionVideo(videoData) {
 }
 
 // Update section video details
-async function updateSectionVideo(video_id, videoData) {
-  const { video_title, video_link } = videoData;
-
+async function updateSectionVideo({ video_id, video_title, video_link }) {
   await db.query({
-    text: "UPDATE section_videos SET video_title = $1, video_link = $2 WHERE video_id = $3",
-    values: [video_title, video_link, video_id],
+    text: "UPDATE section_videos SET video_title = $2, video_link = $3 WHERE video_id = $1",
+    values: [video_id, video_title, video_link],
   });
-}
-
-// Get details of a section video
-async function getSectionVideoDetails(video_id) {
-  const result = await db.query({
-    text: "SELECT * FROM section_videos WHERE video_id = $1",
-    values: [video_id],
-  });
-
-  return result.rows[0];
 }
 
 // Soft delete a section video
@@ -60,12 +48,31 @@ async function deleteSectionVideo(video_id) {
   });
 }
 
+async function getSectionVideoDetails(video_id) {
+  const result = await db.query({
+    text: "SELECT * FROM section_videos WHERE video_id = $1 AND is_deleted = false",
+    values: [video_id],
+  });
+
+  return result.rows[0];
+}
+
+async function getSectionVideos(course_section_id) {
+  const result = await db.query({
+    text: "SELECT * FROM section_videos WHERE course_section_id = $1 AND is_deleted = false",
+    values: [course_section_id],
+  });
+
+  return result.rows;
+}
+
 module.exports = {
   createSectionVideosTable,
   addSectionVideo,
   updateSectionVideo,
   deleteSectionVideo,
   getSectionVideoDetails,
+  getSectionVideos,
 };
 
 // const { DataTypes } = require("sequelize");

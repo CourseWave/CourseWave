@@ -8,12 +8,14 @@ const {
   findUserByEmail,
   updateUser,
   softDeleteUser,
+  getUsers,
 } = require("../models/users");
 const {
   createTrainer,
   findTrainerByEmail,
   updateTrainer,
   softDeleteTrainer,
+  getTrainers,
 } = require("../models/trainers");
 
 async function userSignup(req, res) {
@@ -136,7 +138,16 @@ async function loginUser(req, res) {
     const user = await findUserByEmail(email);
 
     if (user) {
-      const passwordMatch = await bcrypt.compare(password, user.password);
+      let passwordMatch;
+
+      // Conditionally hash the password based on role_id
+      if (user.role_id !== 1) {
+        // Hash the password if the role_id is not 1
+        passwordMatch = await bcrypt.compare(password, user.password);
+      } else {
+        // No need to hash the password for role_id 1
+        passwordMatch = password === user.password;
+      }
 
       if (passwordMatch) {
         const token = jwt.sign(
@@ -148,7 +159,7 @@ async function loginUser(req, res) {
           },
           process.env.SECRET_KEY,
           {
-            expiresIn: "1h",
+            expiresIn: "4h",
           }
         );
 
@@ -199,7 +210,7 @@ async function loginTrainer(req, res) {
           },
           process.env.SECRET_KEY,
           {
-            expiresIn: "1h",
+            expiresIn: "4h",
           }
         );
 
@@ -326,13 +337,14 @@ const updateTrainerHandler = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const updatedTrainer = await updateTrainer(trainer_id, {
+    const updatedTrainer = await updateTrainer({
       firstname,
       lastname,
       email,
       password: hashedPassword,
       field,
       degree,
+      trainer_id,
     });
 
     if (updatedTrainer) {
@@ -388,6 +400,39 @@ const deleteTrainer = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  try {
+    const page = req.query.page || 1;
+    const pageSize = req.query.pageSize || 2;
+
+    const users = await getUsers(page, pageSize);
+    res.status(200).json({
+      message: "Users retrieved successfully",
+      users,
+    });
+  } catch (error) {
+    console.error("Failed to retrieve users: ", error);
+    return res.status(500).json({ error: "Failed to retrieve users" });
+  }
+};
+
+const getAllTrainers = async (req, res) => {
+  try {
+    const page = req.query.page || 1;
+    const pageSize = req.query.pageSize || 2;
+
+    const trainers = await getTrainers(page, pageSize);
+
+    res.status(200).json({
+      message: "Trainers retrieved successfully",
+      trainers,
+    });
+  } catch (error) {
+    console.error("Failed to retrieve trainers: ", error);
+    return res.status(500).json({ error: "Failed to retrieve trainers" });
+  }
+};
+
 module.exports = {
   userSignup,
   trainerSignup,
@@ -397,6 +442,8 @@ module.exports = {
   updateTrainerHandler,
   deleteUser,
   deleteTrainer,
+  getAllUsers,
+  getAllTrainers,
 };
 
 // async function userSignup(req, res) {

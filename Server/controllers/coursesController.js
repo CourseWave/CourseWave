@@ -3,7 +3,11 @@ const {
   addCourse,
   updateCourse,
   deleteCourse,
-  getCourseDetails,
+  getCourses,
+  getCourse,
+  getCoursesByFilter,
+  getCoursesBySearch,
+  getTrainerCourses,
 } = require("../models/courses");
 const {
   addCourseObject,
@@ -21,17 +25,18 @@ const {
   addCourseSection,
   updateCourseSection,
   deleteCourseSection,
-  getCourseSectionDetails,
+  getCourseSections,
 } = require("../models/course_sections");
 const {
   addSectionVideo,
   updateSectionVideo,
   deleteSectionVideo,
-  getCourseVideoDetails,
+  getSectionVideoDetails,
+  getSectionVideos,
 } = require("../models/section_videos");
 const { uploadImage, uploadVideo } = require("../middlewares/multer");
 
-// CRUD functions for courses
+//* CRUD functions for courses
 exports.addCourse = async (req, res) => {
   try {
     uploadImage.single("course_image")(req, res, async function (err) {
@@ -50,6 +55,7 @@ exports.addCourse = async (req, res) => {
         course_price,
         course_rate,
         course_length,
+        course_catagory,
       } = req.body;
 
       const course_image = req.file.path; // Path to the uploaded image
@@ -60,8 +66,9 @@ exports.addCourse = async (req, res) => {
         course_title,
         course_description,
         course_price,
-        course_rate,
+        course_rate: 0,
         course_length,
+        course_catagory,
         course_image,
         trainer_id,
       });
@@ -84,23 +91,23 @@ exports.updateCourse = async (req, res) => {
       course_title,
       course_description,
       course_price,
-      course_rate,
       course_length,
+      course_catagory,
     } = req.body;
 
-    // Update course details
+    // Update course details and calculate average rating
     const updatedCourse = await updateCourse({
-      course_id: course_id,
-      course_title: course_title,
-      course_description: course_description,
-      course_price: course_price,
-      course_rate: course_rate,
-      course_length: course_length,
+      course_id,
+      course_title,
+      course_description,
+      course_price,
+      course_length,
+      course_catagory,
     });
 
     res.status(200).json({
       message: "Course updated successfully",
-      course_id: updatedCourse.course_id,
+      course_id: updatedCourse,
     });
   } catch (error) {
     console.error("Failed to update the course: ", error);
@@ -125,11 +132,14 @@ exports.deleteCourse = async (req, res) => {
   }
 };
 
-exports.getCourse = async (req, res) => {
+exports.getCourses = async (req, res) => {
   try {
-    const course_id = req.params.course_id;
+    const { page = 1, pageSize = 2 } = req.query;
 
-    const coursesWithDetails = await getCourseDetails(course_id);
+    const coursesWithDetails = await getCourses(
+      parseInt(page),
+      parseInt(pageSize)
+    );
 
     if (!coursesWithDetails || coursesWithDetails.length === 0) {
       return res
@@ -149,6 +159,111 @@ exports.getCourse = async (req, res) => {
   }
 };
 
+exports.getCourse = async (req, res) => {
+  try {
+    const course_id = req.params.course_id;
+
+    const courseWithDetails = await getCourse(course_id);
+
+    if (!courseWithDetails || courseWithDetails.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No courses found for the specified course_id" });
+    }
+
+    res.status(200).json({
+      message: "Courses and related data retrieved successfully",
+      course: courseWithDetails,
+    });
+  } catch (error) {
+    console.error("Failed to retrieve courses and related data: ", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to retrieve courses and related data" });
+  }
+};
+
+exports.getCoursesByFilter = async (req, res) => {
+  try {
+    const { catagory, page = 1, pageSize = 2 } = req.query;
+
+    const coursesWithFilter = await getCoursesByFilter(
+      catagory,
+      parseInt(page),
+      parseInt(pageSize)
+    );
+
+    if (!coursesWithFilter || coursesWithFilter.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No courses found for the specified filter" });
+    }
+
+    res.status(200).json({
+      message: "Courses retrieved successfully",
+      coursesWithFilter,
+    });
+  } catch (error) {
+    console.error("Failed to retrieve courses: ", error);
+    return res.status(500).json({ error: "Failed to retrieve courses" });
+  }
+};
+
+exports.getCoursesBySearch = async (req, res) => {
+  try {
+    const { searchTerm, page = 1, pageSize = 2 } = req.query;
+
+    const coursesForSearch = await getCoursesBySearch(
+      searchTerm,
+      parseInt(page),
+      parseInt(pageSize)
+    );
+
+    if (!coursesForSearch || coursesForSearch.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No courses found for the specified trainer_id" });
+    }
+
+    res.status(200).json({
+      message: "Courses retrieved successfully",
+      coursesForSearch,
+    });
+  } catch (error) {
+    console.error("Failed to retrieve courses: ", error);
+    return res.status(500).json({ error: "Failed to retrieve courses" });
+  }
+};
+
+exports.getTrainerCourses = async (req, res) => {
+  try {
+    const trainer_id = req.user.trainer_id;
+    const { page = 1, pageSize = 10 } = req.query;
+
+    const coursesForTrainer = await getTrainerCourses(
+      parseInt(trainer_id),
+      parseInt(page),
+      parseInt(pageSize)
+    );
+
+    if (!coursesForTrainer || coursesForTrainer.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No courses found for the specified trainer_id" });
+    }
+
+    res.status(200).json({
+      message: "Trainer courses retrieved successfully",
+      coursesForTrainer,
+    });
+  } catch (error) {
+    console.error("Failed to retrieve trainer courses: ", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to retrieve trainer courses" });
+  }
+};
+
 //* CRUD functions for course_objects
 exports.addCourseObject = async (req, res) => {
   try {
@@ -164,7 +279,7 @@ exports.addCourseObject = async (req, res) => {
 
     res.status(201).json({
       message: "Course object added successfully",
-      course_object_id: newCourseObject.course_object_id,
+      object_id: newCourseObject.object_id,
     });
   } catch (error) {
     console.error("Failed to add the course object: ", error);
@@ -175,12 +290,10 @@ exports.addCourseObject = async (req, res) => {
 exports.updateCourseObject = async (req, res) => {
   try {
     const { object } = req.body;
-    const course_object_id = req.params.course_object_id;
+    const object_id = req.params.object_id;
 
     // Update course object details
-    const updatedCourseObject = await updateCourseObject(course_object_id, {
-      object,
-    });
+    await updateCourseObject({ object_id, object });
 
     res.status(200).json({
       message: "Course object updated successfully",
@@ -195,10 +308,10 @@ exports.updateCourseObject = async (req, res) => {
 
 exports.deleteCourseObject = async (req, res) => {
   try {
-    const course_object_id = req.params.course_object_id;
+    const object_id = req.params.object_id;
 
     // Soft delete course object
-    await deleteCourseObject(course_object_id);
+    await deleteCourseObject(object_id);
 
     res.status(200).json({
       message: "Course object soft-deleted successfully",
@@ -234,7 +347,7 @@ exports.getCourseObjectDetails = async (req, res) => {
   }
 };
 
-// CRUD functions for course_requirements
+//* CRUD functions for course_requirements
 exports.addCourseRequirement = async (req, res) => {
   try {
     const { requirement } = req.body;
@@ -249,7 +362,7 @@ exports.addCourseRequirement = async (req, res) => {
 
     res.status(201).json({
       message: "Course requirement added successfully",
-      course_requirement_id: newCourseRequirement.course_requirement_id,
+      requirement_id: newCourseRequirement.requirement_id,
     });
   } catch (error) {
     console.error("Failed to add the course requirement: ", error);
@@ -262,15 +375,9 @@ exports.addCourseRequirement = async (req, res) => {
 exports.updateCourseRequirement = async (req, res) => {
   try {
     const { requirement } = req.body;
-    const course_requirement_id = req.params.course_requirement_id;
+    const requirement_id = req.params.requirement_id;
 
-    // Update course requirement details
-    const updatedCourseRequirement = await updateCourseRequirement(
-      course_requirement_id,
-      {
-        requirement,
-      }
-    );
+    await updateCourseRequirement({ requirement_id, requirement });
 
     res.status(200).json({
       message: "Course requirement updated successfully",
@@ -285,10 +392,9 @@ exports.updateCourseRequirement = async (req, res) => {
 
 exports.deleteCourseRequirement = async (req, res) => {
   try {
-    const course_requirement_id = req.params.course_requirement_id;
+    const requirement_id = req.params.requirement_id;
 
-    // Soft delete course requirement
-    await deleteCourseRequirement(course_requirement_id);
+    await deleteCourseRequirement(requirement_id);
 
     res.status(200).json({
       message: "Course requirement soft-deleted successfully",
@@ -326,7 +432,7 @@ exports.getCourseRequirementDetails = async (req, res) => {
   }
 };
 
-// CRUD functions for course_sections
+//* CRUD functions for course_sections
 exports.addCourseSection = async (req, res) => {
   try {
     const { section_name } = req.body;
@@ -355,9 +461,7 @@ exports.updateCourseSection = async (req, res) => {
     const course_section_id = req.params.course_section_id;
 
     // Update course section details
-    const updatedCourseSection = await updateCourseSection(course_section_id, {
-      section_name,
-    });
+    await updateCourseSection({ course_section_id, section_name });
 
     res.status(200).json({
       message: "Course section updated successfully",
@@ -388,22 +492,20 @@ exports.deleteCourseSection = async (req, res) => {
   }
 };
 
-exports.getCourseSectionDetails = async (req, res) => {
+exports.getCourseSections = async (req, res) => {
   try {
     const course_id = req.params.course_id;
 
     // Get course section details
-    const courseSectionDetails = await getCourseSectionDetails(
-      course_id
-    );
+    const courseSection = await getCourseSections(course_id);
 
-    if (!courseSectionDetails || courseSectionDetails.length === 0) {
+    if (!courseSection || courseSection.length === 0) {
       return res.status(404).json({ error: "No course sections found" });
     }
 
     res.status(200).json({
       message: "Course section details retrieved successfully",
-      courseSectionDetails,
+      courseSection,
     });
   } catch (error) {
     console.error("Failed to retrieve course section details: ", error);
@@ -413,7 +515,7 @@ exports.getCourseSectionDetails = async (req, res) => {
   }
 };
 
-// CRUD functions for section_videos
+//* CRUD functions for section_videos
 exports.addCourseVideo = async (req, res) => {
   try {
     uploadVideo.single("video_link")(req, res, async function (err) {
@@ -466,10 +568,7 @@ exports.updateCourseVideo = async (req, res) => {
       const video_id = req.params.video_id;
 
       // Update section video details
-      const updatedSectionVideo = await updateSectionVideo(video_id, {
-        video_title,
-        video_link,
-      });
+      await updateSectionVideo({ video_id, video_title, video_link });
 
       res.status(200).json({
         message: "Section video updated successfully",
@@ -501,12 +600,12 @@ exports.deleteCourseVideo = async (req, res) => {
   }
 };
 
-exports.getCourseVideoDetails = async (req, res) => {
+exports.getSectionVideoDetails = async (req, res) => {
   try {
     const video_id = req.params.video_id;
 
     // Get section video details
-    const sectionVideoDetails = await getCourseVideoDetails(video_id);
+    const sectionVideoDetails = await getSectionVideoDetails(video_id);
 
     if (!sectionVideoDetails) {
       return res.status(404).json({ error: "Section video not found" });
@@ -515,6 +614,29 @@ exports.getCourseVideoDetails = async (req, res) => {
     res.status(200).json({
       message: "Section video details retrieved successfully",
       sectionVideoDetails,
+    });
+  } catch (error) {
+    console.error("Failed to retrieve section video details: ", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to retrieve section video details" });
+  }
+};
+
+exports.getSectionVideos = async (req, res) => {
+  try {
+    const course_section_id = req.params.course_section_id;
+
+    // Get section video details
+    const sectionVideos = await getSectionVideos(course_section_id);
+
+    if (!sectionVideos) {
+      return res.status(404).json({ error: "Section video not found" });
+    }
+
+    res.status(200).json({
+      message: "Section video details retrieved successfully",
+      sectionVideos,
     });
   } catch (error) {
     console.error("Failed to retrieve section video details: ", error);

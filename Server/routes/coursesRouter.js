@@ -18,11 +18,11 @@ router.post(
 //update
 router.put("/updateCourse/:course_id", coursesController.updateCourse);
 router.put(
-  "/updateCourseObject/:course_object_id",
+  "/updateCourseObject/:object_id",
   coursesController.updateCourseObject
 );
 router.put(
-  "/updateCourseRequirement/:course_requirement_id",
+  "/updateCourseRequirement/:requirement_id",
   coursesController.updateCourseRequirement
 );
 router.put(
@@ -36,6 +36,14 @@ router.put(
 //delete
 router.put("/deleteCourse/:course_id", coursesController.deleteCourse);
 router.put(
+  "/deleteCourseObject/:object_id",
+  coursesController.deleteCourseObject
+);
+router.put(
+  "/deleteCourseRequirement/:requirement_id",
+  coursesController.deleteCourseRequirement
+);
+router.put(
   "/deleteCourseSection/:course_section_id",
   coursesController.deleteCourseSection
 );
@@ -44,11 +52,8 @@ router.put(
   coursesController.deleteCourseVideo
 );
 
-router.get(
-  "/getCourse/:course_id",
-  verify.authorize,
-  coursesController.getCourse
-);
+router.get("/getCourses", coursesController.getCourses);
+router.get("/getCourse/:course_id", coursesController.getCourse);
 router.get(
   "/getCourseObjectDetails/:course_id",
   coursesController.getCourseObjectDetails
@@ -58,8 +63,23 @@ router.get(
   coursesController.getCourseRequirementDetails
 );
 router.get(
-  "/courseSectionDetails/:course_id",
-  coursesController.getCourseSectionDetails
+  "/getCourseSections/:course_id",
+  coursesController.getCourseSections
+);
+router.get(
+  "/getSectionVideoDetails/:video_id",
+  coursesController.getSectionVideoDetails
+);
+router.get(
+  "/getSectionVideos/:course_section_id",
+  coursesController.getSectionVideos
+);
+router.get("/getCoursesByFilter", coursesController.getCoursesByFilter);
+router.get("/getCoursesBySearch", coursesController.getCoursesBySearch);
+router.get(
+  "/getTrainerCourses",
+  verify.authorize,
+  coursesController.getTrainerCourses
 );
 
 module.exports = router;

@@ -41,16 +41,6 @@ async function updateCourseSection(course_section_id, sectionData) {
   });
 }
 
-// Get details of a course section
-async function getCourseSectionDetails(course_id) {
-  const result = await db.query({
-    text: "SELECT * FROM course_sections WHERE course_id = $1 AND is_deleted = false",
-    values: [course_id],
-  });
-
-  return result.rows;
-}
-
 // Soft delete a course section
 async function deleteCourseSection(course_section_id) {
   try {
@@ -75,12 +65,22 @@ async function deleteCourseSection(course_section_id) {
   }
 }
 
+// Get details of a course section
+async function getCourseSections(course_id) {
+  const result = await db.query({
+    text: "SELECT * FROM course_sections WHERE course_id = $1 AND is_deleted = false",
+    values: [course_id],
+  });
+
+  return result.rows;
+}
+
 module.exports = {
   createCourseSectionsTable,
   addCourseSection,
   updateCourseSection,
   deleteCourseSection,
-  getCourseSectionDetails,
+  getCourseSections,
 };
 
 // const { DataTypes } = require("sequelize");

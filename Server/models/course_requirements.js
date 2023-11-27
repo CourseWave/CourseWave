@@ -51,9 +51,10 @@ async function updateCourseRequirement({ requirement_id, requirement }) {
 async function deleteCourseRequirement(requirement_id) {
   const query = {
     text: `
-      DELETE FROM course_requirements
+      UPDATE course_requirements 
+      SET is_deleted = true 
       WHERE requirement_id = $1
-      RETURNING requirement_id;
+      RETURNING requirement_id
     `,
     values: [requirement_id],
   };

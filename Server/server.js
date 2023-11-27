@@ -19,6 +19,9 @@ const cartRoute = require("./routes/cartRouter");
 //* Purchases Router
 const purchasesRoute = require("./routes/purchasesRouter");
 
+//* liveSessions Router
+const liveSessionsRoute = require("./routes/liveSessionsRouter");
+
 app.use(cors());
 app.use(express.json());
 
@@ -27,6 +30,7 @@ app.use(coursesRoute);
 app.use(commentsRoute);
 app.use(cartRoute);
 app.use(purchasesRoute);
+app.use(liveSessionsRoute);
 
 // Call the initialization function to create tables
 models.initializeModels();

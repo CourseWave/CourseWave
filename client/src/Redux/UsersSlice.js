@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import Cookies from "js-cookie"
+import Cookies from "js-cookie";
 
 import axios from "axios";
 
@@ -9,7 +9,7 @@ const initialState = {
   teachers: [],
   status: "idle",
   error: null,
-  //   user:null,
+  user: null,
 };
 const token = Cookies.get("token");
 axios.defaults.headers.common["Authorization"] = token;
@@ -17,7 +17,7 @@ axios.defaults.headers.common["Authorization"] = token;
 export const fetchStudents = createAsyncThunk(
   "user/fetchStudents",
   async () => {
-    const response = await axios.get(" http://localhost:3001/student");
+    const response = await axios.get(" http://localhost:5000/student");
     return response.data;
   }
 );
@@ -26,7 +26,7 @@ export const fetchStudents = createAsyncThunk(
 export const fetchTeachers = createAsyncThunk(
   "user/fetchTeachers",
   async () => {
-    const response = await axios.get("http://localhost:3001/teacher");
+    const response = await axios.get("http://localhost:5000/teacher");
     return response.data;
   }
 );
@@ -34,7 +34,10 @@ export const fetchTeachers = createAsyncThunk(
 export const signupUserAsync = createAsyncThunk(
   "user/signupUser",
   async (userData) => {
-    const response = await axios.post("http://localhost:5000/userSignup", userData);
+    const response = await axios.post(
+      "http://localhost:5000/userSignup",
+      userData
+    );
     return response.data;
   }
 );
@@ -43,7 +46,10 @@ export const signupUserAsync = createAsyncThunk(
 export const signupTrainerAsync = createAsyncThunk(
   "user/signupTrainer",
   async (trainerData) => {
-    const response = await axios.post("http://localhost:5000/trainerSignup", trainerData);
+    const response = await axios.post(
+      "http://localhost:5000/trainerSignup",
+      trainerData
+    );
     return response.data;
   }
 );
@@ -51,8 +57,14 @@ export const signupTrainerAsync = createAsyncThunk(
 export const loginUserAsync = createAsyncThunk(
   "user/loginUser",
   async (loginData) => {
-    const response = await axios.post("http://localhost:5000/loginUser", loginData);
-    return response.data;
+    return axios
+      .post("http://localhost:5000/loginUser", loginData)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((e) => {
+        return { error: e.response.data.error };
+      });
   }
 );
 
@@ -60,7 +72,10 @@ export const loginUserAsync = createAsyncThunk(
 export const loginTrainerAsync = createAsyncThunk(
   "user/loginTrainer",
   async (loginData) => {
-    const response = await axios.post("http://localhost:5000/loginTrainer", loginData);
+    const response = await axios.post(
+      "http://localhost:5000/loginTrainer",
+      loginData
+    );
     return response.data;
   }
 );
@@ -98,6 +113,9 @@ export const deleteTrainerAsync = createAsyncThunk(
     return response.data;
   }
 );
+export const emptyStudent = createAsyncThunk("user/emptyStudent", async () => {
+  return [];
+});
 
 // Create a slice of the Redux store
 const userSlice = createSlice({
@@ -171,6 +189,10 @@ const userSlice = createSlice({
         state.user = null; // Reset user data after deletion
       })
       .addCase(deleteTrainerAsync.fulfilled, (state) => {
+        state.status = "succeeded";
+        state.user = null; // Reset user data after deletion
+      })
+      .addCase(emptyStudent.fulfilled, (state) => {
         state.status = "succeeded";
         state.user = null; // Reset user data after deletion
       });

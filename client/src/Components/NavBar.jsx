@@ -1,25 +1,49 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import Hero2 from "../Assets/Hero2.png";
+import Cookies from "js-cookie";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { emptyStudent } from "../Redux/UsersSlice";
+import { useDispatch } from "react-redux";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [signIn, setSignIn] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  useEffect(() => {
+    const token = Cookies.get("token");
+    token && setSignIn(true);
+  }, []);
+
+  useEffect(() => {
+    console.log({ user });
+  }, [user]);
+
+  const logout = () => {
+    Cookies.remove("token");
+    navigate("/LoginPage");
+    dispatch(emptyStudent());
+
+    window.location.reload();
+  };
+
   const navAfter = signIn ? (
     <>
-    
-    
-    
-    
+      <button
+        onClick={logout}
+        className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-700 md:p-0 dark:text-red-500 md:dark:hover:text-red-600 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+      >
+        Logout
+      </button>
     </>
   ) : (
     <>
-      {" "}
       <Link
         to="/LoginPage"
         className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"

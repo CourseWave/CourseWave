@@ -1,20 +1,28 @@
 // LoginPage.jsx
-import React, { useState } from 'react';
-import { loginUserAsync } from '../Redux/UsersSlice';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { loginUserAsync } from "../Redux/UsersSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    navigate('/')
-    dispatch(loginUserAsync({ email, password }));
-    console.log(`Logging in with email: ${email} and password: ${password}`);
+    const result = await dispatch(loginUserAsync({ email, password }));
+    if (result?.payload?.error) {
+      setErrorMessage(result.payload.error);
+      return;
+    }
+    Cookies.set("token", result.payload.token);
+    navigate("/");
+    window.location.reload();
+    console.log(result);
     // For a real application, you would typically make an API call to authenticate the user.
   };
 
@@ -24,7 +32,10 @@ const LoginPage = () => {
         <h2 className="text-2xl font-bold mb-4">Login</h2>
         <form>
           <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              htmlFor="email"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               Email
             </label>
             <input
@@ -35,7 +46,10 @@ const LoginPage = () => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              htmlFor="password"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
               Password
             </label>
             <input
@@ -45,6 +59,9 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
+          {errorMessage?.length > 0 && (
+            <div className="text-red-700 mb-2">{errorMessage}</div>
+          )}
           <button
             type="button"
             className="bg-blue-500 text-white px-4 py-2 rounded-md"

@@ -109,22 +109,6 @@ const AddCourse = () => {
       imageUrl: "",
     }));
   };
-  // const handleSubmit = (e) => {
-  //   if (!courseData.title && !courseData.tagline) return;
-  //   e.preventDefault();
-  //   dispatch(createCourse(courseData));
-  //   // Here, you can dispatch an action to send the courseData to your backend/API
-  //   // Example: dispatch(addCourse(courseData));
-
-  //   // Reset the form after submission
-  //   setCourseData({
-  //     title: "",
-  //     tagline: "",
-  //     objectives: [],
-  //     requirements: [],
-  //     description: "",
-  //   });
-  // };
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -22,6 +22,7 @@ export default function CheckoutForm() {
     }
 
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
+    console.log(paymentIntent,clientSecret);
       setMessage(paymentIntent.status === "succeeded" ? "Your payment succeeded" : "Unexpected error occurred");
     });
   }, [stripe]);
@@ -38,7 +39,7 @@ export default function CheckoutForm() {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: "{{EDUCATIVE_LIVE_VM_URL}}:3000",
+        return_url: "http://localhost:3000",
       }
     });
 

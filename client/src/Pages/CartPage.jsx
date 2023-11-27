@@ -73,7 +73,8 @@ export const CartsPage = () => {
                 <p className="mb-1 text-lg font-bold">$ {calculateTotal().toFixed(2)}</p>
               </div>
             </div>
-            <Link to="/PaymentPage">
+
+            <Link to="/PaymentPage" state={{amount:calculateTotal()}}>
               <button className="mt-6 w-full rounded-md bg-indigo-900 py-1.5 font-medium text-blue-50 hover:bg-indigo-950">
                 Check out
               </button>

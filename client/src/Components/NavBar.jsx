@@ -4,7 +4,7 @@ import Hero2 from "../Assets/Hero2.png";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [signIn, setSignIn] = useState(true);
+  const [signIn, setSignIn] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

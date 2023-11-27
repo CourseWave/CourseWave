@@ -1,12 +1,19 @@
 // LoginPage.jsx
 import React, { useState } from 'react';
+import { loginUserAsync } from '../Redux/UsersSlice';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    // You can implement authentication logic here
+  const handleLogin = (e) => {
+    e.preventDefault();
+    navigate('/')
+    dispatch(loginUserAsync({ email, password }));
     console.log(`Logging in with email: ${email} and password: ${password}`);
     // For a real application, you would typically make an API call to authenticate the user.
   };

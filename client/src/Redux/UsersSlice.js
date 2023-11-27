@@ -1,4 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import Cookies from "js-cookie"
+
 import axios from "axios";
 
 // Define initial state
@@ -9,7 +11,8 @@ const initialState = {
   error: null,
   //   user:null,
 };
-
+const token = Cookies.get("token");
+axios.defaults.headers.common["Authorization"] = token;
 // Define async thunk for fetching students
 export const fetchStudents = createAsyncThunk(
   "user/fetchStudents",
@@ -31,7 +34,7 @@ export const fetchTeachers = createAsyncThunk(
 export const signupUserAsync = createAsyncThunk(
   "user/signupUser",
   async (userData) => {
-    const response = await axios.post("/userSignup", userData);
+    const response = await axios.post("http://localhost:5000/userSignup", userData);
     return response.data;
   }
 );
@@ -40,7 +43,7 @@ export const signupUserAsync = createAsyncThunk(
 export const signupTrainerAsync = createAsyncThunk(
   "user/signupTrainer",
   async (trainerData) => {
-    const response = await axios.post("/trainerSignup", trainerData);
+    const response = await axios.post("http://localhost:5000/trainerSignup", trainerData);
     return response.data;
   }
 );
@@ -48,7 +51,7 @@ export const signupTrainerAsync = createAsyncThunk(
 export const loginUserAsync = createAsyncThunk(
   "user/loginUser",
   async (loginData) => {
-    const response = await axios.post("/loginUser", loginData);
+    const response = await axios.post("http://localhost:5000/loginUser", loginData);
     return response.data;
   }
 );
@@ -57,7 +60,7 @@ export const loginUserAsync = createAsyncThunk(
 export const loginTrainerAsync = createAsyncThunk(
   "user/loginTrainer",
   async (loginData) => {
-    const response = await axios.post("/loginTrainer", loginData);
+    const response = await axios.post("http://localhost:5000/loginTrainer", loginData);
     return response.data;
   }
 );

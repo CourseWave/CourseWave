@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-
+import { signupUserAsync } from "../Redux/UsersSlice";
+import { useDispatch } from "react-redux";
 const StudentForm = () => {
   const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
+    firstname: "",
+    lastname: "",
     email: "",
     password: "",
-    confirm_password: "",
   });
-
+  const dispatch = useDispatch();
   const [errors, setErrors] = useState({});
+ 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,36 +24,35 @@ const StudentForm = () => {
     });
   };
 
+  const nameRegex = /^[a-zA-Z]{3,20}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&!])[A-Za-z\d@#$%^&!]{6,30}$/;
+
   const validateForm = () => {
     let isValid = true;
     const newErrors = {};
 
-    if (!formData.first_name.trim()) {
-      newErrors.first_name = "First Name is required";
+    if (!nameRegex.test(formData.firstname.trim())) {
+      newErrors.firstname = "First Name is required";
       isValid = false;
     }
 
-    if (!formData.last_name.trim()) {
-      newErrors.last_name = "Last Name is required";
+    if (!nameRegex.test(formData.lastname.trim())) {
+      newErrors.lastname = "Last Name is required";
       isValid = false;
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-      isValid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+    if (!emailRegex.test(formData.email.trim())) {
       newErrors.email = "Invalid email format";
       isValid = false;
     }
 
-    if (!formData.password.trim()) {
-      newErrors.password = "Password is required";
+    if (!passwordRegex.test(formData.password.trim())) {
+      newErrors.password =
+        "Password is required and must meet the specified criteria";
       isValid = false;
     }
-    if (!formData.confirm_password.trim()) {
-      newErrors.confirm_password = "Confirm Password  is required";
-      isValid = false;
-    }
+
     if (formData.password !== formData.confirm_password) {
       newErrors.confirm_password = "Passwords do not match";
       isValid = false;
@@ -66,8 +66,16 @@ const StudentForm = () => {
     e.preventDefault();
 
     if (validateForm()) {
-      console.log("Registration data:", formData);
-    }
+      dispatch(signupUserAsync(formData));
+      setFormData({
+        firstname: "",
+        lastname: "",
+        email: "",
+        password: "",
+        confirm_password: "",
+      });
+      setErrors({});
+    } 
   };
 
   return (
@@ -76,44 +84,44 @@ const StudentForm = () => {
       <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
         <div className="">
           <label
-            htmlFor="first_name"
+            htmlFor="firstname"
             className="block text-gray-700 font-bold mb-2"
           >
             First Name
           </label>
           <input
             type="text"
-            id="first_name"
-            name="first_name"
-            value={formData.first_name}
+            id="firstname"
+            name="firstname"
+            value={formData.firstname}
             onChange={handleChange}
             className={`border ${
-              errors.first_name ? "border-red-500" : "border-gray-300"
+              errors.firstname ? "border-red-500" : "border-gray-300"
             } rounded w-full py-2 px-3`}
           />
-          {errors.first_name && (
-            <p className="text-red-500 text-sm mt-2">{errors.first_name}</p>
+          {errors.firstname && (
+            <p className="text-red-500 text-sm mt-2">{errors.firstname}</p>
           )}
         </div>
         <div className="">
           <label
-            htmlFor="last_name"
+            htmlFor="lastname"
             className="block text-gray-700 font-bold mb-2"
           >
             Last Name
           </label>
           <input
             type="text"
-            id="last_name"
-            name="last_name"
-            value={formData.last_name}
+            id="lastname"
+            name="lastname"
+            value={formData.lastname}
             onChange={handleChange}
             className={`border ${
-              errors.last_name ? "border-red-500" : "border-gray-300"
+              errors.lastname ? "border-red-500" : "border-gray-300"
             } rounded w-full py-2 px-3`}
           />
-          {errors.last_name && (
-            <p className="text-red-500 text-sm mt-2">{errors.last_name}</p>
+          {errors.lastname && (
+            <p className="text-red-500 text-sm mt-2">{errors.lastname}</p>
           )}
         </div>
         <div className="col-span-2">

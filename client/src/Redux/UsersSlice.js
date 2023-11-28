@@ -17,7 +17,7 @@ axios.defaults.headers.common["Authorization"] = token;
 export const fetchStudents = createAsyncThunk(
   "user/fetchStudents",
   async () => {
-    const response = await axios.get(" http://localhost:5000/student");
+    const response = await axios.get(" http://localhost:5000/getUsers");
     return response.data;
   }
 );
@@ -26,7 +26,7 @@ export const fetchStudents = createAsyncThunk(
 export const fetchTeachers = createAsyncThunk(
   "user/fetchTeachers",
   async () => {
-    const response = await axios.get("http://localhost:5000/teacher");
+    const response = await axios.get("http://localhost:5000/getTrainers");
     return response.data;
   }
 );
@@ -72,11 +72,13 @@ export const loginUserAsync = createAsyncThunk(
 export const loginTrainerAsync = createAsyncThunk(
   "user/loginTrainer",
   async (loginData) => {
-    const response = await axios.post(
-      "http://localhost:5000/loginTrainer",
-      loginData
-    );
-    return response.data;
+    return axios.post("http://localhost:5000/loginTrainer", loginData)
+    .then((response)=>{
+      return response.data;
+    })
+    .catch((e)=>{
+      return { error: e.response.data.error };
+    })
   }
 );
 
@@ -122,15 +124,20 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    updateUserInfo: (state, action) => {
+    loggedUserInfo: (state, action) => {
       // Update user information in the state
-      state.userInfo = action.payload;
+      state.user = action.payload;
     },
 
     // Example reducer for updating trainer information
     updateTrainerInfo: (state, action) => {
       // Update trainer information in the state
       state.trainerInfo = action.payload;
+    },
+
+    setUserState: (state, action) => {
+      state.user = action.payload;
+      state.users = action.payload;
     },
   },
 
@@ -170,7 +177,7 @@ const userSlice = createSlice({
       })
       .addCase(loginUserAsync.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.user = action.payload;
+        state.user = action.payload.user;
       })
       .addCase(loginTrainerAsync.fulfilled, (state, action) => {
         state.status = "succeeded";
@@ -200,6 +207,6 @@ const userSlice = createSlice({
 });
 
 // Export actions and reducer
-export const { userActions, updateUserInfo, updateTrainerInfo } =
+export const { loggedUserInfo, updateTrainerInfo, setUserState } =
   userSlice.actions;
 export const userReducer = userSlice.reducer;

@@ -16,7 +16,7 @@ export const CartsPage = () => {
   }, []);
 
   const calculateTotal = () => {
-    return cartItems.reduce((total, course) => total + course.price * (course.quantity || 1), 0);
+    return cartItems.reduce((total, course) => total + course.course_price * (course.quantity || 1), 0);
   };
 
   return (
@@ -31,30 +31,29 @@ export const CartsPage = () => {
           <div className="rounded-lg md:w-2/3">
             {cartItems.map((course) => (
               <div
-                key={course.id}
+                key={course.course_id}
                 className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start"
               >
                 <div className="sm:ml-4 sm:flex sm:w-full sm:justify-between ">
                   <div className="mt-5 sm:mt-0 ">
                     <img
-                      src={course.image}
-                      alt={course.title}
+                      src={course.course_image}
+                      alt={course.course_title}
                       className="w-52 object-cover rounded-md"
                     />
-                    <h2 className="text-lg font-bold text-gray-900">{course.title}</h2>
-                    <p className="mt-1 text-xs text-gray-700">{course.tagline}</p>
+                    <h2 className="text-lg font-bold text-gray-900">{course.course_title}</h2>
                   </div>
                   <div className="mt-4 flex justify-between im sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
                     <div className="flex items-center border-gray-100">
                       <button
-                        onClick={() => removeCourse(course.id)}
+                        onClick={() => removeCourse(course.course_id)}
                         className="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-indigo-900 hover:text-blue-50"
                       >
                         Remove
                       </button>
                     </div>
                     <div className="flex items-center space-x-4">
-                      <p className="text-sm"> ${course.price}</p>
+                      <p className="text-sm"> ${course.course_price}</p>
                     </div>
                   </div>
                 </div>

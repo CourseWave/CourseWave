@@ -35,15 +35,15 @@ const CoursesTable = () => {
           </thead>
           <tbody className="border-2 border-black">
             {courses.map((course) => (
-              <tr key={course.id}>
-                <td>{course.id}</td>
-                <td>{course.title}</td>
+              <tr key={course.course_id}>
+                <td>{course.course_id}</td>
+                <td>{course.course_title}</td>
                 <td>
                   {/* Add your action buttons or links here */}
                   {/* Example: */}
                   <div className="flex gap-5">
                     <button className="bg-green-500 p-2 rounded-lg text-white" onClick={() => handleEdit(course)}>Edit</button>
-                    <button className="bg-red-700 p-2 rounded-lg text-white" onClick={() => handleDelete(course.id)}>Delete</button>
+                    <button className="bg-red-700 p-2 rounded-lg text-white" onClick={() => handleDelete(course.course_id)}>Delete</button>
                   </div>
                 </td>
               </tr>

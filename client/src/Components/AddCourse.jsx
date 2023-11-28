@@ -2,20 +2,23 @@
 import React, { useState, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { createCourse } from "../Redux/CoursesSlice";
+import "react-toastify/dist/ReactToastify.css";
+import { Slide, ToastContainer, toast } from "react-toastify";
 
 const AddCourse = () => {
+  const toastId = "fetched-nationalities";
   const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(1);
   const [courseData, setCourseData] = useState({
     title: "",
-    tagline: "",
+    course_catagory: "",
     objectives: [],
     requirements: [],
     description: "",
     price: 0,
-    videos: [],
+    // videos: [],
+    course_length: 0,
     image: null,
-    imageUrl: "",
   });
 
   const handleChange = (e, index, field) => {
@@ -66,39 +69,30 @@ const AddCourse = () => {
     });
   }, []);
 
-  const handleAddVideo = useCallback(() => {
-    setCourseData((prevData) => ({
-      ...prevData,
-      videos: [...prevData.videos, ""],
-    }));
-  }, []);
+  // const handleAddVideo = useCallback(() => {
+  //   setCourseData((prevData) => ({
+  //     ...prevData,
+  //     videos: [...prevData.videos, ""],
+  //   }));
+  // }, []);
 
-  const handleRemoveVideo = useCallback((index) => {
-    setCourseData((prevData) => {
-      const newVideos = [...prevData.videos];
-      newVideos.splice(index, 1);
-      return {
-        ...prevData,
-        videos: newVideos,
-      };
-    });
-  }, []);
+  // const handleRemoveVideo = useCallback((index) => {
+  //   setCourseData((prevData) => {
+  //     const newVideos = [...prevData.videos];
+  //     newVideos.splice(index, 1);
+  //     return {
+  //       ...prevData,
+  //       videos: newVideos,
+  //     };
+  //   });
+  // }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    console.log(file, e);
     setCourseData((prevData) => ({
       ...prevData,
       image: file,
-      imageUrl: "", // Reset imageUrl when a new image is selected
-    }));
-  };
-
-  const handleImageUrlChange = (e) => {
-    const imageUrl = e.target.value;
-    setCourseData((prevData) => ({
-      ...prevData,
-      imageUrl,
-      image: null, // Reset image when a new imageUrl is provided
     }));
   };
 
@@ -106,7 +100,6 @@ const AddCourse = () => {
     setCourseData((prevData) => ({
       ...prevData,
       image: null,
-      imageUrl: "",
     }));
   };
 
@@ -116,19 +109,39 @@ const AddCourse = () => {
       // Move to the next step
       setCurrentStep(2);
     } else {
+      const requiredFields = [
+        "course_catagory",
+        "title",
+        "image",
+        "course_length",
+      ];
+      const missingFields = requiredFields.filter(
+        (field) => !courseData[field]
+      );
+      console.log(missingFields);
+      if (missingFields.length > 0) {
+        missingFields.forEach((field) => {
+          toast.error(`${field} is missing`, {
+            position: toast.POSITION.TOP_RIGHT,
+            toastId,
+          });
+        });
+        return;
+      }
+
       // Submit the form
       dispatch(createCourse(courseData));
       // Reset the form after submission
       setCourseData({
         title: "",
-        tagline: "",
+        course_catagory: "",
+        course_length: 0,
         objectives: [],
         requirements: [],
         description: "",
         price: 0,
         videos: [],
         image: null,
-        imageUrl: "",
       });
       // Reset the step to the first step
       setCurrentStep(1);
@@ -169,14 +182,28 @@ const AddCourse = () => {
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
-                Tagline
+                Course Catagory
               </label>
               <input
                 type="text"
-                name="tagline"
-                value={courseData.tagline}
+                name="course_catagory"
+                value={courseData.course_catagory}
                 onChange={(e) => {
-                  handleChange(e, 0, "tagline");
+                  handleChange(e, 0, "course_catagory");
+                }}
+                className="mt-1 p-2 w-full border rounded-md"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Course Length
+              </label>
+              <input
+                type="number"
+                name="course_length"
+                value={courseData.course_length}
+                onChange={(e) => {
+                  handleChange(e, 0, "course_length");
                 }}
                 className="mt-1 p-2 w-full border rounded-md"
               />
@@ -234,7 +261,7 @@ const AddCourse = () => {
               </button>
             </div>
 
-            <div className="mb-4 border border-black rounded-md p-5" >
+            <div className="mb-4 border border-black rounded-md p-5">
               <label className="block text-sm font-medium text-gray-700">
                 Requirements
               </label>
@@ -300,7 +327,9 @@ const AddCourse = () => {
               <label className="block text-lg font-medium text-black">
                 Image
               </label>
-              <p className="text-sm text-gray-700">This Image will be shown in the card as a featured Image</p>
+              <p className="text-sm text-gray-700">
+                This Image will be shown in the card as a featured Image
+              </p>
               {courseData.image && (
                 <div className="mb-2">
                   <img
@@ -323,19 +352,8 @@ const AddCourse = () => {
                 onChange={handleImageChange}
                 className="mt-1 p-2 w-full border rounded-md"
               />
-              <div className="mt-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  or Image URL
-                </label>
-                <input
-                  type="text"
-                  value={courseData.imageUrl}
-                  onChange={handleImageUrlChange}
-                  className="mt-1 p-2 w-full border rounded-md"
-                />
-              </div>
             </div>
-            <div className="mb-4 border-2 border-black rounded-md p-5">
+            {/* <div className="mb-4 border-2 border-black rounded-md p-5">
               <label className="block text-lg font-medium text-blacK ">
                 Add Your Videos Here
               </label>
@@ -370,7 +388,7 @@ const AddCourse = () => {
               >
                 Add Video
               </button>
-            </div>
+            </div> */}
             <div className="flex justify-between">
               <button
                 className="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400"

@@ -1,6 +1,6 @@
 // LoginPage.jsx
 import React, { useState } from "react";
-import { loginUserAsync } from "../Redux/UsersSlice";
+import { loginTrainerAsync, loginUserAsync, setUserState } from "../Redux/UsersSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -8,22 +8,40 @@ import Cookies from "js-cookie";
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userType, setUserType] = useState("student");
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const result = await dispatch(loginUserAsync({ email, password }));
-    if (result?.payload?.error) {
-      setErrorMessage(result.payload.error);
-      return;
+    if (userType === "student") {
+      const result = await dispatch(
+        loginUserAsync({ email, password, userType })
+      );
+      if (result?.payload?.error) {
+        setErrorMessage(result.payload.error);
+        return;
+      }
+      Cookies.set("token", result.payload.token);
+      Cookies.set("userInfo", JSON.stringify(result.payload));
+      navigate("/");
+      window.location.reload();
+      console.log(result);
+    }else{
+      const result = await dispatch(
+        loginTrainerAsync({ email, password, userType })
+      );
+      if (result?.payload?.error) {
+        setErrorMessage(result.payload.error);
+        return;
+      }
+      Cookies.set("token", result.payload.token);
+      Cookies.set("userInfo", JSON.stringify(result.payload));
+      navigate("/");
+      window.location.reload();
+      console.log(result);
     }
-    Cookies.set("token", result.payload.token);
-    navigate("/");
-    window.location.reload();
-    console.log(result);
-    // For a real application, you would typically make an API call to authenticate the user.
   };
 
   return (
@@ -58,6 +76,31 @@ const LoginPage = () => {
               className="border rounded-md px-3 py-2 w-full"
               onChange={(e) => setPassword(e.target.value)}
             />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Login As:
+            </label>
+            <div className="flex">
+              <label className="mr-4">
+                <input
+                  type="radio"
+                  value="student"
+                  checked={userType === "student"}
+                  onChange={() => setUserType("student")}
+                />
+                Student
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value="teacher"
+                  checked={userType === "teacher"}
+                  onChange={() => setUserType("teacher")}
+                />
+                Teacher
+              </label>
+            </div>
           </div>
           {errorMessage?.length > 0 && (
             <div className="text-red-700 mb-2">{errorMessage}</div>

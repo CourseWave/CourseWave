@@ -1,8 +1,11 @@
 // CourseSlice.js
 import { createSlice } from "@reduxjs/toolkit";
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import Cookies from "js-cookie";
 
+const token = Cookies.get("token");
+axios.defaults.headers.common["Authorization"] = token;
 const CoursesSlice = createSlice({
   name: "Courses",
   initialState: {
@@ -83,7 +86,9 @@ const CoursesSlice = createSlice({
       const course = state.Courses.find((course) => course.id === courseId);
       if (course) {
         // Assuming a course has an 'objectives' array, you can update the specific objective
-        const index = course.objectives.findIndex((obj) => obj.id === objectiveId);
+        const index = course.objectives.findIndex(
+          (obj) => obj.id === objectiveId
+        );
         if (index !== -1) {
           course.objectives[index] = updatedObjective;
         }
@@ -95,7 +100,9 @@ const CoursesSlice = createSlice({
       const course = state.Courses.find((course) => course.id === courseId);
       if (course) {
         // Assuming a course has an 'objectives' array, you can filter out the deleted objective
-        course.objectives = course.objectives.filter((obj) => obj.id !== objectiveId);
+        course.objectives = course.objectives.filter(
+          (obj) => obj.id !== objectiveId
+        );
       }
     },
 
@@ -113,7 +120,9 @@ const CoursesSlice = createSlice({
       const course = state.Courses.find((course) => course.id === courseId);
       if (course) {
         // Assuming a course has a 'requirements' array, you can update the specific requirement
-        const index = course.requirements.findIndex((req) => req.id === requirementId);
+        const index = course.requirements.findIndex(
+          (req) => req.id === requirementId
+        );
         if (index !== -1) {
           course.requirements[index] = updatedRequirement;
         }
@@ -125,7 +134,9 @@ const CoursesSlice = createSlice({
       const course = state.Courses.find((course) => course.id === courseId);
       if (course) {
         // Assuming a course has a 'requirements' array, you can filter out the deleted requirement
-        course.requirements = course.requirements.filter((req) => req.id !== requirementId);
+        course.requirements = course.requirements.filter(
+          (req) => req.id !== requirementId
+        );
       }
     },
   },
@@ -155,10 +166,8 @@ export const {
 export const fetchCourses = () => async (dispatch) => {
   try {
     dispatch(fetchCoursesPending());
-    const response = await axios.get("http://localhost:3001/course");
-    console.log(response);
-    const courses = response.data;
-    console.log(courses);
+    const response = await axios.get("http://localhost:5000/getCourses");
+    const courses = response.data.courses;
     dispatch(fetchCoursesFulfilled(courses));
   } catch (error) {
     dispatch(fetchCoursesRejected(error.message));
@@ -169,11 +178,34 @@ export const fetchCourses = () => async (dispatch) => {
 export const createCourse = (courseData) => async (dispatch) => {
   try {
     dispatch(createCoursePending());
+    const z = {};
+    // Create FormData object
+    const formData = new FormData();
+
+    // Append data to FormData
+
+    z["course_image"] = courseData["image"];
+    z["course_title"] = courseData["title"];
+    z["course_description"] = courseData["description"];
+    z["course_price"] = courseData["price"];
+    z["course_catagory"] = courseData["course_catagory"];
+    z["course_length"] = courseData["course_length"];
+    z["course_rate"] = "1";
+
+    Object.keys(z).forEach((key) => {
+      formData.append(key, z[key]);
+    });
     const response = await axios.post(
-      "http://localhost:3001/course",
-      courseData
+      "http://localhost:5000/addCourse",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data", // Important for file upload
+        },
+      }
     );
-    const newCourse = response.data; // Assuming the new course is returned from the API
+
+    const newCourse = response.data;
     dispatch(createCourseFulfilled(newCourse));
   } catch (error) {
     dispatch(createCourseRejected(error.message));
@@ -186,7 +218,7 @@ export const updateCourse =
     try {
       dispatch(updateCoursePending());
       const response = await axios.put(
-        `http://localhost:3001/updateCourse/${courseId}`,
+        `http://localhost:5000/updateCourse/${courseId}`,
         updatedData
       );
       console.log(response);
@@ -199,7 +231,7 @@ export const updateCourse =
 export const deleteCourse = (courseId) => async (dispatch) => {
   try {
     dispatch(deleteCoursePending());
-    await axios.put(`http://localhost:3001/deleteCourse/${courseId}`);
+    await axios.put(`http://localhost:5000/deleteCourse/${courseId}`);
     dispatch(deleteCourseFulfilled(courseId));
   } catch (error) {
     dispatch(deleteCourseRejected(error.message));
@@ -207,10 +239,13 @@ export const deleteCourse = (courseId) => async (dispatch) => {
 };
 
 export const addObjectiveAsync = createAsyncThunk(
-  'courses/addObjective',
+  "courses/addObjective",
   async (objectiveData) => {
     try {
-      const response = await api.post(`/addCourseObject/${objectiveData.course_id}`, objectiveData);
+      const response = await axios.post(
+        `http://localhost:5000/addCourseObject/${objectiveData.course_id}`,
+        objectiveData
+      );
       return response.data;
     } catch (error) {
       // Handle error
@@ -220,10 +255,13 @@ export const addObjectiveAsync = createAsyncThunk(
 );
 
 export const updateObjectiveAsync = createAsyncThunk(
-  'courses/updateObjective',
+  "courses/updateObjective",
   async (objectiveData) => {
     try {
-      const response = await api.put(`/updateCourseObject/${objectiveData.course_object_id}`, objectiveData);
+      const response = await axios.put(
+        `http://localhost:5000/updateCourseObject/${objectiveData.course_object_id}`,
+        objectiveData
+      );
       return response.data;
     } catch (error) {
       // Handle error
@@ -233,10 +271,12 @@ export const updateObjectiveAsync = createAsyncThunk(
 );
 
 export const deleteObjectiveAsync = createAsyncThunk(
-  'courses/deleteObjective',
+  "courses/deleteObjective",
   async (objectiveData) => {
     try {
-      const response = await api.put(`/deleteCourseObject/${objectiveData.course_object_id}`);
+      const response = await axios.put(
+        `http://localhost:5000/deleteCourseObject/${objectiveData.course_object_id}`
+      );
       return response.data;
     } catch (error) {
       // Handle error
@@ -246,10 +286,13 @@ export const deleteObjectiveAsync = createAsyncThunk(
 );
 
 export const addRequirementAsync = createAsyncThunk(
-  'courses/addRequirement',
+  "courses/addRequirement",
   async (requirementData) => {
     try {
-      const response = await api.post(`/addCourseRequirement/${requirementData.course_id}`, requirementData);
+      const response = await axios.post(
+        `http://localhost:5000/addCourseRequirement/${requirementData.course_id}`,
+        requirementData
+      );
       return response.data;
     } catch (error) {
       // Handle error
@@ -259,10 +302,13 @@ export const addRequirementAsync = createAsyncThunk(
 );
 
 export const updateRequirementAsync = createAsyncThunk(
-  'courses/updateRequirement',
+  "courses/updateRequirement",
   async (requirementData) => {
     try {
-      const response = await api.put(`/updateCourseRequirement/${requirementData.course_requirement_id}`, requirementData);
+      const response = await axios.put(
+        `http://localhost:5000/updateCourseRequirement/${requirementData.course_requirement_id}`,
+        requirementData
+      );
       return response.data;
     } catch (error) {
       // Handle error
@@ -272,10 +318,12 @@ export const updateRequirementAsync = createAsyncThunk(
 );
 
 export const deleteRequirementAsync = createAsyncThunk(
-  'courses/deleteRequirement',
+  "courses/deleteRequirement",
   async (requirementData) => {
     try {
-      const response = await api.put(`/deleteCourseRequirement/${requirementData.course_requirement_id}`);
+      const response = await axios.put(
+        `http://localhost:5000/deleteCourseRequirement/${requirementData.course_requirement_id}`
+      );
       return response.data;
     } catch (error) {
       // Handle error

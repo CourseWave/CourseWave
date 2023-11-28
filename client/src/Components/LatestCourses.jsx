@@ -45,17 +45,17 @@ const Courses = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mx-[6rem] mt-8">
         {currentItems && currentItems.map((course) => (
           <div
-            key={course.id}
+            key={course.course_id}
             className="bg-white p-4 rounded-lg shadow-md cursor-pointer"
-            onClick={() => handleCourseClick(course.id)}
+            onClick={() => handleCourseClick(course.course_id)}
           >
             <img
-              src={course.image}
-              alt={course.title}
+              src={course.course_image}
+              alt={course.course_title}
               className="w-full h-32 object-cover mb-4 rounded-md"
             />
-            <h3 className="text-xl font-bold mb-2 text-black">{course.title}</h3>
-            <p className="text-gray-600">{course.description}</p>
+            <h3 className="text-xl font-bold mb-2 text-black">{course.course_title}</h3>
+            <p className="text-gray-600">{course.course_description}</p>
           </div>
         ))}
       </div>

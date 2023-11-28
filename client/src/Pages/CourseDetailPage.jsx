@@ -10,10 +10,11 @@ const CourseDetailPage = () => {
   const { courseId } = useParams();
   const courses = useSelector((state) => state.Courses.Courses);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [course, setCourse] = useState(null);
   const dispatch = useDispatch();
 
   const handleAddToCart = () => {
-    const courseToAdd = courses.find((c) => c.id === parseInt(courseId));
+    const courseToAdd = courses.find((c) => c.course_id === parseInt(courseId));
 
     if (courseToAdd) {
       dispatch(addToCart(courseToAdd));
@@ -37,12 +38,15 @@ const CourseDetailPage = () => {
     };
 
     fetchData();
-  }, [dispatch]);
+  }, []);
 
-  const course = isDataLoaded
-    ? courses.find((c) => c.id === parseInt(courseId))
-    : null;
+useEffect(()=>{
+  setCourse(courses.find((c) => c.course_id === parseInt(courseId)))
+  console.log(courses);
+},[courses]);
 
+ 
+console.log(course);
   if (!isDataLoaded) {
     return (
       <div className="text-center text-gray-500 font-bold mt-8">Loading...</div>
@@ -61,12 +65,12 @@ const CourseDetailPage = () => {
       <div className="container flex flex-wrap relative justify-center p-2">
         {/* Right Column - Course Details */}
         <div className="flex flex-col flex-wrap p-10 border-2  w-1/6 h-[30rem] rounded-2xl bg-white fixed right-[100px]">
-          <h1 className="text-3xl font-bold text-black">{course.title}</h1>
-          <p className="text-black">{course.description}</p>
+          <h1 className="text-3xl font-bold text-black">{course.course_title}</h1>
+          <p className="text-black">{course.course_description}</p>
 
           <div className="flex justify-center flex-col">
-            <span className="text-black">Rating: {course.rating}</span>
-            <span className="text-black">Price: ${course.price}</span>
+            <span className="text-black">Rating: {course.course_rating}</span>
+            <span className="text-black">Price: ${course.course_price}</span>
           </div>
 
           <div className="flex justify-center flex-col gap-5">
@@ -87,9 +91,9 @@ const CourseDetailPage = () => {
         <div className="flex flex-wrap bg-black h-[16rem] justify-center">
           <div className="m-10 flex flex-wrap ">
             <div className="text-white">
-              <h1 className="text-3xl font-bold">{course.title}</h1>
+              <h1 className="text-3xl font-bold">{course.course_title}</h1>
               <p className="text-lg">{course.tagline}</p>
-              <p className="text-lg">Rating: {course.rating}</p>
+              <p className="text-lg">Rating: {course.course_rating}</p>
               {/* Add creator details here */}
               <p className="text-lg">Creator: {course.creator}</p>
             </div>

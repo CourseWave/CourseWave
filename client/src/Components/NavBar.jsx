@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { emptyStudent } from "../Redux/UsersSlice";
 import { useDispatch } from "react-redux";
+import { ToastContainer } from "react-toastify";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,12 +22,10 @@ const Navbar = () => {
     token && setSignIn(true);
   }, []);
 
-  useEffect(() => {
-    console.log({ user });
-  }, [user]);
-
   const logout = () => {
     Cookies.remove("token");
+    Cookies.set("userInfo");
+
     navigate("/LoginPage");
     dispatch(emptyStudent());
 
@@ -61,7 +60,8 @@ const Navbar = () => {
   );
 
   return (
-    <nav className="bg-white border-gray-200 dark:bg-gray-900">
+    <>
+     <nav className="bg-white border-gray-200 dark:bg-gray-900">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <Link
           to="/"
@@ -169,6 +169,10 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
+    <div className="toast-container"><ToastContainer limit={2}/></div>
+</>
+   
+    
   );
 };
 

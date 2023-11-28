@@ -1,12 +1,12 @@
 // StudentProfile.js
 
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchStudents } from '../Redux/UsersSlice';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchStudents } from "../Redux/UsersSlice";
 
 const StudentProfile = () => {
   const dispatch = useDispatch();
-  const userId = ''; // Replace with the actual user ID
+  const userId = ""; // Replace with the actual user ID
 
   useEffect(() => {
     dispatch(fetchStudents(userId));

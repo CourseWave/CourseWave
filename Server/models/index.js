@@ -9,6 +9,8 @@ const course_sectionsModel = require("./course_sections");
 const section_videosModel = require("./section_videos");
 const commentsModel = require("./comments");
 const cartModel = require("./cart");
+const purchasesModel = require("./purchases");
+const liveSessionsModel = require("./liveSessions");
 
 const initializationFunctions = [
   rolesModel.createRolesTable,
@@ -21,6 +23,8 @@ const initializationFunctions = [
   section_videosModel.createSectionVideosTable,
   commentsModel.createCommentsTable,
   cartModel.createCartTable,
+  purchasesModel.createPurchasesTable,
+  liveSessionsModel.createLiveSessionsTable,
 ];
 
 const initializeModels = async () => {
@@ -44,5 +48,7 @@ module.exports = {
   section_videos: section_videosModel,
   comments: commentsModel,
   cart: cartModel,
+  purchases: purchasesModel,
+  liveSession: liveSessionsModel,
   initializeModels,
 };

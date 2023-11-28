@@ -57,7 +57,6 @@ exports.addCourse = async (req, res) => {
         course_length,
         course_catagory,
       } = req.body;
-
       const course_image = req.file.path; // Path to the uploaded image
       const trainer_id = req.user.trainer_id;
 

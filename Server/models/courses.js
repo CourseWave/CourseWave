@@ -136,10 +136,8 @@ async function getCourses(page, pageSize) {
     text: `
       SELECT * FROM courses
       WHERE is_deleted = false
-      ORDER BY course_id
-      LIMIT $1 OFFSET $2;
+      ORDER BY course_id;
     `,
-    values: [pageSize, offset],
   };
 
   const result = await db.query(query);

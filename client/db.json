@@ -1,0 +1,193 @@
+{
+  "student": [
+    {
+      "id": 1,
+      "firstname": "haitham",
+      "lastname": "alzyoud",
+      "email": "lololol@gmail.com",
+      "password": "123Ha456*"
+    }
+  ],
+  "teacher": [
+    {
+      "id": 1,
+      "firstname": "Mutaz",
+      "lastname": "Ashab",
+      "email": "wasup@gmail.com",
+      "password": "123It456*",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg"
+    },
+    {
+      "id": 2,
+      "firstname": "Mohammad",
+      "lastname": "Ashab",
+      "email": "wasup@gmail.com",
+      "password": "123It456*"
+    }
+  ],
+  "course": [
+    {
+      "id": 1,
+      "title": "sss",
+      "description": "1",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Development",
+      "price": "50",
+      "Requirements": "",
+      "Objectives": ""
+    },
+    {
+      "id": 2,
+      "title": "sss",
+      "description": "2",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Design",
+      "price": "50",
+      "Requirements": "",
+      "Objectives": ""
+    },
+    {
+      "id": 3,
+      "title": "asdwdasd",
+      "description": "3",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "IT and Software",
+      "price": "50",
+      "Requirements": "",
+      "Objectives": ""
+    },
+    {
+      "id": 4,
+      "title": "js",
+      "description": "4",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Online Classes",
+      "price": "50",
+      "Requirements": "",
+      "Objectives": ""
+    },
+    {
+      "id": 5,
+      "title": "css",
+      "description": "5",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Self Development",
+      "price": "50",
+      "Requirements": "",
+      "Objectives": ""
+    },
+    {
+      "id": 6,
+      "title": "java",
+      "description": "6",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Marketing",
+      "price": "50",
+      "Requirements": "",
+      "Objectives": ""
+    },
+    {
+      "id": 7,
+      "title": "java",
+      "description": "7",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Marketing",
+      "price": "50",
+      "Requirements": "",
+      "Objectives": ""
+    },
+    {
+      "id": 8,
+      "title": "java",
+      "description": "8",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Marketing",
+      "price": "50",
+      "Requirements": "",
+      "Objectives": ""
+    },
+    {
+      "title": "React",
+      "tagline": "",
+      "objectives": "1-lo\n2-ali\n3-why",
+      "requirements": "1111111111\n222222222\n33333333",
+      "description": "11111111111\n2222222222\n333333333333\n",
+      "id": 9
+    },
+    {
+      "title": "mongoDB",
+      "tagline": "database",
+      "objectives": [
+        "llll"
+      ],
+      "requirements": [
+        "jjjjj"
+      ],
+      "description": "asdasdwawdqwqasdzxc",
+      "id": 10
+    },
+    {
+      "title": "c++",
+      "tagline": "Language",
+      "objectives": [
+        "Language",
+        "Language",
+        "Language",
+        "Language"
+      ],
+      "requirements": [
+        "Language Language Language",
+        "Language Language Language",
+        "Language Language Language ",
+        "Language Language Language"
+      ],
+      "description": "why why why why why wlolololololololololololololololol",
+      "price": "50",
+      "videos": [
+        "first",
+        "second"
+      ],
+      "image": null,
+      "imageUrl": "",
+      "id": 11
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "title": "Development",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Development"
+    },
+    {
+      "id": 2,
+      "title": "Design",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Design"
+    },
+    {
+      "id": 3,
+      "title": "IT and Software",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "IT and Software"
+    },
+    {
+      "id": 4,
+      "title": "Online Classes",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Online Classes"
+    },
+    {
+      "id": 5,
+      "title": "Self Development ",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Self Development"
+    },
+    {
+      "id": 6,
+      "title": "Marketing",
+      "image": "https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg",
+      "type": "Marketing"
+    }
+  ]
+}

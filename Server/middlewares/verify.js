@@ -8,14 +8,23 @@ app.use(cookieParser());
 async function authorize(req, res, next) {
   try {
     if (!req.user) {
-      const authorizationHeader = req.headers.authorization;
-      if (authorizationHeader) {
-        const user = jwt.verify(authorizationHeader, process.env.SECRET_KEY);
-        if (user.role_id) {
-          req.user = user;
-          next();
-        } else {
-          res.status(401).json("Unauthorized user");
+      const tokenCookie = req.headers.cookie;
+      if (tokenCookie) {
+        const cookiesArray = tokenCookie.split(";");
+        const accessTokenCookie = cookiesArray.find((cookie) =>
+          cookie.trim().startsWith("accessToken=")
+        );
+        if (accessTokenCookie) {
+          const accessToken = accessTokenCookie.split("=")[1].trim();
+          const user = jwt.verify(accessToken, process.env.SECRET_KEY);
+          console.log(user);
+          if (user.role_id) {
+            req.user = user;
+            next();
+          } else {
+            res.status(401).json("Unauthorized user");
+          }
+          console.log(user);
         }
       } else {
         res.status(401).json("You need to login first");

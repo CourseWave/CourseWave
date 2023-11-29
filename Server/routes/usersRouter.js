@@ -33,13 +33,13 @@ router.put(
 router.get(
   "/getUsers",
   verify.authorize,
-  role.hasRole(3),
+  role.hasRole(1),
   userController.getAllUsers
 );
 router.get(
   "/getTrainers",
   verify.authorize,
-  role.hasRole(3),
+  role.hasRole(1),
   userController.getAllTrainers
 );
 

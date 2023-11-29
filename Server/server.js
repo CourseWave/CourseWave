@@ -35,37 +35,30 @@ app.use(liveSessionsRoute);
 // Call the initialization function to create tables
 models.initializeModels();
 
-
-
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-
-
-  app.post("/create-payment-intent", async (req, res) => {
-    console.log(req);
-    if(!req.body.amount){
-      return;
-    }
-    const { amount } = req.body;
+app.post("/create-payment-intent", async (req, res) => {
   console.log(req);
-    const paymentIntent = await stripe.paymentIntents.create({
+  if (!req.body.amount) {
+    return;
+  }
+  const { amount } = req.body;
+  console.log(req);
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: 3000,
+    currency: "usd",
 
-      amount:3000,
-      currency: "usd",
-
-      automatic_payment_methods: {
-        enabled: true,
-      },
-    });
-    console.log();
-  
-    res.send({
-      clientSecret: paymentIntent.client_secret,
-    });
+    automatic_payment_methods: {
+      enabled: true,
+    },
   });
+  console.log();
 
+  res.send({
+    clientSecret: paymentIntent.client_secret,
+  });
+});
 
 app.listen(5000, () => {
   console.log("Server is running on port 5000");
 });
-

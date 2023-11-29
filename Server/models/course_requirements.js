@@ -30,7 +30,7 @@ async function addCourseRequirement({ course_id, requirement }) {
   };
 
   const result = await db.query(query);
-  return result.rows[0].requirement_id;
+  return result.rows[0];
 }
 
 async function updateCourseRequirement({ requirement_id, requirement }) {
@@ -45,7 +45,7 @@ async function updateCourseRequirement({ requirement_id, requirement }) {
   };
 
   const result = await db.query(query);
-  return result.rows[0].requirement_id;
+  return result.rows[0];
 }
 
 async function deleteCourseRequirement(requirement_id) {
@@ -60,7 +60,7 @@ async function deleteCourseRequirement(requirement_id) {
   };
 
   const result = await db.query(query);
-  return result.rows[0].requirement_id;
+  return result.rows[0];
 }
 
 async function getCourseRequirementDetails(course_id) {

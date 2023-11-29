@@ -71,10 +71,11 @@ exports.addCourse = async (req, res) => {
         course_image,
         trainer_id,
       });
-
+console.log(newCourse);
       res.status(201).json({
+        batata: "batata",
         message: "Course and related data added successfully",
-        course_id: newCourse.course_id,
+        course_id: newCourse,
       });
     });
   } catch (error) {

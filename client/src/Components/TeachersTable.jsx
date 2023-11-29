@@ -9,11 +9,12 @@ const TeachersTable = () => {
   const status = useSelector((state) => state.user.status);
   const error = useSelector((state) => state.user.error);
 
+  console.log(teachers);
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchTeachers());
     }
-  }, [status, dispatch]);
+  }, [dispatch]);
 
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -35,7 +36,7 @@ const TeachersTable = () => {
           </tr>
         </thead>
         <tbody>
-          {teachers.map((teacher) => (
+          {teachers?.map((teacher) => (
             <tr key={teacher.id}>
               <td>{teacher.id}</td>
               <td>{teacher.firstname}</td>

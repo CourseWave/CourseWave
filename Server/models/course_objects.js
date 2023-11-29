@@ -30,7 +30,7 @@ async function addCourseObject({ course_id, object }) {
   };
 
   const result = await db.query(query);
-  return result.rows[0].object_id;
+  return result.rows[0];
 }
 
 async function updateCourseObject({ object_id, object }) {
@@ -45,7 +45,7 @@ async function updateCourseObject({ object_id, object }) {
   };
 
   const result = await db.query(query);
-  return result.rows[0].object_id;
+  return result.rows[0];
 }
 
 async function deleteCourseObject(object_id) {
@@ -60,7 +60,7 @@ async function deleteCourseObject(object_id) {
   };
 
   const result = await db.query(query);
-  return result.rows[0].object_id;
+  return result.rows[0];
 }
 
 async function getCourseObjectDetails(course_id) {

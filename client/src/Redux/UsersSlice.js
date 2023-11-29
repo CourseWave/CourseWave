@@ -18,7 +18,8 @@ export const fetchStudents = createAsyncThunk(
   "user/fetchStudents",
   async () => {
     const response = await axios.get(" http://localhost:5000/getUsers");
-    return response.data;
+    console.log(response.data.users);
+    return response.data.users;
   }
 );
 
@@ -27,7 +28,8 @@ export const fetchTeachers = createAsyncThunk(
   "user/fetchTeachers",
   async () => {
     const response = await axios.get("http://localhost:5000/getTrainers");
-    return response.data;
+    console.log(response.data);
+    return response.data.trainers;
   }
 );
 
@@ -72,13 +74,14 @@ export const loginUserAsync = createAsyncThunk(
 export const loginTrainerAsync = createAsyncThunk(
   "user/loginTrainer",
   async (loginData) => {
-    return axios.post("http://localhost:5000/loginTrainer", loginData)
-    .then((response)=>{
-      return response.data;
-    })
-    .catch((e)=>{
-      return { error: e.response.data.error };
-    })
+    return axios
+      .post("http://localhost:5000/loginTrainer", loginData)
+      .then((response) => {
+        return response.data;
+      })
+      .catch((e) => {
+        return { error: e.response.data.error };
+      });
   }
 );
 

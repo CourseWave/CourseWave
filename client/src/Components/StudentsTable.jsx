@@ -12,8 +12,9 @@ const StudentsTable = () => {
 
   useEffect(() => {
       dispatch(fetchStudents());
+      
     }
-  , []);
+  , [dispatch]);
 
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -35,7 +36,7 @@ const StudentsTable = () => {
           </tr>
         </thead>
         <tbody>
-          {students.map((student) => (
+          {students?.map((student) => (
             <tr key={student.id}>
               <td>{student.id}</td>
               <td>{student.firstname}</td>

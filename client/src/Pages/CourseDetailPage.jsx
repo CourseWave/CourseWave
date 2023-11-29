@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { fetchCourses } from "../Redux/CoursesSlice";
 import { addToCart } from "../Redux/CartSlice";
-import SearchBar from "../Components/SearchBar";
 
 const CourseDetailPage = () => {
   // Assuming you have a Redux store with courses and categories
@@ -95,7 +94,7 @@ console.log(course);
               <p className="text-lg">{course.tagline}</p>
               <p className="text-lg">Rating: {course.course_rating}</p>
               {/* Add creator details here */}
-              <p className="text-lg">Creator: {course.creator}</p>
+              <p className="text-lg">Creator: {course.firstname}</p>
             </div>
           </div>
         </div>

@@ -74,44 +74,44 @@ const CoursesSlice = createSlice({
 
     addObjective: (state, action) => {
       const { courseId, objective } = action.payload;
-      const course = state.Courses.find((course) => course.id === courseId);
+      const course = state.Courses.find(
+        (course) => course.course_id === courseId
+      );
       if (course) {
         // Assuming a course has an 'objectives' array, you can push the new objective
-        course.objectives.push(objective);
+        course.objectives = objective;
       }
     },
 
     updateObjective: (state, action) => {
-      const { courseId, objectiveId, updatedObjective } = action.payload;
-      const course = state.Courses.find((course) => course.id === courseId);
+      const { courseId, updatedObjective } = action.payload;
+      const course = state.Courses.find(
+        (course) => course.course_id === courseId
+      );
       if (course) {
-        // Assuming a course has an 'objectives' array, you can update the specific objective
-        const index = course.objectives.findIndex(
-          (obj) => obj.id === objectiveId
-        );
-        if (index !== -1) {
-          course.objectives[index] = updatedObjective;
-        }
+        course.objectives = updatedObjective;
       }
     },
 
     deleteObjective: (state, action) => {
       const { courseId, objectiveId } = action.payload;
-      const course = state.Courses.find((course) => course.id === courseId);
+      const course = state.Courses.find(
+        (course) => course.course_id === courseId
+      );
       if (course) {
         // Assuming a course has an 'objectives' array, you can filter out the deleted objective
-        course.objectives = course.objectives.filter(
-          (obj) => obj.id !== objectiveId
-        );
+        course.objectives = "";
       }
     },
 
     addRequirement: (state, action) => {
       const { courseId, requirement } = action.payload;
-      const course = state.Courses.find((course) => course.id === courseId);
+      const course = state.Courses.find(
+        (course) => course.course_id === courseId
+      );
       if (course) {
         // Assuming a course has a 'requirements' array, you can push the new requirement
-        course.requirements.push(requirement);
+        course.requirements = requirement;
       }
     },
 
@@ -207,6 +207,7 @@ export const createCourse = (courseData) => async (dispatch) => {
 
     const newCourse = response.data;
     dispatch(createCourseFulfilled(newCourse));
+    return newCourse;
   } catch (error) {
     dispatch(createCourseRejected(error.message));
   }
@@ -244,7 +245,7 @@ export const addObjectiveAsync = createAsyncThunk(
     try {
       const response = await axios.post(
         `http://localhost:5000/addCourseObject/${objectiveData.course_id}`,
-        objectiveData
+        { object: objectiveData.object }
       );
       return response.data;
     } catch (error) {
@@ -260,7 +261,7 @@ export const updateObjectiveAsync = createAsyncThunk(
     try {
       const response = await axios.put(
         `http://localhost:5000/updateCourseObject/${objectiveData.course_object_id}`,
-        objectiveData
+        objectiveData.objective
       );
       return response.data;
     } catch (error) {
@@ -291,7 +292,7 @@ export const addRequirementAsync = createAsyncThunk(
     try {
       const response = await axios.post(
         `http://localhost:5000/addCourseRequirement/${requirementData.course_id}`,
-        requirementData
+        { requirement: requirementData.requirement }
       );
       return response.data;
     } catch (error) {

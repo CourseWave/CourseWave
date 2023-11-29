@@ -1,14 +1,26 @@
 // AddCourse.jsx
 import React, { useState, useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createCourse } from "../Redux/CoursesSlice";
 import "react-toastify/dist/ReactToastify.css";
 import { Slide, ToastContainer, toast } from "react-toastify";
+import {
+  addObjectiveAsync,
+  updateObjectiveAsync,
+  deleteObjectiveAsync,
+  addRequirementAsync,
+  updateRequirementAsync,
+  deleteRequirementAsync,
+} from "../Redux/CoursesSlice";
 
 const AddCourse = () => {
   const toastId = "fetched-nationalities";
   const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(1);
+  const courses = useSelector((state) => state.Courses);
+  const [sectionData, setSectionData] = useState({
+    sections: [],
+  });
   const [courseData, setCourseData] = useState({
     title: "",
     course_catagory: "",
@@ -32,7 +44,6 @@ const AddCourse = () => {
     updatedData[field] = value;
     setCourseData(updatedData);
   };
-
   const handleAddObjective = useCallback(() => {
     setCourseData((prevData) => ({
       ...prevData,
@@ -102,8 +113,46 @@ const AddCourse = () => {
       image: null,
     }));
   };
+  const handleAddSection = useCallback(() => {
+    setSectionData((prevData) => ({
+      ...prevData,
+      sections: [...prevData.sections, { title: "", videos: [] }],
+    }));
+  }, []);
 
-  const handleSubmit = (e) => {
+  const handleRemoveSection = useCallback((index) => {
+    setSectionData((prevData) => {
+      const newSections = [...prevData.sections];
+      newSections.splice(index, 1);
+      return {
+        ...prevData,
+        sections: newSections,
+      };
+    });
+  }, []);
+
+  const handleAddVideoInSection = (sectionIndex) => {
+    setSectionData((prevData) => {
+      const newSections = [...prevData.sections];
+      newSections[sectionIndex].videos.push("");
+      return {
+        ...prevData,
+        sections: newSections,
+      };
+    });
+  };
+
+  const handleRemoveVideoFromSection = (sectionIndex, videoIndex) => {
+    setSectionData((prevData) => {
+      const newSections = [...prevData.sections];
+      newSections[sectionIndex].videos.splice(videoIndex, 1);
+      return {
+        ...prevData,
+        sections: newSections,
+      };
+    });
+  };
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (currentStep === 1) {
       // Move to the next step
@@ -114,6 +163,7 @@ const AddCourse = () => {
         "title",
         "image",
         "course_length",
+        "requirements",
       ];
       const missingFields = requiredFields.filter(
         (field) => !courseData[field]
@@ -130,7 +180,25 @@ const AddCourse = () => {
       }
 
       // Submit the form
-      dispatch(createCourse(courseData));
+      dispatch(createCourse(courseData)).then((e) => {
+        console.log({ e });
+        if (courseData.objectives.length) {
+          const objectiveData = {
+            object: courseData.objectives,
+            course_id: e.course_id,
+          };
+          dispatch(addObjectiveAsync(objectiveData));
+        }
+        if (courseData.requirements.length) {
+          const requirementsData = {
+            requirement: courseData.requirements,
+            course_id: e.course_id,
+          };
+          dispatch(addRequirementAsync(requirementsData));
+
+        }
+      });
+
       // Reset the form after submission
       setCourseData({
         title: "",
@@ -223,7 +291,7 @@ const AddCourse = () => {
               />
             </div>
 
-            <div className="mb-4 border border-black rounded-md p-5">
+             <div className="mb-4 border border-black rounded-md p-5">
               <label className="block text-sm font-medium text-gray-700">
                 Objectives
               </label>
@@ -298,6 +366,7 @@ const AddCourse = () => {
               </button>
             </div>
 
+
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 Description
@@ -352,6 +421,87 @@ const AddCourse = () => {
                 onChange={handleImageChange}
                 className="mt-1 p-2 w-full border rounded-md"
               />
+            </div>
+            <div className="mb-4 border-2 border-black rounded-md p-5">
+              <label className="block text-lg font-medium text-black">
+                Sections
+              </label>
+              {sectionData?.sections?.map((section, sectionIndex) => (
+                <div key={sectionIndex} className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Section Title
+                  </label>
+                  <input
+                    type="text"
+                    value={section.title}
+                    onChange={(e) => {
+                      const newSections = [...sectionData.sections];
+                      newSections[sectionIndex].title = e.target.value;
+                      setSectionData((prevData) => ({
+                        ...prevData,
+                        sections: newSections,
+                      }));
+                    }}
+                    className="mt-1 p-2 w-full border rounded-md"
+                  />
+
+                  <label className="block text-sm font-medium text-gray-700 mt-2">
+                    Videos
+                  </label>
+                  {section.videos.map((video, videoIndex) => (
+                    <div key={videoIndex}>
+                      <input
+                        type="text"
+                        value={video}
+                        onChange={(e) => {
+                          const newSections = [...sectionData.sections];
+                          newSections[sectionIndex].videos[videoIndex] =
+                            e.target.value;
+                          setSectionData((prevData) => ({
+                            ...prevData,
+                            sections: newSections,
+                          }));
+                        }}
+                        className="mt-1 p-2 w-full border rounded-md"
+                      />
+                      <button
+                        type="button"
+                        className="m-2 p-2 rounded-md bg-red-500 text-white"
+                        onClick={() =>
+                          handleRemoveVideoFromSection(
+                            sectionIndex,
+                            videoIndex
+                          )
+                        }
+                      >
+                        Remove Video
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    className="m-2 p-2 rounded-md bg-indigo-700 text-white"
+                    type="button"
+                    onClick={() => handleAddVideoInSection(sectionIndex)}
+                  >
+                    Add Video
+                  </button>
+
+                  <button
+                    type="button"
+                    className="m-2 p-2 rounded-md bg-red-500 text-white"
+                    onClick={() => handleRemoveSection(sectionIndex)}
+                  >
+                    Remove Section
+                  </button>
+                </div>
+              ))}
+              <button
+                className="m-2 p-2 rounded-md bg-indigo-700 text-white"
+                type="button"
+                onClick={handleAddSection}
+              >
+                Add Section
+              </button>
             </div>
             {/* <div className="mb-4 border-2 border-black rounded-md p-5">
               <label className="block text-lg font-medium text-blacK ">

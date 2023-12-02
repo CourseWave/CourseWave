@@ -186,6 +186,7 @@ const AddCourse = () => {
         "image",
         "course_length",
         "requirements",
+        "objectives",
       ];
       const missingFields = requiredFields.filter(
         (field) => !courseData[field]
@@ -231,7 +232,7 @@ const AddCourse = () => {
       }
     }
   };
-  
+
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
@@ -393,7 +394,6 @@ const AddCourse = () => {
                 className="mt-1 p-2 w-full border rounded-md"
               />
             </div>
-
             <div className="mb-4 border-2 border-black rounded-md p-5">
               <label className="block text-lg font-medium text-black">
                 Image

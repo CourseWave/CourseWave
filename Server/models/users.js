@@ -1,4 +1,4 @@
-const db = require("../db/db"); // Adjust the path based on your project structure
+const db = require("../db/db");
 const bcrypt = require("bcrypt");
 
 const createUsersTable = async () => {
@@ -105,9 +105,7 @@ const getUsers = async (page, pageSize) => {
     text: `
       SELECT * FROM users
       ORDER BY user_id
-      LIMIT $1 OFFSET $2;
     `,
-    values: [pageSize, offset],
   };
 
   const result = await db.query(query);

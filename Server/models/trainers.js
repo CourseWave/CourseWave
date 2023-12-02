@@ -119,10 +119,8 @@ const getTrainers = async (page, pageSize) => {
   const query = {
     text: `
       SELECT * FROM trainers
-      ORDER BY trainer_id
-      LIMIT $1 OFFSET $2;
+      ORDER BY trainer_id;
     `,
-    values: [pageSize, offset],
   };
 
   const result = await db.query(query);

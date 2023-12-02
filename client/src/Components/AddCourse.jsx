@@ -1,7 +1,11 @@
 // AddCourse.jsx
 import React, { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addCourseVideo, createCourse } from "../Redux/CoursesSlice";
+import {
+  addCourseVideo,
+  createCourse,
+  addCourseSection,
+} from "../Redux/CoursesSlice";
 import "react-toastify/dist/ReactToastify.css";
 import { Slide, ToastContainer, toast } from "react-toastify";
 
@@ -176,60 +180,75 @@ const AddCourse = () => {
     });
   };
 
+  const validateFields = () => {
+    let isValid = false;
+
+    const requiredFields = [
+      "course_catagory",
+      "title",
+      "image",
+      "course_length",
+      "requirements",
+      "objectives",
+    ];
+    const missingFields = requiredFields.filter(
+      (field) => !courseData[field] || courseData[field]?.length === 0
+    );
+    if (missingFields.length > 0) {
+      missingFields.forEach((field) => {
+        toast.error(`${field} is missing`, {
+          position: toast.POSITION.TOP_RIGHT,
+          toastId,
+        });
+      });
+      return isValid;
+    }
+    return !isValid;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const isFormValid = validateFields();
+    if (!isFormValid) return;
+
     if (currentStep === 1) {
-      const requiredFields = [
-        "course_catagory",
-        "title",
-        "image",
-        "course_length",
-        "requirements",
-        "objectives",
-      ];
-      const missingFields = requiredFields.filter(
-        (field) => !courseData[field]
-      );
-      console.log(missingFields);
-      if (missingFields.length > 0) {
-        missingFields.forEach((field) => {
-          toast.error(`${field} is missing`, {
-            position: toast.POSITION.TOP_RIGHT,
-            toastId,
-          });
-        });
-        return;
-      }
       setCurrentStep(2);
-    } else if (currentStep === 2) {
-      try {
-        setLoading(true);
-        const response = await dispatch(createCourse(courseData));
-        setCreatedCourseId(response.course_id);
-        setCurrentStep(3);
-      } catch (error) {
-        console.error("Error creating course:", error);
-        toast.error("Failed to create course. Please try again.");
-      } finally {
-        setLoading(false); // Reset loading state
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await dispatch(createCourse(courseData));
+      setCreatedCourseId(response.course_id);
+
+      if (response.course_id) {
+        await submitCourseSection(response.course_id);
       }
-    } else if (currentStep === 3) {
-      try {
-        setLoading(true);
-        const courseDataWithVideos = {
-          ...courseData,
-          sections: videosData.sections,
-        };
-        const response = await dispatch(createCourse(courseDataWithVideos));
-        setCreatedCourseId(response.course_id);
-        setCurrentStep(1);
-      } catch (error) {
-        console.error("Error adding videos:", error);
-        toast.error("Failed to add videos. Please try again.");
-      } finally {
-        setLoading(false); // Reset loading state
-      }
+    } catch (error) {
+      console.error("Error creating course:", error);
+      toast.error("Failed to create course. Please try again.");
+    } finally {
+      setLoading(false); // Reset loading state
+    }
+  };
+
+  const submitCourseSection = async (courseId) => {
+    try {
+      setLoading(true);
+      const courseDataWithVideos = {
+        sectionData: sectionData.sections[0],
+        course_id: courseId,
+      };
+      const response = await dispatch(addCourseSection(courseDataWithVideos));
+      console.log(response);
+      return response.course_section_id;
+      //setCreatedCourseId(response.course_section_id);
+    } catch (error) {
+      console.error("Error adding videos:", error);
+      toast.error("Failed to add videos. Please try again.");
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 

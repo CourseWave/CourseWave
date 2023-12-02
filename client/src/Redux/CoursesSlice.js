@@ -370,9 +370,9 @@ export const addCourseSection = createAsyncThunk(
   "courses/addCourseSection",
   async ({ course_id, sectionData }) => {
     const response = await axios.post(
-      `http://localhost:5000//addCourseSection/${course_id}`,
+      `http://localhost:5000/addCourseSection/${course_id}`,
       {
-        sections: sectionData, // Expecting sectionData to be an array of objects
+        section_name: sectionData, // Expecting sectionData to be an array of objects
       }
     );
     return response.data;

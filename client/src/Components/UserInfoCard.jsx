@@ -11,18 +11,17 @@ const UserInfoCard = () => {
   useEffect(() => {
     if (!user) return;
     let token = Cookies.get("userInfo");
+    if (!token) return;
     token = JSON.parse(token);
     if (token.trainer) {
       setCurruntUsers(
-        user.teachers.trainers.find(
+        user.teachers.find(
           (c) => c.trainer_id === parseInt(token.trainer.trainer_id)
         )
       );
     } else {
       setCurruntUsers(
-        user.students.users.find(
-          (c) => c.user_id === parseInt(token.student.user_id)
-        )
+        user.students.find((c) => c.user_id === parseInt(token.user.user_id))
       );
     }
   }, [user]);

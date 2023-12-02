@@ -72,73 +72,104 @@ const CoursesSlice = createSlice({
       state.error = action.payload;
     },
 
-    addObjective: (state, action) => {
-      const { courseId, objective } = action.payload;
-      const course = state.Courses.find(
-        (course) => course.course_id === courseId
-      );
-      if (course) {
-        // Assuming a course has an 'objectives' array, you can push the new objective
-        course.objectives = objective;
-      }
-    },
+    // addObjective: (state, action) => {
+    //   const { courseId, objective } = action.payload;
+    //   const course = state.Courses.find(
+    //     (course) => course.course_id === courseId
+    //   );
+    //   if (course) {
+    //     // Assuming a course has an 'objectives' array, you can push the new objective
+    //     course.objectives = objective;
+    //   }
+    // },
 
-    updateObjective: (state, action) => {
-      const { courseId, updatedObjective } = action.payload;
-      const course = state.Courses.find(
-        (course) => course.course_id === courseId
-      );
-      if (course) {
-        course.objectives = updatedObjective;
-      }
-    },
+    // updateObjective: (state, action) => {
+    //   const { courseId, updatedObjective } = action.payload;
+    //   const course = state.Courses.find(
+    //     (course) => course.course_id === courseId
+    //   );
+    //   if (course) {
+    //     course.objectives = updatedObjective;
+    //   }
+    // },
 
-    deleteObjective: (state, action) => {
-      const { courseId, objectiveId } = action.payload;
-      const course = state.Courses.find(
-        (course) => course.course_id === courseId
-      );
-      if (course) {
-        // Assuming a course has an 'objectives' array, you can filter out the deleted objective
-        course.objectives = "";
-      }
-    },
+    // deleteObjective: (state, action) => {
+    //   const { courseId, objectiveId } = action.payload;
+    //   const course = state.Courses.find(
+    //     (course) => course.course_id === courseId
+    //   );
+    //   if (course) {
+    //     // Assuming a course has an 'objectives' array, you can filter out the deleted objective
+    //     course.objectives = "";
+    //   }
+    // },
 
-    addRequirement: (state, action) => {
-      const { courseId, requirement } = action.payload;
-      const course = state.Courses.find(
-        (course) => course.course_id === courseId
-      );
-      if (course) {
-        // Assuming a course has a 'requirements' array, you can push the new requirement
-        course.requirements = requirement;
-      }
-    },
+    // addRequirement: (state, action) => {
+    //   const { courseId, requirement } = action.payload;
+    //   const course = state.Courses.find(
+    //     (course) => course.course_id === courseId
+    //   );
+    //   if (course) {
+    //     // Assuming a course has a 'requirements' array, you can push the new requirement
+    //     course.requirements = requirement;
+    //   }
+    // },
 
-    updateRequirement: (state, action) => {
-      const { courseId, requirementId, updatedRequirement } = action.payload;
-      const course = state.Courses.find((course) => course.id === courseId);
-      if (course) {
-        // Assuming a course has a 'requirements' array, you can update the specific requirement
-        const index = course.requirements.findIndex(
-          (req) => req.id === requirementId
-        );
-        if (index !== -1) {
-          course.requirements[index] = updatedRequirement;
+    // updateRequirement: (state, action) => {
+    //   const { courseId, requirementId, updatedRequirement } = action.payload;
+    //   const course = state.Courses.find((course) => course.id === courseId);
+    //   if (course) {
+    //     // Assuming a course has a 'requirements' array, you can update the specific requirement
+    //     const index = course.requirements.findIndex(
+    //       (req) => req.id === requirementId
+    //     );
+    //     if (index !== -1) {
+    //       course.requirements[index] = updatedRequirement;
+    //     }
+    //   }
+    // },
+
+    // deleteRequirement: (state, action) => {
+    //   const { courseId, requirementId } = action.payload;
+    //   const course = state.Courses.find((course) => course.id === courseId);
+    //   if (course) {
+    //     // Assuming a course has a 'requirements' array, you can filter out the deleted requirement
+    //     course.requirements = course.requirements.filter(
+    //       (req) => req.id !== requirementId
+    //     );
+    //   }
+    // },
+  },
+  extraReducers: (builder) => {
+    // ... (previous extraReducers)
+
+    builder
+    .addCase(addCourseSection.fulfilled, (state, action) => {
+      // Handle the state update after adding a new section
+      // For example, assuming action.payload contains the new section data
+      state.Courses = state.Courses.map(course => {
+        if (course.id === action.payload.course_id) {
+          // Assuming your course has a 'sections' array, you can push the new section
+          course.sections.push(action.payload.section);
         }
-      }
-    },
-
-    deleteRequirement: (state, action) => {
-      const { courseId, requirementId } = action.payload;
-      const course = state.Courses.find((course) => course.id === courseId);
-      if (course) {
-        // Assuming a course has a 'requirements' array, you can filter out the deleted requirement
-        course.requirements = course.requirements.filter(
-          (req) => req.id !== requirementId
-        );
-      }
-    },
+        return course;
+      });
+    })
+    .addCase(addCourseVideo.fulfilled, (state, action) => {
+      // Handle the state update after adding a new video
+      // For example, assuming action.payload contains the new video data
+      state.Courses = state.Courses.map(course => {
+        course.sections = course.sections.map(section => {
+          if (section.id === action.payload.course_section_id) {
+            // Assuming your section has a 'videos' array, you can push the new video
+            section.videos.push(action.payload.video);
+          }
+          return section;
+        });
+        return course;
+      });
+    });
+    // Additional cases for other CRUD operations, sections, and videos if needed
   },
 });
 
@@ -155,12 +186,13 @@ export const {
   deleteCoursePending,
   deleteCourseFulfilled,
   deleteCourseRejected,
-  addObjective,
-  updateObjective,
-  deleteObjective,
-  addRequirement,
-  updateRequirement,
-  deleteRequirement,
+  // addObjective,
+  // updateObjective,
+  // deleteObjective,
+  // addRequirement,
+  // updateRequirement,
+  // deleteRequirement,
+  addVideosToSections ,
 } = CoursesSlice.actions;
 
 export const fetchCourses = () => async (dispatch) => {
@@ -204,6 +236,7 @@ export const createCourse = (courseData) => async (dispatch) => {
         },
       }
     );
+    console.log(response);
 
     const newCourse = response.data;
     dispatch(createCourseFulfilled(newCourse));
@@ -239,97 +272,135 @@ export const deleteCourse = (courseId) => async (dispatch) => {
   }
 };
 
-export const addObjectiveAsync = createAsyncThunk(
-  "courses/addObjective",
-  async (objectiveData) => {
-    try {
-      const response = await axios.post(
-        `http://localhost:5000/addCourseObject/${objectiveData.course_id}`,
-        { object: objectiveData.object }
-      );
-      return response.data;
-    } catch (error) {
-      // Handle error
-      throw error;
-    }
+// export const addObjectiveAsync = createAsyncThunk(
+//   "courses/addObjective",
+//   async (objectiveData) => {
+//     try {
+//       const response = await axios.post(
+//         `http://localhost:5000/addCourseObject/${objectiveData.course_id}`,
+//         { object: objectiveData.object }
+//       );
+//       return response.data;
+//     } catch (error) {
+//       // Handle error
+//       throw error;
+//     }
+//   }
+// );
+
+// export const updateObjectiveAsync = createAsyncThunk(
+//   "courses/updateObjective",
+//   async (objectiveData) => {
+//     try {
+//       const response = await axios.put(
+//         `http://localhost:5000/updateCourseObject/${objectiveData.course_object_id}`,
+//         objectiveData.objective
+//       );
+//       return response.data;
+//     } catch (error) {
+//       // Handle error
+//       throw error;
+//     }
+//   }
+// );
+
+// export const deleteObjectiveAsync = createAsyncThunk(
+//   "courses/deleteObjective",
+//   async (objectiveData) => {
+//     try {
+//       const response = await axios.put(
+//         `http://localhost:5000/deleteCourseObject/${objectiveData.course_object_id}`
+//       );
+//       return response.data;
+//     } catch (error) {
+//       // Handle error
+//       throw error;
+//     }
+//   }
+// );
+
+// export const addRequirementAsync = createAsyncThunk(
+//   "courses/addRequirement",
+//   async (requirementData) => {
+//     try {
+//       const response = await axios.post(
+//         `http://localhost:5000/addCourseRequirement/${requirementData.course_id}`,
+//         { requirement: requirementData.requirement }
+//       );
+//       return response.data;
+//     } catch (error) {
+//       // Handle error
+//       throw error;
+//     }
+//   }
+// );
+
+// export const updateRequirementAsync = createAsyncThunk(
+//   "courses/updateRequirement",
+//   async (requirementData) => {
+//     try {
+//       const response = await axios.put(
+//         `http://localhost:5000/updateCourseRequirement/${requirementData.course_requirement_id}`,
+//         requirementData
+//       );
+//       return response.data;
+//     } catch (error) {
+//       // Handle error
+//       throw error;
+//     }
+//   }
+// );
+
+// export const deleteRequirementAsync = createAsyncThunk(
+//   "courses/deleteRequirement",
+//   async (requirementData) => {
+//     try {
+//       const response = await axios.put(
+//         `http://localhost:5000/deleteCourseRequirement/${requirementData.course_requirement_id}`
+//       );
+//       return response.data;
+//     } catch (error) {
+//       // Handle error
+//       throw error;
+//     }
+//   }
+// );
+
+export const addCourseSection = createAsyncThunk(
+  "courses/addCourseSection",
+  async ({ course_id, sectionData }) => {
+    const response = await axios.post(`http://localhost:5000//addCourseSection/${course_id}`, {
+      sections: sectionData,  // Expecting sectionData to be an array of objects
+    });
+    return response.data;
   }
 );
 
-export const updateObjectiveAsync = createAsyncThunk(
-  "courses/updateObjective",
-  async (objectiveData) => {
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/updateCourseObject/${objectiveData.course_object_id}`,
-        objectiveData.objective
-      );
-      return response.data;
-    } catch (error) {
-      // Handle error
-      throw error;
-    }
+
+// Async Thunk for adding a new video to a course section
+// Update the parameters to take courseData and videoData separately
+// export const addCourseVideo = createAsyncThunk(
+//   "courses/addCourseVideo",
+//   async ({ course_id, course_section_id, videoData }) => {
+//     console.log(course_id, course_section_id, videoData);
+//     const response = await axios.post(`http://localhost:5000//addCourseVideos/`, {
+//       course_id,
+//       course_section_id,
+//       videoData,
+//     });
+//     return response.data;
+//   }
+// );
+export const addCourseVideo = createAsyncThunk(
+  "courses/addCourseVideo",
+  async ({ course_id, course_section_id, videoData }) => {
+    const response = await axios.post(`http://localhost:5000/addCourseVideos`, {
+      course_id,
+      course_section_id,
+      videoData,
+    });
+    return response.data;
   }
 );
 
-export const deleteObjectiveAsync = createAsyncThunk(
-  "courses/deleteObjective",
-  async (objectiveData) => {
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/deleteCourseObject/${objectiveData.course_object_id}`
-      );
-      return response.data;
-    } catch (error) {
-      // Handle error
-      throw error;
-    }
-  }
-);
-
-export const addRequirementAsync = createAsyncThunk(
-  "courses/addRequirement",
-  async (requirementData) => {
-    try {
-      const response = await axios.post(
-        `http://localhost:5000/addCourseRequirement/${requirementData.course_id}`,
-        { requirement: requirementData.requirement }
-      );
-      return response.data;
-    } catch (error) {
-      // Handle error
-      throw error;
-    }
-  }
-);
-
-export const updateRequirementAsync = createAsyncThunk(
-  "courses/updateRequirement",
-  async (requirementData) => {
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/updateCourseRequirement/${requirementData.course_requirement_id}`,
-        requirementData
-      );
-      return response.data;
-    } catch (error) {
-      // Handle error
-      throw error;
-    }
-  }
-);
-
-export const deleteRequirementAsync = createAsyncThunk(
-  "courses/deleteRequirement",
-  async (requirementData) => {
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/deleteCourseRequirement/${requirementData.course_requirement_id}`
-      );
-      return response.data;
-    } catch (error) {
-      // Handle error
-      throw error;
-    }
-  }
-);
 export default CoursesSlice.reducer;

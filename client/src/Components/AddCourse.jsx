@@ -1,26 +1,33 @@
 // AddCourse.jsx
 import React, { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createCourse } from "../Redux/CoursesSlice";
+import { addCourseVideo, createCourse } from "../Redux/CoursesSlice";
 import "react-toastify/dist/ReactToastify.css";
 import { Slide, ToastContainer, toast } from "react-toastify";
-import {
-  addObjectiveAsync,
-  updateObjectiveAsync,
-  deleteObjectiveAsync,
-  addRequirementAsync,
-  updateRequirementAsync,
-  deleteRequirementAsync,
-} from "../Redux/CoursesSlice";
 
 const AddCourse = () => {
   const toastId = "fetched-nationalities";
   const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(1);
   const courses = useSelector((state) => state.Courses);
+
   const [sectionData, setSectionData] = useState({
-    sections: [],
+    sections: [
+      {
+        title: "",
+      },
+    ],
   });
+
+  const [videosData, setVideosData] = useState({
+    sections: [
+      {
+        title: "",
+        videos: [{ title: "", file: null }],
+      },
+    ],
+  });
+
   const [courseData, setCourseData] = useState({
     title: "",
     course_catagory: "",
@@ -32,6 +39,8 @@ const AddCourse = () => {
     course_length: 0,
     image: null,
   });
+  const [createdCourseId, setCreatedCourseId] = useState(null); // State to store created course id
+  const [loading, setLoading] = useState(false); // State to track loading state
 
   const handleChange = (e, index, field) => {
     const { value } = e.target;
@@ -100,7 +109,6 @@ const AddCourse = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    console.log(file, e);
     setCourseData((prevData) => ({
       ...prevData,
       image: file,
@@ -113,6 +121,7 @@ const AddCourse = () => {
       image: null,
     }));
   };
+
   const handleAddSection = useCallback(() => {
     setSectionData((prevData) => ({
       ...prevData,
@@ -120,10 +129,10 @@ const AddCourse = () => {
     }));
   }, []);
 
-  const handleRemoveSection = useCallback((index) => {
+  const handleRemoveSection = useCallback((sectionIndex) => {
     setSectionData((prevData) => {
       const newSections = [...prevData.sections];
-      newSections.splice(index, 1);
+      newSections.splice(sectionIndex, 1);
       return {
         ...prevData,
         sections: newSections,
@@ -131,10 +140,24 @@ const AddCourse = () => {
     });
   }, []);
 
+  // const handleAddVideoInSection = (sectionIndex) => {
+  //   setVideosData((prevData) => {
+  //     const newSections = [...prevData.sections];
+  //     const currentSection = newSections[sectionIndex];
+  //     currentSection.videos.push({ title: "", file: null });
+  //     console.log(prevData);
+
+  //     return {
+  //       ...prevData,
+  //       sections: newSections,
+  //     };
+  //   });
+  // };
+
   const handleAddVideoInSection = (sectionIndex) => {
-    setSectionData((prevData) => {
+    setVideosData((prevData) => {
       const newSections = [...prevData.sections];
-      newSections[sectionIndex].videos.push("");
+      newSections[sectionIndex].videos.push({ title: "", file: null });
       return {
         ...prevData,
         sections: newSections,
@@ -143,7 +166,7 @@ const AddCourse = () => {
   };
 
   const handleRemoveVideoFromSection = (sectionIndex, videoIndex) => {
-    setSectionData((prevData) => {
+    setVideosData((prevData) => {
       const newSections = [...prevData.sections];
       newSections[sectionIndex].videos.splice(videoIndex, 1);
       return {
@@ -152,12 +175,11 @@ const AddCourse = () => {
       };
     });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (currentStep === 1) {
-      // Move to the next step
-      setCurrentStep(2);
-    } else {
       const requiredFields = [
         "course_catagory",
         "title",
@@ -178,47 +200,40 @@ const AddCourse = () => {
         });
         return;
       }
-
-      // Submit the form
-      dispatch(createCourse(courseData)).then((e) => {
-        console.log({ e });
-        if (courseData.objectives.length) {
-          const objectiveData = {
-            object: courseData.objectives,
-            course_id: e.course_id,
-          };
-          dispatch(addObjectiveAsync(objectiveData));
-        }
-        if (courseData.requirements.length) {
-          const requirementsData = {
-            requirement: courseData.requirements,
-            course_id: e.course_id,
-          };
-          dispatch(addRequirementAsync(requirementsData));
-
-        }
-      });
-
-      // Reset the form after submission
-      setCourseData({
-        title: "",
-        course_catagory: "",
-        course_length: 0,
-        objectives: [],
-        requirements: [],
-        description: "",
-        price: 0,
-        videos: [],
-        image: null,
-      });
-      // Reset the step to the first step
-      setCurrentStep(1);
+      setCurrentStep(2);
+    } else if (currentStep === 2) {
+      try {
+        setLoading(true);
+        const response = await dispatch(createCourse(courseData));
+        setCreatedCourseId(response.course_id);
+        setCurrentStep(3);
+      } catch (error) {
+        console.error("Error creating course:", error);
+        toast.error("Failed to create course. Please try again.");
+      } finally {
+        setLoading(false); // Reset loading state
+      }
+    } else if (currentStep === 3) {
+      try {
+        setLoading(true);
+        const courseDataWithVideos = {
+          ...courseData,
+          sections: videosData.sections,
+        };
+        const response = await dispatch(createCourse(courseDataWithVideos));
+        setCreatedCourseId(response.course_id);
+        setCurrentStep(1);
+      } catch (error) {
+        console.error("Error adding videos:", error);
+        toast.error("Failed to add videos. Please try again.");
+      } finally {
+        setLoading(false); // Reset loading state
+      }
     }
   };
-
+  
   const handleBack = () => {
     if (currentStep > 1) {
-      // Move back to the previous step
       setCurrentStep(currentStep - 1);
     }
   };
@@ -291,7 +306,7 @@ const AddCourse = () => {
               />
             </div>
 
-             <div className="mb-4 border border-black rounded-md p-5">
+            <div className="mb-4 border border-black rounded-md p-5">
               <label className="block text-sm font-medium text-gray-700">
                 Objectives
               </label>
@@ -366,7 +381,6 @@ const AddCourse = () => {
               </button>
             </div>
 
-
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 Description
@@ -379,19 +393,7 @@ const AddCourse = () => {
                 className="mt-1 p-2 w-full border rounded-md"
               />
             </div>
-            <div className="flex justify-end">
-              <button
-                className="bg-indigo-700 text-white py-2 px-4 rounded-md hover:bg-indigo-600"
-                type="submit"
-              >
-                Next
-              </button>
-            </div>
-          </>
-        )}
-        {/*------------------------ Second Step -------------------------- */}
-        {currentStep === 2 && (
-          <>
+
             <div className="mb-4 border-2 border-black rounded-md p-5">
               <label className="block text-lg font-medium text-black">
                 Image
@@ -422,6 +424,20 @@ const AddCourse = () => {
                 className="mt-1 p-2 w-full border rounded-md"
               />
             </div>
+
+            <div className="flex justify-end">
+              <button
+                className="bg-indigo-700 text-white py-2 px-4 rounded-md hover:bg-indigo-600"
+                type="submit"
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
+        {/*------------------------ Second Step -------------------------- */}
+        {currentStep === 2 && (
+          <>
             <div className="mb-4 border-2 border-black rounded-md p-5">
               <label className="block text-lg font-medium text-black">
                 Sections
@@ -445,47 +461,6 @@ const AddCourse = () => {
                     className="mt-1 p-2 w-full border rounded-md"
                   />
 
-                  <label className="block text-sm font-medium text-gray-700 mt-2">
-                    Videos
-                  </label>
-                  {section.videos.map((video, videoIndex) => (
-                    <div key={videoIndex}>
-                      <input
-                        type="text"
-                        value={video}
-                        onChange={(e) => {
-                          const newSections = [...sectionData.sections];
-                          newSections[sectionIndex].videos[videoIndex] =
-                            e.target.value;
-                          setSectionData((prevData) => ({
-                            ...prevData,
-                            sections: newSections,
-                          }));
-                        }}
-                        className="mt-1 p-2 w-full border rounded-md"
-                      />
-                      <button
-                        type="button"
-                        className="m-2 p-2 rounded-md bg-red-500 text-white"
-                        onClick={() =>
-                          handleRemoveVideoFromSection(
-                            sectionIndex,
-                            videoIndex
-                          )
-                        }
-                      >
-                        Remove Video
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    className="m-2 p-2 rounded-md bg-indigo-700 text-white"
-                    type="button"
-                    onClick={() => handleAddVideoInSection(sectionIndex)}
-                  >
-                    Add Video
-                  </button>
-
                   <button
                     type="button"
                     className="m-2 p-2 rounded-md bg-red-500 text-white"
@@ -503,42 +478,7 @@ const AddCourse = () => {
                 Add Section
               </button>
             </div>
-            {/* <div className="mb-4 border-2 border-black rounded-md p-5">
-              <label className="block text-lg font-medium text-blacK ">
-                Add Your Videos Here
-              </label>
-              {courseData?.videos?.map((video, index) => (
-                <div key={index}>
-                  <input
-                    type="text"
-                    value={video}
-                    onChange={(e) => {
-                      const newVideos = [...courseData.videos];
-                      newVideos[index] = e.target.value;
-                      setCourseData((prevData) => ({
-                        ...prevData,
-                        videos: newVideos,
-                      }));
-                    }}
-                    className="mt-2 p-2 w-full border rounded-md "
-                  />
-                  <button
-                    type="button"
-                    className="m-2 p-2 rounded-md bg-red-500 text-white"
-                    onClick={() => handleRemoveVideo(index)}
-                  >
-                    Remove video
-                  </button>
-                </div>
-              ))}
-              <button
-                className="m-2 p-2 rounded-md bg-indigo-700 text-white"
-                type="button"
-                onClick={handleAddVideo}
-              >
-                Add Video
-              </button>
-            </div> */}
+
             <div className="flex justify-between">
               <button
                 className="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400"
@@ -547,6 +487,97 @@ const AddCourse = () => {
               >
                 Back
               </button>
+
+              <button
+                className="bg-indigo-700 text-white py-2 px-4 rounded-md hover:bg-indigo-600"
+                type="button"
+                onClick={() => setCurrentStep(3)}
+              >
+                Next to Step 3
+              </button>
+            </div>
+          </>
+        )}
+        {/*------------------------ third Step -------------------------- */}
+
+        {currentStep === 3 && (
+          <>
+            <div className="mb-4 border-2 border-black rounded-md p-5">
+              <label className="block text-lg font-medium text-black">
+                Add Your Videos Here
+              </label>
+              {videosData?.sections?.map((section, sectionIndex) => (
+                <div key={sectionIndex} className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Section Title: {section.title}
+                  </label>
+                  {section.videos.map((video, videoIndex) => (
+                    <div key={`${videoIndex}`}>
+                      {/* Video Title Input */}
+                      <label className="block text-sm font-medium text-gray-700">
+                        Video Title
+                      </label>
+                      <input
+                        type="text"
+                        value={video.title}
+                        onChange={(e) => {
+                          const newSections = [...videosData.sections];
+                          newSections[sectionIndex].videos[videoIndex].title =
+                            e.target.value;
+                          setVideosData((prevData) => ({
+                            ...prevData,
+                            sections: newSections,
+                          }));
+                        }}
+                        className="mt-1 p-2 w-full border rounded-md"
+                      />
+
+                      {/* Video File Input */}
+                      <input
+                        type="file"
+                        accept="video/*"
+                        onChange={(e) => {
+                          const newSections = [...videosData.sections];
+                          newSections[sectionIndex].videos[videoIndex].file =
+                            e.target.files[0];
+                          setVideosData((prevData) => ({
+                            ...prevData,
+                            sections: newSections,
+                          }));
+                        }}
+                        className="mt-1 p-2 w-full border rounded-md"
+                      />
+                      <button
+                        type="button"
+                        className="m-2 p-2 rounded-md bg-red-500 text-white"
+                        onClick={() =>
+                          handleRemoveVideoFromSection(sectionIndex, videoIndex)
+                        }
+                      >
+                        Remove Video
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    className="m-2 p-2 rounded-md bg-indigo-700 text-white"
+                    type="button"
+                    onClick={() => handleAddVideoInSection(sectionIndex)}
+                  >
+                    Add Video
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-between">
+              <button
+                className="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400"
+                type="button"
+                onClick={() => setCurrentStep(2)}
+              >
+                Back to Step 2
+              </button>
+
               <button
                 className="bg-indigo-700 text-white py-2 px-4 rounded-md hover:bg-indigo-600"
                 type="submit"

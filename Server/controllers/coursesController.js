@@ -240,10 +240,30 @@ exports.getTrainerCourses = async (req, res) => {
 };
 
 //* CRUD functions for course_sections
+// exports.addCourseSection = async (req, res) => {
+//   try {
+//     const { section_name } = req.body;
+//     const course_id = req.params.course_id;
+
+//     // Add new course section
+//     const newCourseSection = await course_sectionsModel.addCourseSection({
+//       section_name,
+//       course_id,
+//       is_deleted: false,
+//     });
+
+//     res.status(201).json({
+//       message: "Course section added successfully",
+//       course_section_id: newCourseSection.course_section_id,
+//     });
+//   } catch (error) {
+//     console.error("Failed to add the course section: ", error);
+//     return res.status(500).json({ error: "Failed to add the course section" });
+//   }
+// };
 exports.addCourseSection = async (req, res) => {
   try {
-    const { section_name } = req.body;
-    const course_id = req.params.course_id;
+    const { section_name, course_id } = req.body;
 
     // Add new course section
     const newCourseSection = await course_sectionsModel.addCourseSection({

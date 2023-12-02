@@ -73,10 +73,9 @@ exports.addCourse = async (req, res) => {
         trainer_id,
       });
 
-      console.log(newCourse);
       res.status(201).json({
         message: "Course and related data added successfully",
-        course_id: newCourse,
+        course_id: newCourse.course_id,
       });
     });
   } catch (error) {
@@ -434,30 +433,10 @@ exports.getCourseRequirementDetails = async (req, res) => {
 };
 
 //* CRUD functions for course_sections
-// exports.addCourseSection = async (req, res) => {
-//   try {
-//     const { section_name } = req.body;
-//     const course_id = req.params.course_id;
-
-//     // Add new course section
-//     const newCourseSection = await course_sectionsModel.addCourseSection({
-//       section_name,
-//       course_id,
-//       is_deleted: false,
-//     });
-
-//     res.status(201).json({
-//       message: "Course section added successfully",
-//       course_section_id: newCourseSection.course_section_id,
-//     });
-//   } catch (error) {
-//     console.error("Failed to add the course section: ", error);
-//     return res.status(500).json({ error: "Failed to add the course section" });
-//   }
-// };
 exports.addCourseSection = async (req, res) => {
   try {
-    const { section_name, course_id } = req.body;
+    const { section_name } = req.body;
+    const course_id = req.params.course_id;
 
     // Add new course section
     const newCourseSection = await addCourseSection({

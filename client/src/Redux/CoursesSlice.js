@@ -144,31 +144,31 @@ const CoursesSlice = createSlice({
     // ... (previous extraReducers)
 
     builder
-    .addCase(addCourseSection.fulfilled, (state, action) => {
-      // Handle the state update after adding a new section
-      // For example, assuming action.payload contains the new section data
-      state.Courses = state.Courses.map(course => {
-        if (course.id === action.payload.course_id) {
-          // Assuming your course has a 'sections' array, you can push the new section
-          course.sections.push(action.payload.section);
-        }
-        return course;
-      });
-    })
-    .addCase(addCourseVideo.fulfilled, (state, action) => {
-      // Handle the state update after adding a new video
-      // For example, assuming action.payload contains the new video data
-      state.Courses = state.Courses.map(course => {
-        course.sections = course.sections.map(section => {
-          if (section.id === action.payload.course_section_id) {
-            // Assuming your section has a 'videos' array, you can push the new video
-            section.videos.push(action.payload.video);
+      .addCase(addCourseSection.fulfilled, (state, action) => {
+        // Handle the state update after adding a new section
+        // For example, assuming action.payload contains the new section data
+        state.Courses = state.Courses.map((course) => {
+          if (course.id === action.payload.course_id) {
+            // Assuming your course has a 'sections' array, you can push the new section
+            course.sections.push(action.payload.section);
           }
-          return section;
+          return course;
         });
-        return course;
+      })
+      .addCase(addCourseVideo.fulfilled, (state, action) => {
+        // Handle the state update after adding a new video
+        // For example, assuming action.payload contains the new video data
+        state.Courses = state.Courses.map((course) => {
+          course.sections = course.sections.map((section) => {
+            if (section.id === action.payload.course_section_id) {
+              // Assuming your section has a 'videos' array, you can push the new video
+              section.videos.push(action.payload.video);
+            }
+            return section;
+          });
+          return course;
+        });
       });
-    });
     // Additional cases for other CRUD operations, sections, and videos if needed
   },
 });
@@ -192,7 +192,7 @@ export const {
   // addRequirement,
   // updateRequirement,
   // deleteRequirement,
-  addVideosToSections ,
+  addVideosToSections,
 } = CoursesSlice.actions;
 
 export const fetchCourses = () => async (dispatch) => {
@@ -369,13 +369,15 @@ export const deleteCourse = (courseId) => async (dispatch) => {
 export const addCourseSection = createAsyncThunk(
   "courses/addCourseSection",
   async ({ course_id, sectionData }) => {
-    const response = await axios.post(`http://localhost:5000//addCourseSection/${course_id}`, {
-      sections: sectionData,  // Expecting sectionData to be an array of objects
-    });
+    const response = await axios.post(
+      `http://localhost:5000//addCourseSection/${course_id}`,
+      {
+        sections: sectionData, // Expecting sectionData to be an array of objects
+      }
+    );
     return response.data;
   }
 );
-
 
 // Async Thunk for adding a new video to a course section
 // Update the parameters to take courseData and videoData separately

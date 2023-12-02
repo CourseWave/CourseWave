@@ -56,7 +56,7 @@ async function addCourse({
   };
 
   const result = await db.query(query);
-  return result.rows[0].course_id;
+  return result.rows[0];
 }
 
 async function updateCourse({

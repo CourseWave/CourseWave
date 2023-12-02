@@ -30,7 +30,18 @@ router.put(
   userController.deleteTrainer
 );
 
-router.get("/getUsers", verify.authorize, userController.getAllUsers);
-router.get("/getTrainers", verify.authorize, userController.getAllTrainers);
+router.get(
+  "/getUsers",
+  verify.authorize,
+  //role.hasRole(3), Can't login as admin
+  userController.getAllUsers
+);
+
+router.get(
+  "/getTrainers",
+  verify.authorize,
+  // role.hasRole(3), Can't login as admin
+  userController.getAllTrainers
+);
 
 module.exports = router;

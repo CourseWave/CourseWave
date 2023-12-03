@@ -4,18 +4,22 @@ const createCoursesTable = async () => {
   const query = `
     CREATE TABLE IF NOT EXISTS courses (
       course_id SERIAL PRIMARY KEY,
-      course_author TEXT NOT NULL,
+      course_author VARCHAR(255) NOT NULL,
       course_title TEXT NOT NULL,
+      course_tagline TEXT NOT NULL,
       course_description TEXT NOT NULL,
       course_price DOUBLE PRECISION NOT NULL,
       course_rate DOUBLE PRECISION DEFAULT 0,
       course_length DOUBLE PRECISION NOT NULL,
-      course_catagory VARCHAR(255) NOT NULL,
       course_image TEXT NOT NULL,
+      course_objectives TEXT[] NOT NULL,
+      course_requirements TEXT[] NOT NULL,
       trainer_id INTEGER NOT NULL REFERENCES trainers(trainer_id),
       is_deleted BOOLEAN NOT NULL DEFAULT false
     );
   `;
+
+  // category_id INTEGER NOT NULL REFERENCES course_categories(category_id),
 
   try {
     await db.query(query);
@@ -32,31 +36,64 @@ async function addCourse({
   course_price,
   course_rate,
   course_length,
-  course_catagory,
+  // category_id,
   course_image,
+  course_objectives,
+  course_requirements,
+  course_tagline,
   trainer_id,
 }) {
-  const query = {
-    text: `
-      INSERT INTO courses
-      (course_title, course_description, course_price, course_rate, course_length, course_catagory, course_image, trainer_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      RETURNING course_id;
-    `,
-    values: [
-      course_title,
-      course_description,
-      course_price,
-      course_rate,
-      course_length,
-      course_catagory,
-      course_image,
-      trainer_id,
-    ],
-  };
+  try {
+    const trainerQuery =
+      "SELECT firstname, lastname FROM trainers WHERE trainer_id = $1;";
+    const trainerResult = await db.query(trainerQuery, [trainer_id]);
+    const trainer = trainerResult.rows[0];
 
-  const result = await db.query(query);
-  return result.rows[0].course_id;
+    if (!trainer) {
+      throw new Error("Trainer not found");
+    }
+
+    const course_author = `${trainer.firstname} ${trainer.lastname}`;
+
+    // const categoryQuery = `SELECT category_name FROM course_categories WHERE category_id = $1;`;
+    // const categoryResult = await db.query(categoryQuery, [category_id]);
+    // const category = categoryResult.rows[0];
+
+    // if (!category || categoryResult.rows.length === 0) {
+    //   throw new Error("Category not found for category_id: " + category_id);
+    // }
+
+    // const course_category_name = category.category_name;
+
+    const query = {
+      text: `
+        INSERT INTO courses
+        (course_author, course_title, course_description, course_price, course_rate, course_length, course_image, course_objectives, course_requirements, course_tagline, trainer_id)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        RETURNING course_id;
+      `,
+      values: [
+        course_author,
+        course_title,
+        course_description,
+        course_price,
+        course_rate,
+        course_length,
+        // course_category_name,
+        course_image,
+        course_objectives,
+        course_requirements,
+        course_tagline,
+        trainer_id,
+      ],
+    };
+
+    const result = await db.query(query);
+    return result.rows[0].course_id;
+  } catch (error) {
+    console.error("Failed to add course: ", error);
+    throw error;
+  }
 }
 
 async function updateCourse({
@@ -65,7 +102,10 @@ async function updateCourse({
   course_description,
   course_price,
   course_length,
-  course_catagory,
+  course_category,
+  course_tagline,
+  course_objectives,
+  course_requirements,
 }) {
   try {
     // Calculate average rating from comments for the course
@@ -90,8 +130,11 @@ async function updateCourse({
           course_description = $3,
           course_price = $4,
           course_length = $5,
-          course_catagory = $6,
-          course_rate = $7
+          course_category = $6,
+          course_tagline = $7,
+          course_objectives = $8,
+          course_requirements = $9,
+          course_rate = $10
         WHERE course_id = $1
         RETURNING course_id;
       `,
@@ -101,7 +144,10 @@ async function updateCourse({
         course_description,
         course_price,
         course_length,
-        course_catagory,
+        course_category,
+        course_tagline,
+        course_objectives,
+        course_requirements,
         averageRating,
       ],
     };
@@ -139,11 +185,18 @@ async function getCourses(page, pageSize) {
       ORDER BY course_id
       LIMIT $1 OFFSET $2;
     `,
-    values: [pageSize, offset],
   };
 
   const result = await db.query(query);
-  return result.rows;
+
+  const coursesWithImage = result.rows.map((course) => ({
+    ...course,
+    image_url: course.course_image
+      ? `http://localhost:5000/${course.course_image}`
+      : null,
+  }));
+
+  return coursesWithImage;
 }
 
 async function getCourse(course_id) {
@@ -161,23 +214,6 @@ async function getCourse(course_id) {
   if (!course) {
     return null; // Return null if course not found
   }
-
-  // Fetch related data from other tables
-  const objectsQuery = {
-    text: `
-      SELECT * FROM course_objects
-      WHERE course_id = $1 AND is_deleted = false;
-    `,
-    values: [course_id],
-  };
-
-  const requirementsQuery = {
-    text: `
-      SELECT * FROM course_requirements
-      WHERE course_id = $1 AND is_deleted = false;
-    `,
-    values: [course_id],
-  };
 
   const sectionsQuery = {
     text: `
@@ -197,26 +233,22 @@ async function getCourse(course_id) {
     values: [course_id],
   };
 
-  const [objectsResult, requirementsResult, sectionsResult, videosResult] =
-    await Promise.all([
-      db.query(objectsQuery),
-      db.query(requirementsQuery),
-      db.query(sectionsQuery),
-      db.query(videosQuery),
-    ]);
+  const [sectionsResult, videosResult] = await Promise.all([
+    db.query(sectionsQuery),
+    db.query(videosQuery),
+  ]);
 
-  const objects = objectsResult.rows;
-  const requirements = requirementsResult.rows;
   const sections = sectionsResult.rows;
   const videos = videosResult.rows;
 
-  // Combine the course details with related data
+  // Add image_url to course object
   const courseWithDetails = {
     ...course,
-    objects,
-    requirements,
     sections,
     videos,
+    image_url: course.course_image
+      ? `http://localhost:5000/${course.course_image}`
+      : null,
   };
 
   return courseWithDetails;
@@ -228,7 +260,7 @@ async function getCoursesByFilter(category, page, pageSize) {
   const query = {
     text: `
       SELECT * FROM courses
-      WHERE course_catagory = $1 AND is_deleted = false
+      WHERE course_category = $1 AND is_deleted = false
       ORDER BY course_id
       LIMIT $2 OFFSET $3;
     `,
@@ -236,7 +268,15 @@ async function getCoursesByFilter(category, page, pageSize) {
   };
 
   const result = await db.query(query);
-  return result.rows;
+
+  const coursesWithImage = result.rows.map((course) => ({
+    ...course,
+    image_url: course.course_image
+      ? `http://localhost:5000/${course.course_image}`
+      : null,
+  }));
+
+  return coursesWithImage;
 }
 
 async function getCoursesBySearch(searchTerm, page, pageSize) {
@@ -253,7 +293,15 @@ async function getCoursesBySearch(searchTerm, page, pageSize) {
   };
 
   const result = await db.query(query);
-  return result.rows;
+
+  const coursesWithImage = result.rows.map((course) => ({
+    ...course,
+    image_url: course.course_image
+      ? `http://localhost:5000/${course.course_image}`
+      : null,
+  }));
+
+  return coursesWithImage;
 }
 
 async function getTrainerCourses(trainer_id, page, pageSize) {
@@ -270,7 +318,15 @@ async function getTrainerCourses(trainer_id, page, pageSize) {
   };
 
   const result = await db.query(query);
-  return result.rows;
+
+  const coursesWithImage = result.rows.map((course) => ({
+    ...course,
+    image_url: course.course_image
+      ? `http://localhost:5000/${course.course_image}`
+      : null,
+  }));
+
+  return coursesWithImage;
 }
 
 module.exports = {

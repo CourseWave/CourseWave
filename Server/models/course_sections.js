@@ -20,16 +20,30 @@ const createCourseSectionsTable = async () => {
 };
 
 // Add new course section
-async function addCourseSection(sectionData) {
-  const { section_name, course_id, is_deleted } = sectionData;
+const addCourseSection = async (courseId, sections) => {
+  if (!Array.isArray(sections)) {
+    throw new Error("Sections must be an array");
+  }
 
-  const result = await db.query({
-    text: "INSERT INTO course_sections (section_name, course_id, is_deleted) VALUES ($1, $2, $3) RETURNING *",
-    values: [section_name, course_id, is_deleted],
+  const queries = sections.map((section) => {
+    return {
+      text: `
+        INSERT INTO course_sections (section_name, course_id)
+        VALUES ($1, $2)
+        RETURNING course_section_id;
+      `,
+      values: [section, courseId],
+    };
   });
 
-  return result.rows[0];
-}
+  try {
+    const results = await Promise.all(queries.map((query) => db.query(query)));
+    return results.map((result) => result.rows[0].course_section_id);
+  } catch (error) {
+    console.error("Error adding course sections:", error);
+    throw error;
+  }
+};
 
 // Update course section details
 async function updateCourseSection(course_section_id, sectionData) {

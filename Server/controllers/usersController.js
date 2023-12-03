@@ -87,11 +87,11 @@ async function trainerSignup(req, res) {
         .required(),
       password: joi
         .string()
-        .pattern(
-          new RegExp(
-            "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&!])[A-Za-z\\d@#$%^&!]{6,30}$"
-          )
-        )
+        // .pattern(
+        //   new RegExp(
+        //     "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&!])[A-Za-z\\d@#$%^&!]{6,30}$"
+        //   )
+        // )
         .required(),
     });
 

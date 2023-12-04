@@ -10,23 +10,31 @@ const usersRoute = require("./routes/usersRouter");
 //* Courses Router
 const coursesRoute = require("./routes/coursesRouter");
 
+//* courseCatagories Router
+const courseCategories = require("./routes/courseCatagoriesRouter");
+
 //* Comments Router
 const commentsRoute = require("./routes/commentsRouter");
 
 //* Cart Router
 const cartRoute = require("./routes/cartRouter");
 
-//* Payments Router
-const paymentsRoute = require("./routes/paymentsRouter");
+//* Purchases Router
+const purchasesRoute = require("./routes/purchasesRouter");
+
+//* liveSessions Router
+const liveSessionsRoute = require("./routes/liveSessionsRouter");
 
 app.use(cors());
 app.use(express.json());
 
 app.use(usersRoute);
 app.use(coursesRoute);
+app.use(courseCategories);
 app.use(commentsRoute);
 app.use(cartRoute);
-app.use(paymentsRoute);
+app.use(purchasesRoute);
+app.use(liveSessionsRoute);
 
 // Call the initialization function to create tables
 models.initializeModels();

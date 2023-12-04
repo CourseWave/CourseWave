@@ -1,4 +1,4 @@
-const db = require("../db/db"); // Adjust the path based on your project structure
+const db = require("../db/db");
 const bcrypt = require("bcrypt");
 
 const createUsersTable = async () => {

@@ -6,6 +6,9 @@ import CourseCard from "../Components/CourseCard";
 import SearchBar from "../Components/SearchBar";
 import { fetchCourses } from "../Redux/CoursesSlice";
 import { useLocation } from "react-router-dom";
+import background from "../Assets/category-bg.mp4"
+
+
 const CategoryPage = () => {
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.Categories.categories);
@@ -65,11 +68,16 @@ const CategoryPage = () => {
   return (
     <>
       <div className="bg-gray-100 ">
-        <img
-          src="https://i.pinimg.com/564x/e3/dd/74/e3dd74701e3a69c6d01c86737303ad51.jpg"
-          alt=""
-          className="w-full h-[35rem] md:h-[45rem] xl:h-[40rem]"
-        />
+      <video
+        autoPlay
+        loop
+        muted
+        className="w-full h-[35rem] md:h-[45rem] xl:h-[40rem] object-cover"
+      >
+        <source src={background} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+        
         <div className="bg-cover bg-center h-40 md:h-60 xl:h-96">
           <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-96">
             <SearchBar onSearch={handleSearch} />

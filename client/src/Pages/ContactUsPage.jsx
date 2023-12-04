@@ -27,7 +27,7 @@ const ContactUsPage = () => {
       };
 
   return (
-    <div className=" mx-auto bg-[#6F97FF] mb-5">
+    <div className=" mx-auto  mb-5">
       <div className="flex justify-center items-center mb-8">
         <img src="" alt="Contact" className="w-full h-auto" />
       </div>

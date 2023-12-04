@@ -59,7 +59,7 @@ const CoursesSlice = createSlice({
 
     deleteCoursePending: (state) => {
       state.status = "loading";
-      state.error = null; // Clear any previous errors when starting the delete
+      state.error = null; 
     },
     deleteCourseFulfilled: (state, action) => {
       state.status = "succeeded";
@@ -145,8 +145,6 @@ const CoursesSlice = createSlice({
 
     builder
       .addCase(addCourseSection.fulfilled, (state, action) => {
-        // Handle the state update after adding a new section
-        // For example, assuming action.payload contains the new section data
         state.Courses = state.Courses.map((course) => {
           if (course.id === action.payload.course_id) {
             // Assuming your course has a 'sections' array, you can push the new section
@@ -168,8 +166,29 @@ const CoursesSlice = createSlice({
           });
           return course;
         });
+      })
+      .addCase(fetchSections.fulfilled, (state, action) => {
+        // Assuming each course has a 'sections' property
+        const { course_id, sections } = action.payload;
+        const course = state.Courses.find((c) => c.id === course_id);
+        if (course) {
+          course.sections = sections;
+        }
+      })
+      .addCase(fetchSectionVideos.fulfilled, (state, action) => {
+        // Assuming each section has a 'videos' property
+        const { course_section_id, videos } = action.payload;
+        state.Courses = state.Courses.map((course) => {
+          course.sections = course.sections.map((section) => {
+            if (section.id === course_section_id) {
+              section.videos = videos;
+            }
+            return section;
+          });
+          return course;
+        });
       });
-    // Additional cases for other CRUD operations, sections, and videos if needed
+    
   },
 });
 
@@ -379,6 +398,24 @@ export const addCourseSection = createAsyncThunk(
   }
 );
 
+export const fetchSections = createAsyncThunk(
+  "courses/fetchSections",
+  async (course_id) => {
+    try {
+      const token = Cookies.get("token");
+      axios.defaults.headers.common["Authorization"] = token;
+
+      const response = await axios.get(
+        `http://localhost:5000/getCourseSections/${course_id}`
+      );
+      return response.data.sections;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
+
 // Async Thunk for adding a new video to a course section
 // Update the parameters to take courseData and videoData separately
 // export const addCourseVideo = createAsyncThunk(
@@ -405,4 +442,17 @@ export const addCourseVideo = createAsyncThunk(
   }
 );
 
+export const fetchSectionVideos = createAsyncThunk(
+  "courses/fetchSectionVideos",
+  async (course_section_id) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/getSectionVideos/${course_section_id}`
+      );
+      return response.data.videos;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
 export default CoursesSlice.reducer;

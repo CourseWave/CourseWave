@@ -259,8 +259,8 @@ const AddCourse = () => {
   };
 
   return (
-    <div className="container mx-auto p-8 bg-white rounded-lg shadow-lg border">
-      <h2 className="text-2xl font-bold mb-4">
+    <div className="container mx-auto p-8 bg-gray-200 rounded-lg shadow-lg border">
+      <h2 className="text-2xl font-bold mb-4 text-indigo-700">
         Add New Course - step {currentStep}
       </h2>
       <form className="w-[]" onSubmit={handleSubmit}>

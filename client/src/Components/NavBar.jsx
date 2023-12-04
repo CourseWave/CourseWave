@@ -28,7 +28,7 @@ const Navbar = () => {
     token = JSON.parse(token);
     if (token.trainer) {
       setProfileType("/TeacherProfile");
-      setProfileType("");
+      // setProfileType("");
     } else {
       console.log({ token });
       setProfileType("/StudentProfile");

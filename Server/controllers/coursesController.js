@@ -34,7 +34,9 @@ const {
   getSectionVideoDetails,
   getSectionVideos,
 } = require("../models/section_videos");
-const { uploadImage, uploadVideo } = require("../middlewares/multer");
+const { uploadImage, uploadVideoLinks } = require("../middlewares/multer");
+
+
 
 //* CRUD functions for courses
 exports.addCourse = async (req, res) => {
@@ -434,24 +436,22 @@ exports.getCourseRequirementDetails = async (req, res) => {
 
 //* CRUD functions for course_sections
 exports.addCourseSection = async (req, res) => {
-  try {
-    const { section_name } = req.body;
-    const course_id = req.params.course_id;
+  const { courseId, sections } = req.body;
 
-    // Add new course section
-    const newCourseSection = await addCourseSection({
-      section_name,
-      course_id,
-      is_deleted: false,
-    });
+  try {
+    const newCourseSection = await addCourseSection(
+      courseId,
+      sections
+    );
 
     res.status(201).json({
-      message: "Course section added successfully",
-      course_section_id: newCourseSection.course_section_id,
+      newCourseSection,
     });
   } catch (error) {
-    console.error("Failed to add the course section: ", error);
-    return res.status(500).json({ error: "Failed to add the course section" });
+    res.status(500).json({
+      message: "Error adding sections",
+      error,
+    });
   }
 };
 
@@ -518,36 +518,48 @@ exports.getCourseSections = async (req, res) => {
 //* CRUD functions for section_videos
 exports.addCourseVideo = async (req, res) => {
   try {
-    uploadVideo.single("video_link")(req, res, async function (err) {
+    uploadVideoLinks(req, res, async function (err) {
       if (err) {
         console.error(err);
         return res.status(500).json({ error: "Video upload failed" });
       }
 
-      if (!req.file) {
-        return res.status(400).json({ error: "No video uploaded" });
+      if (!req.files || !req.files.length) {
+        return res.status(400).json({ error: "No videos uploaded" });
       }
 
-      const { video_title } = req.body;
-      const video_link = req.file.path;
-      const course_section_id = req.params.course_section_id;
+      const { video_titles, course_section_id } = req.body;
 
-      // Add new section video
-      const newSectionVideo = await addSectionVideo({
-        video_title,
-        video_link,
-        course_section_id,
-        is_deleted: false,
-      });
+      if (
+        !Array.isArray(video_titles) ||
+        video_titles.length !== req.files.length
+      ) {
+        return res.status(400).json({ error: "Invalid video data" });
+      }
+
+      const videoData = [];
+      for (let i = 0; i < req.files.length; i++) {
+        videoData.push({
+          video_title: video_titles[i],
+          video_link: `/videos/${req.files[i].filename}`, // Adjust path based on storage location
+          course_section_id,
+        });
+      }
+
+      const newSectionVideos = await Promise.all(
+        videoData.map((videoData) =>
+          section_videosModel.addSectionVideo(videoData)
+        )
+      );
 
       res.status(201).json({
-        message: "Course video added successfully",
-        video_id: newSectionVideo.video_id,
+        message: "Course videos added successfully",
+        video_ids: newSectionVideos.map((video) => video.video_id),
       });
     });
   } catch (error) {
-    console.error("Failed to add the course video: ", error);
-    return res.status(500).json({ error: "Failed to add the course video" });
+    console.error("Failed to add the course videos:", error);
+    return res.status(500).json({ error: "Failed to add the course videos" });
   }
 };
 

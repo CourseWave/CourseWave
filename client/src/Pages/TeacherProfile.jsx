@@ -5,6 +5,7 @@ import { fetchTeachers } from "../Redux/UsersSlice";
 import UserInfoCard from "../Components/UserInfoCard";
 import CoursesList from "../Components/CourseList";
 import AddCourse from "../Components/AddCourse";
+import SectionsList from "../Components/SectionsList";
 
 const TeacherProfile = () => {
   const dispatch = useDispatch();
@@ -51,11 +52,20 @@ const TeacherProfile = () => {
         >
           Add Course
         </button>
+        <button
+          className={`w-full py-2 mb-2 rounded ${
+            activeTab === "SectionsList" ? "bg-blue-500 text-white" : "bg-white"
+          }`}
+          onClick={() => setActiveTab("SectionsList")}
+        >
+          Sections List
+        </button>
       </div>
       <div className="container  p-4  ">
         {activeTab === "userInfo" && <UserInfoCard />}
         {activeTab === "coursesList" && <CoursesList />}
         {activeTab === "addCourse" && <AddCourse />}
+        {activeTab === "SectionsList" && <SectionsList />}
       </div>
     </div>
   );

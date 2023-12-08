@@ -21,10 +21,10 @@ exports.addCourse = async (req, res) => {
         course_price,
         course_rate,
         course_length,
-        // category_id,
         course_objectives,
         course_requirements,
         course_tagline,
+        category_id,
       } = req.body;
 
       const course_image = req.file.path;
@@ -36,11 +36,11 @@ exports.addCourse = async (req, res) => {
         course_price,
         course_rate,
         course_length,
-        // category_id,
         course_image,
         course_objectives,
         course_requirements,
         course_tagline,
+        category_id,
         trainer_id,
       });
 
@@ -363,7 +363,7 @@ exports.addCourseVideo = async (req, res) => {
         return res.status(500).json({ error: "Video upload failed" });
       }
 
-      if (!req.files || !req.files.length) {
+      if (!req.files || req.files.length === 0) {
         return res.status(400).json({ error: "No videos uploaded" });
       }
 
@@ -378,14 +378,11 @@ exports.addCourseVideo = async (req, res) => {
         return res.status(400).json({ error: "Invalid video data" });
       }
 
-      const videoData = [];
-      for (let i = 0; i < req.files.length; i++) {
-        videoData.push({
-          video_title: video_titles[i],
-          video_link: `/videos/${req.files[i].filename}`, // Adjust path based on storage location
-          course_section_id,
-        });
-      }
+      const videoData = req.files.map((file, index) => ({
+        video_title: video_titles[index],
+        video_link: `/videos/${file.filename}`, // Adjust path based on storage location
+        course_section_id,
+      }));
 
       const newSectionVideos = await Promise.all(
         videoData.map((videoData) =>

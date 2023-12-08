@@ -28,7 +28,8 @@ const TeacherForm = () => {
 
   const nameRegex = /^[a-zA-Z]{3,20}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&!])[A-Za-z\d@#$%^&!]{6,30}$/;
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&!])[A-Za-z\d@#$%^&!]{6,30}$/;
 
   const validateForm = () => {
     let isValid = true;
@@ -76,12 +77,19 @@ const TeacherForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(signupTrainerAsync(formData));
-    console.log(formData);
-    // if (validateForm()) {
-    //   // Send registration data to backend or perform registration logic here
-    //   console.log("Registration data:", formData);
-    // }
+    if (validateForm()) {
+      dispatch(signupTrainerAsync(formData));
+      setFormData({
+        firstname: "",
+        lastname: "",
+        email: "",
+        password: "",
+        confirm_password: "",
+        degree: "",
+        field: "",
+      });
+      setErrors({});
+    }
   };
 
   return (

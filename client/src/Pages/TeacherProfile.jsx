@@ -1,11 +1,9 @@
-// // TeacherProfile.js
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTeachers } from "../Redux/UsersSlice";
 import UserInfoCard from "../Components/UserInfoCard";
 import CoursesList from "../Components/CourseList";
 import AddCourse from "../Components/AddCourse";
-import SectionsList from "../Components/SectionsList";
 
 const TeacherProfile = () => {
   const dispatch = useDispatch();
@@ -25,47 +23,44 @@ const TeacherProfile = () => {
   const user = useSelector((state) => state.user);
 
   return (
-    <div className="container p-8 bg-white rounded-lg  flex ">
-      <div className="w-1/4 h-[40rem] bg-indigo-900 p-10 rounded-lg shadow-md flex flex-col">
-        <img src={user.image} alt="qwer" />
+    <div className="flex">
+      {/* Sidebar */}
+      <div className="w-[15rem] h-[70rem] dark:bg-gray-900 p-10  shadow-md flex flex-col">
+        <img src={user.image} alt="User Avatar" className="mb-4" />
+
         <button
-          className={`w-full py-2 mb-2 rounded ${
-            activeTab === "userInfo" ? "bg-blue-500 text-white" : "bg-white"
+          className={`py-2 mb-2 rounded text-white ${
+            activeTab === "userInfo" ? "bg-blue-300" : ""
           }`}
           onClick={() => setActiveTab("userInfo")}
         >
           User Info
         </button>
+
         <button
-          className={`w-full py-2 mb-2 rounded ${
-            activeTab === "coursesList" ? "bg-blue-500 text-white" : "bg-white"
-          }`}
-          onClick={() => setActiveTab("coursesList")}
-        >
-          Courses List
-        </button>
-        <button
-          className={`w-full py-2 mb-2 rounded ${
-            activeTab === "addCourse" ? "bg-blue-500 text-white" : "bg-white"
+          className={`py-2 mb-2 rounded text-white ${
+            activeTab === "addCourse" ? "bg-blue-300" : ""
           }`}
           onClick={() => setActiveTab("addCourse")}
         >
           Add Course
         </button>
+
         <button
-          className={`w-full py-2 mb-2 rounded ${
-            activeTab === "SectionsList" ? "bg-blue-500 text-white" : "bg-white"
+          className={`py-2 mb-2 rounded text-white ${
+            activeTab === "coursesList" ? "bg-blue-300" : ""
           }`}
-          onClick={() => setActiveTab("SectionsList")}
+          onClick={() => setActiveTab("coursesList")}
         >
-          Sections List
+          Courses List
         </button>
       </div>
-      <div className="container  p-4  ">
+
+      {/* Main Content */}
+      <div className="flex-1 p-8">
         {activeTab === "userInfo" && <UserInfoCard />}
         {activeTab === "coursesList" && <CoursesList />}
         {activeTab === "addCourse" && <AddCourse />}
-        {activeTab === "SectionsList" && <SectionsList />}
       </div>
     </div>
   );

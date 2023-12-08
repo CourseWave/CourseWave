@@ -2,7 +2,6 @@
 import React, { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  addCourseVideo,
   createCourse,
   addCourseSection,
 } from "../Redux/CoursesSlice";
@@ -23,18 +22,10 @@ const AddCourse = () => {
     ],
   });
 
-  const [videosData, setVideosData] = useState({
-    sections: [
-      {
-        title: "",
-        videos: [{ title: "", file: null }],
-      },
-    ],
-  });
-
   const [courseData, setCourseData] = useState({
     title: "",
-    course_catagory: "",
+    course_tagline: "",
+    // course_catagory: "",
     objectives: [],
     requirements: [],
     description: "",
@@ -48,15 +39,22 @@ const AddCourse = () => {
 
   const handleChange = (e, index, field) => {
     const { value } = e.target;
-    const updatedData = { ...courseData };
+    setCourseData((prevData) => {
+      // Create a copy of the previous state to avoid mutation
+      const updatedData = { ...prevData };
 
-    if (!updatedData[field]) {
-      updatedData[field] = [];
-    }
+      // If the field is an array (objectives, requirements), update the specific element
+      if (Array.isArray(updatedData[field])) {
+        updatedData[field][index] = value;
+      } else {
+        // Otherwise, update the field directly
+        updatedData[field] = value;
+      }
 
-    updatedData[field] = value;
-    setCourseData(updatedData);
+      return updatedData;
+    });
   };
+
   const handleAddObjective = useCallback(() => {
     setCourseData((prevData) => ({
       ...prevData,
@@ -93,24 +91,6 @@ const AddCourse = () => {
     });
   }, []);
 
-  // const handleAddVideo = useCallback(() => {
-  //   setCourseData((prevData) => ({
-  //     ...prevData,
-  //     videos: [...prevData.videos, ""],
-  //   }));
-  // }, []);
-
-  // const handleRemoveVideo = useCallback((index) => {
-  //   setCourseData((prevData) => {
-  //     const newVideos = [...prevData.videos];
-  //     newVideos.splice(index, 1);
-  //     return {
-  //       ...prevData,
-  //       videos: newVideos,
-  //     };
-  //   });
-  // }, []);
-
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setCourseData((prevData) => ({
@@ -144,48 +124,13 @@ const AddCourse = () => {
     });
   }, []);
 
-  // const handleAddVideoInSection = (sectionIndex) => {
-  //   setVideosData((prevData) => {
-  //     const newSections = [...prevData.sections];
-  //     const currentSection = newSections[sectionIndex];
-  //     currentSection.videos.push({ title: "", file: null });
-  //     console.log(prevData);
-
-  //     return {
-  //       ...prevData,
-  //       sections: newSections,
-  //     };
-  //   });
-  // };
-
-  const handleAddVideoInSection = (sectionIndex) => {
-    setVideosData((prevData) => {
-      const newSections = [...prevData.sections];
-      newSections[sectionIndex].videos.push({ title: "", file: null });
-      return {
-        ...prevData,
-        sections: newSections,
-      };
-    });
-  };
-
-  const handleRemoveVideoFromSection = (sectionIndex, videoIndex) => {
-    setVideosData((prevData) => {
-      const newSections = [...prevData.sections];
-      newSections[sectionIndex].videos.splice(videoIndex, 1);
-      return {
-        ...prevData,
-        sections: newSections,
-      };
-    });
-  };
-
   const validateFields = () => {
     let isValid = false;
 
     const requiredFields = [
-      "course_catagory",
+      // "course_catagory",
       "title",
+      "course_tagline",
       "image",
       "course_length",
       "requirements",
@@ -219,7 +164,10 @@ const AddCourse = () => {
 
     try {
       setLoading(true);
+      console.log("Dispatching createCourse action with data:", courseData);
+
       const response = await dispatch(createCourse(courseData));
+      console.log("Response from createCourse:", response.course_id);
       setCreatedCourseId(response.course_id);
 
       if (response.course_id) {
@@ -237,13 +185,13 @@ const AddCourse = () => {
     try {
       setLoading(true);
       const courseDataWithVideos = {
-        sectionData: sectionData.sections[0],
-        course_id: courseId,
+        sections: sectionData.sections,
+        courseId: courseId,
       };
       const response = await dispatch(addCourseSection(courseDataWithVideos));
       console.log(response);
       return response.course_section_id;
-      //setCreatedCourseId(response.course_section_id);
+      // setCreatedCourseId(response.course_section_id);
     } catch (error) {
       console.error("Error adding videos:", error);
       toast.error("Failed to add videos. Please try again.");
@@ -282,8 +230,23 @@ const AddCourse = () => {
                 required
               />
             </div>
-
             <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">
+                TagLine
+              </label>
+              <input
+                type="text"
+                name="course_tagline"
+                value={courseData.course_tagline}
+                onChange={(e) => {
+                  handleChange(e, 0, "course_tagline");
+                }}
+                className="mt-1 p-2 w-full border rounded-md"
+                required
+              />
+            </div>
+
+            {/* <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 Course Catagory
               </label>
@@ -296,7 +259,7 @@ const AddCourse = () => {
                 }}
                 className="mt-1 p-2 w-full border rounded-md"
               />
-            </div>
+            </div> */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 Course Length
@@ -335,16 +298,10 @@ const AddCourse = () => {
                   <input
                     type="text"
                     value={objective}
-                    onChange={(e) => {
-                      const newObjectives = [...courseData.objectives];
-                      newObjectives[index] = e.target.value;
-                      setCourseData((prevData) => ({
-                        ...prevData,
-                        objectives: newObjectives,
-                      }));
-                    }}
+                    onChange={(e) => handleChange(e, index, "objectives")}
                     className="mt-1 p-2 w-full border rounded-md"
                   />
+
                   <button
                     type="button"
                     className="m-2 p-2 rounded-md bg-red-500 text-white "
@@ -373,16 +330,10 @@ const AddCourse = () => {
                   <input
                     type="text"
                     value={requirement}
-                    onChange={(e) => {
-                      const newRequirements = [...courseData.requirements];
-                      newRequirements[index] = e.target.value;
-                      setCourseData((prevData) => ({
-                        ...prevData,
-                        requirements: newRequirements,
-                      }));
-                    }}
+                    onChange={(e) => handleChange(e, index, "requirements")}
                     className="mt-1 p-2 w-full border rounded-md"
                   />
+
                   <button
                     type="button"
                     className="m-2 p-2 rounded-md bg-red-500 text-white"
@@ -506,97 +457,6 @@ const AddCourse = () => {
               >
                 Back
               </button>
-
-              <button
-                className="bg-indigo-700 text-white py-2 px-4 rounded-md hover:bg-indigo-600"
-                type="button"
-                onClick={() => setCurrentStep(3)}
-              >
-                Next to Step 3
-              </button>
-            </div>
-          </>
-        )}
-        {/*------------------------ third Step -------------------------- */}
-
-        {currentStep === 3 && (
-          <>
-            <div className="mb-4 border-2 border-black rounded-md p-5">
-              <label className="block text-lg font-medium text-black">
-                Add Your Videos Here
-              </label>
-              {videosData?.sections?.map((section, sectionIndex) => (
-                <div key={sectionIndex} className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Section Title: {section.title}
-                  </label>
-                  {section.videos.map((video, videoIndex) => (
-                    <div key={`${videoIndex}`}>
-                      {/* Video Title Input */}
-                      <label className="block text-sm font-medium text-gray-700">
-                        Video Title
-                      </label>
-                      <input
-                        type="text"
-                        value={video.title}
-                        onChange={(e) => {
-                          const newSections = [...videosData.sections];
-                          newSections[sectionIndex].videos[videoIndex].title =
-                            e.target.value;
-                          setVideosData((prevData) => ({
-                            ...prevData,
-                            sections: newSections,
-                          }));
-                        }}
-                        className="mt-1 p-2 w-full border rounded-md"
-                      />
-
-                      {/* Video File Input */}
-                      <input
-                        type="file"
-                        accept="video/*"
-                        onChange={(e) => {
-                          const newSections = [...videosData.sections];
-                          newSections[sectionIndex].videos[videoIndex].file =
-                            e.target.files[0];
-                          setVideosData((prevData) => ({
-                            ...prevData,
-                            sections: newSections,
-                          }));
-                        }}
-                        className="mt-1 p-2 w-full border rounded-md"
-                      />
-                      <button
-                        type="button"
-                        className="m-2 p-2 rounded-md bg-red-500 text-white"
-                        onClick={() =>
-                          handleRemoveVideoFromSection(sectionIndex, videoIndex)
-                        }
-                      >
-                        Remove Video
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    className="m-2 p-2 rounded-md bg-indigo-700 text-white"
-                    type="button"
-                    onClick={() => handleAddVideoInSection(sectionIndex)}
-                  >
-                    Add Video
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-between">
-              <button
-                className="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400"
-                type="button"
-                onClick={() => setCurrentStep(2)}
-              >
-                Back to Step 2
-              </button>
-
               <button
                 className="bg-indigo-700 text-white py-2 px-4 rounded-md hover:bg-indigo-600"
                 type="submit"

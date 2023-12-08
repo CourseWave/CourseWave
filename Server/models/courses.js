@@ -52,18 +52,11 @@ async function addCourse({
     if (!trainer) {
       throw new Error("Trainer not found");
     }
+    course_objectives = course_objectives.split(",").map((e) => e.trim());
+
+    course_requirements = course_requirements.split(",").map((e) => e.trim());
 
     const course_author = `${trainer.firstname} ${trainer.lastname}`;
-
-    // const categoryQuery = `SELECT category_name FROM course_categories WHERE category_id = $1;`;
-    // const categoryResult = await db.query(categoryQuery, [category_id]);
-    // const category = categoryResult.rows[0];
-
-    // if (!category || categoryResult.rows.length === 0) {
-    //   throw new Error("Category not found for category_id: " + category_id);
-    // }
-
-    // const course_category_name = category.category_name;
 
     const query = {
       text: `

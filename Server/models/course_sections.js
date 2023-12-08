@@ -85,7 +85,7 @@ async function getCourseSections(course_id) {
     text: "SELECT * FROM course_sections WHERE course_id = $1 AND is_deleted = false",
     values: [course_id],
   });
-
+  console.log(result.rows)
   return result.rows;
 }
 

@@ -1,42 +1,7 @@
-const db = require("../models/index");
-const {
-  addCourse,
-  updateCourse,
-  deleteCourse,
-  getCourses,
-  getCourse,
-  getCoursesByFilter,
-  getCoursesBySearch,
-  getTrainerCourses,
-} = require("../models/courses");
-const {
-  addCourseObject,
-  updateCourseObject,
-  deleteCourseObject,
-  getCourseObjectDetails,
-} = require("../models/course_objects");
-const {
-  addCourseRequirement,
-  updateCourseRequirement,
-  deleteCourseRequirement,
-  getCourseRequirementDetails,
-} = require("../models/course_requirements");
-const {
-  addCourseSection,
-  updateCourseSection,
-  deleteCourseSection,
-  getCourseSections,
-} = require("../models/course_sections");
-const {
-  addSectionVideo,
-  updateSectionVideo,
-  deleteSectionVideo,
-  getSectionVideoDetails,
-  getSectionVideos,
-} = require("../models/section_videos");
+const coursesModel = require("../models/courses");
+const course_sectionsModel = require("../models/course_sections");
+const section_videosModel = require("../models/section_videos");
 const { uploadImage, uploadVideoLinks } = require("../middlewares/multer");
-
-
 
 //* CRUD functions for courses
 exports.addCourse = async (req, res) => {
@@ -298,7 +263,7 @@ exports.addCourseSection = async (req, res) => {
   const { courseId, sections } = req.body;
 
   try {
-    const newCourseSection = await addCourseSection(
+    const newCourseSection = await course_sectionsModel.addCourseSection(
       courseId,
       sections
     );
@@ -307,6 +272,7 @@ exports.addCourseSection = async (req, res) => {
       newCourseSection,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       message: "Error adding sections",
       error,
@@ -355,8 +321,9 @@ exports.deleteCourseSection = async (req, res) => {
 };
 
 exports.getCourseSections = async (req, res) => {
+  const course_id = req.params.course_id;
+console.log(course_id);
   try {
-    const course_id = req.params.course_id;
 
     // Get course section details
     const courseSection = await course_sectionsModel.getCourseSections(
@@ -381,8 +348,16 @@ exports.getCourseSections = async (req, res) => {
 
 //* CRUD functions for section_videos
 exports.addCourseVideo = async (req, res) => {
+  const { video_titles, course_section_id } = req.body;
+  console.log(req.body.data);
+
+
   try {
+    console.log('hhhhhh');
+
     uploadVideoLinks(req, res, async function (err) {
+      console.log('hhhhheeeeeeeee h');
+
       if (err) {
         console.error(err);
         return res.status(500).json({ error: "Video upload failed" });
@@ -392,12 +367,14 @@ exports.addCourseVideo = async (req, res) => {
         return res.status(400).json({ error: "No videos uploaded" });
       }
 
-      const { video_titles, course_section_id } = req.body;
+      console.log('ssssssss');
 
+      console.log(req.files);
       if (
         !Array.isArray(video_titles) ||
         video_titles.length !== req.files.length
-      ) {
+      ) 
+      {
         return res.status(400).json({ error: "Invalid video data" });
       }
 

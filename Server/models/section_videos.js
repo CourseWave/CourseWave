@@ -20,36 +20,19 @@ const createSectionVideosTable = async () => {
   }
 };
 
-// Add new section video
 async function addSectionVideo(videoData) {
   const { video_title, video_link, course_section_id } = videoData;
 
-  if (typeof video_title === "string" && typeof video_link === "string") {
-    // Handle single video
+  try {
     const result = await db.query({
       text: "INSERT INTO section_videos (video_title, video_link, course_section_id) VALUES ($1, $2, $3) RETURNING *",
       values: [video_title, video_link, course_section_id],
     });
 
     return result.rows[0];
-  } else if (Array.isArray(video_title) && Array.isArray(video_link)) {
-    // Handle multiple videos
-    if (video_title.length !== video_link.length) {
-      throw new Error("Invalid video data");
-    }
-
-    const queries = [];
-    for (let i = 0; i < video_title.length; i++) {
-      queries.push({
-        text: "INSERT INTO section_videos (video_title, video_link, course_section_id) VALUES ($1, $2, $3) RETURNING *",
-        values: [video_title[i], video_link[i], course_section_id],
-      });
-    }
-
-    const results = await Promise.all(queries.map((query) => db.query(query)));
-    return results.map((result) => result.rows[0]);
-  } else {
-    throw new Error("Invalid video data format");
+  } catch (error) {
+    console.error("Failed to add section video:", error);
+    throw error;
   }
 }
 

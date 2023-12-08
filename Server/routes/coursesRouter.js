@@ -2,12 +2,10 @@ const express = require("express");
 const router = express.Router();
 const coursesController = require("../controllers/coursesController");
 const verify = require("../middlewares/verify");
-// post
 router.post("/addCourse", verify.authorize, coursesController.addCourse);
 router.post("/addCourseSection", coursesController.addCourseSection);
-router.post("/addCourseVideos", coursesController.addCourseVideo);
+router.post("/addCourseVideos", coursesController.addCourseVideos);
 
-//update
 router.put("/updateCourse/:course_id", coursesController.updateCourse);
 
 router.put(
@@ -18,7 +16,7 @@ router.put(
   "/updateCourseVideos/:video_id",
   coursesController.updateCourseVideo
 );
-//delete
+
 router.put("/deleteCourse/:course_id", coursesController.deleteCourse);
 router.put(
   "/deleteCourseSection/:course_section_id",

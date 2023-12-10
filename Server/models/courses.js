@@ -190,7 +190,6 @@ async function getCourses(page, pageSize) {
       WHERE is_deleted = false
       ORDER BY course_id;
     `,
-    values: [pageSize, offset],
   };
 
   const result = await db.query(query);

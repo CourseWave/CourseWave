@@ -35,6 +35,8 @@ const CoursesSlice = createSlice({
       state.sections = action.payload;
     },
     fetchSectionsRejected: (state, action) => {
+      console.log("BATATATATA");
+      console.log({ action });
       state.status = "failed";
       state.error = action.payload;
     },
@@ -83,6 +85,28 @@ const CoursesSlice = createSlice({
       state.status = "failed";
       state.error = action.payload;
     },
+
+    fetchSectionVideosPending: (state) => {
+      state.status = "loading"; // Update the status to loading while fetching videos
+    },
+    
+    fetchSectionVideosFulfilled: (state, action) => {
+      const { course_section_id, videos } = action.payload;
+      const section = state.sections.find(
+        (section) => section.id === course_section_id
+      );
+    
+      if (section) {
+        section.videos = videos;
+        state.status = "succeeded"; // Update the status to succeeded after fetching videos
+      }
+    },
+    
+    fetchSectionVideosRejected: (state, action) => {
+      state.status = "failed";
+      state.error = action.payload; // Store the error message in the state
+    },
+    
   },
   extraReducers: (builder) => {
     builder.addCase(fetchSectionsFulfilled, (state, action) => {
@@ -93,32 +117,34 @@ const CoursesSlice = createSlice({
         course.sections = sections;
       }
     });
-    builder.addCase(addCourseVideo.pending, (state) => {
+    builder.addCase(fetchSectionsRejected, (state, action) => {
+      console.log({ action });
+    });
+    builder.addCase(addCourseVideos.pending, (state) => {
       state.status = "loading";
     });
 
-    builder.addCase(addCourseVideo.fulfilled, (state, action) => {
+    builder.addCase(addCourseVideos.fulfilled, (state, action) => {
       state.status = "succeeded";
-    
-      // Assuming the server response includes the updated video data
-      const { course_id, section_id, video } = action.payload;
-    
-      // Find the corresponding course by course_id
-      const course = state.Courses.find((c) => c.id === course_id);
-    
-      if (course) {
-        // Find the corresponding section by section_id
-        const section = course.sections.find((s) => s.id === section_id);
-    
-        if (section) {
-          // Update the section with the newly added video
-          section.videos.push(video);
-        }
-      }
-    });
-    
 
-    builder.addCase(addCourseVideo.rejected, (state, action) => {
+      // Assuming the server response includes the updated video data
+      // const { course_id, section_id, video } = action.payload;
+
+      // // Find the corresponding course by course_id
+      // const course = state.Courses.find((c) => c.id === course_id);
+
+      // if (course) {
+      //   // Find the corresponding section by section_id
+      //   const section = course.sections.find((s) => s.id === section_id);
+
+      //   if (section) {
+      //     // Update the section with the newly added video
+      //     section.videos.push(video);
+      //   }
+      // }
+    });
+
+    builder.addCase(addCourseVideos.rejected, (state, action) => {
       state.status = "failed";
       state.error = action.payload;
     });
@@ -142,6 +168,9 @@ export const {
   deleteCourseFulfilled,
   deleteCourseRejected,
   addVideosToSections,
+  fetchSectionVideosPending,
+  fetchSectionVideosFulfilled,
+  fetchSectionVideosRejected,
 } = CoursesSlice.actions;
 
 export const fetchCourses = () => async (dispatch) => {
@@ -252,34 +281,26 @@ export const fetchSections = (course_id) => async (dispatch) => {
       `http://localhost:5000/getCourseSections/${course_id}`
     );
     const section = response.data.courseSection;
-    console.log(response.data.courseSection);
     dispatch(fetchSectionsFulfilled(section));
   } catch (error) {
-    dispatch(fetchSectionsRejected(error.message));
+    dispatch(fetchSectionsFulfilled([]));
   }
 };
 
-// export const addCourseVideo = createAsyncThunk(
-//   "courses/addCourseVideo",
-//   async ({ course_id, course_section_id, videoData }) => {
-//     const response = await axios.post(`http://localhost:5000/addCourseVideos`, {
-//       course_id,
-//       course_section_id,
-//       videoData,
-//     });
-//     return response.data;
-//   }
-// );
-
-export const addCourseVideo = createAsyncThunk(
-  "courses/addCourseVideo",
-  async ({ course_section_id, video_titles}) => {
-    const data = {video_titles , course_section_id }
+export const addCourseVideos = createAsyncThunk(
+  "courses/addCourseVideos",
+  async (data) => {
     console.log(data);
     try {
-      const response = await axios.post(`http://localhost:5000/addCourseVideos`, {
-        data
-      });
+      const response = await axios.post(
+        `http://localhost:5000/addCourseVideos`,
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       console.log(data);
       return response.data;
     } catch (error) {
@@ -290,15 +311,28 @@ export const addCourseVideo = createAsyncThunk(
 
 export const fetchSectionVideos = createAsyncThunk(
   "courses/fetchSectionVideos",
-  async (course_section_id) => {
+  async (course_section_id, { dispatch, rejectWithValue }) => {
     try {
+      dispatch(fetchSectionVideosPending());
+
       const response = await axios.get(
         `http://localhost:5000/getSectionVideos/${course_section_id}`
       );
-      return response.data.videos;
+
+      dispatch(fetchSectionVideosFulfilled({
+        course_section_id,
+        videos: response.data.videos,
+      }));
+
+      return response.data;
     } catch (error) {
-      throw error;
+      dispatch(fetchSectionVideosRejected(error.message));
+
+      return rejectWithValue(error.message);
     }
   }
 );
+
+
+
 export default CoursesSlice.reducer;

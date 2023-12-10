@@ -322,9 +322,8 @@ exports.deleteCourseSection = async (req, res) => {
 
 exports.getCourseSections = async (req, res) => {
   const course_id = req.params.course_id;
-console.log(course_id);
+  console.log(course_id);
   try {
-
     // Get course section details
     const courseSection = await course_sectionsModel.getCourseSections(
       course_id
@@ -347,16 +346,10 @@ console.log(course_id);
 };
 
 //* CRUD functions for section_videos
-exports.addCourseVideo = async (req, res) => {
-  const { video_titles, course_section_id } = req.body;
-  console.log(req.body.data);
-
-
+exports.addCourseVideos = async (req, res) => {
   try {
-    console.log('hhhhhh');
-
     uploadVideoLinks(req, res, async function (err) {
-      console.log('hhhhheeeeeeeee h');
+      let { video_titles, course_section_id } = req.body;
 
       if (err) {
         console.error(err);
@@ -366,24 +359,20 @@ exports.addCourseVideo = async (req, res) => {
       if (!req.files || req.files.length === 0) {
         return res.status(400).json({ error: "No videos uploaded" });
       }
+      const videos = req.files;
 
-      console.log('ssssssss');
-
-      console.log(req.files);
       if (
         !Array.isArray(video_titles) ||
         video_titles.length !== req.files.length
-      ) 
-      {
+      ) {
         return res.status(400).json({ error: "Invalid video data" });
       }
-
-      const videoData = req.files.map((file, index) => ({
+      const videoData = videos.map((file, index) => ({
         video_title: video_titles[index],
         video_link: `/videos/${file.filename}`, // Adjust path based on storage location
         course_section_id,
       }));
-
+      console.log({ videoData });
       const newSectionVideos = await Promise.all(
         videoData.map((videoData) =>
           section_videosModel.addSectionVideo(videoData)

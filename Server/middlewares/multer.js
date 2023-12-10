@@ -18,9 +18,9 @@ const videoLinkStorage = multer.diskStorage({
     cb(null, "videos");
   },
   filename: (req, file, cb) => {
-    const videoId = Date.now();
-    const extension = path.extname(file.originalname);
-    cb(null, `${videoId}-${file.originalname}${extension}`);
+    const filename =
+      Date.now() + "-" + file.originalname + path.extname(file.originalname);
+    cb(null, filename);
   },
 });
 

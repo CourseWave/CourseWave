@@ -1,154 +1,68 @@
-// // VideoForm.jsx
-// import React, { useState } from "react";
-// import { useDispatch } from "react-redux";
-// import { addCourseVideo } from "../Redux/CoursesSlice";
-
-// const VideoForm = ({ courseId, sectionId, onClose }) => {
-//   const dispatch = useDispatch();
-//   const [videoTitle, setVideoTitle] = useState("");
-//   const [videoFile, setVideoFile] = useState(null);
-
-//   const handleAddVideo = () => {
-//     const formData = new FormData();
-//     formData.append("course_id", courseId);
-//     formData.append("course_section_id", sectionId);
-//     formData.append("title", videoTitle);
-//     formData.append("video", videoFile);
-
-//     dispatch(addCourseVideo(formData));
-//     onClose();
-//   };
-
-//   const handleFileChange = (e) => {
-//     const file = e.target.files[0];
-//     setVideoFile(file);
-//   };
-
-//   return (
-//     <div>
-//       <label>
-//         Video Title:
-//         <input
-//           type="text"
-//           name="videoTitle"
-//           value={videoTitle}
-//           onChange={(e) => setVideoTitle(e.target.value)}
-//           className="text-black"
-//         />
-//       </label>
-//       <label>
-//         Video File:
-//         <input type="file" onChange={handleFileChange} />
-//       </label>
-//       <button className="border-2 px-2 rounded-sm" onClick={handleAddVideo}>
-//         Add Video
-//       </button>
-//     </div>
-//   );
-// };
-
-// export default VideoForm;
-
-// VideoForm.jsx
-// import React, { useState } from "react";
-// import { useDispatch } from "react-redux";
-// import { addCourseVideo } from "../Redux/CoursesSlice";
-
-// const VideoForm = ({ courseId, sectionId, onClose }) => {
-//   const dispatch = useDispatch();
-//   const [videoTitle, setVideoTitle] = useState("");
-//   const [videoUrl, setVideoUrl] = useState("");
-
-//   const handleVideoChange = (e) => {
-//     const file = e.target.files[0];
-//     setVideoUrl((prevData) =>({
-//       ...prevData,
-//       videoUrl:file,
-//     }))
-//    }
-
-//   const handleAddVideo = () => {
-//     console.log("Adding video...", { sectionId, videoTitle });
-
-//     // Dispatch an action to add the video to the section
-//     dispatch(addCourseVideo({
-//       course_section_id: sectionId,
-//       video_titles: videoTitle,
-//     }));
-//     onClose(); // Close the form/modal
-//   };
-
-//   return (
-//     <div>
-//       <label>
-//         Video Title:
-//         <input type="text" value={videoTitle} onChange={(e) => setVideoTitle(e.target.value)}  className="text-black"/>
-//       </label>
-//       <label>
-//         Video URL:
-//         <input type="file" onChange={handleVideoChange} />
-//       </label>
-//       <button  onClick={handleAddVideo}>Add Video</button>
-//     </div>
-//   );
-// };
-
-// export default VideoForm;
-
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { addCourseVideo } from "../Redux/CoursesSlice";
 
-const VideoForm = ({ sectionId, onClose }) => {
-  const dispatch = useDispatch();
+const VideoForm = ({ sectionId, onChange }) => {
   const [videoTitle, setVideoTitle] = useState("");
   const [videoFile, setVideoFile] = useState(null);
-
-  const handleAddVideo = () => {
-    if (sectionId !== undefined && videoTitle !== "" && videoFile !== null) {
-      const formData = new FormData();
-      formData.append("course_section_id", sectionId);
-      formData.append("video_titles", videoTitle);
-      formData.append("video", videoFile);
-
-      console.log("Request Payload:", {
-        course_section_id: sectionId,
-        video_titles: videoTitle,
-        video: videoFile,
-      });
-
-      // Dispatch an action to add the video to the section
-      dispatch(addCourseVideo(formData));
-      onClose(); // Close the form/modal
-    }
-  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      console.log({ file });
       setVideoFile(file);
+      onChange({ file: file, title: videoTitle });
     }
   };
 
+  const handleVideoTitleChange = (e) => {
+    const title = e.target.value;
+    setVideoTitle(title);
+    onChange({ title: title, file: videoFile });
+  };
+
   return (
-    <div>
-      <label>
+    <div className="flex flex-col flex-wrap gap-3 p-2">
+      <label className=" text-sm text-gray-700 font-bold flex flex-col">
         Video Title:
         <input
           type="text"
           name="videoTitle"
           value={videoTitle}
-          onChange={(e) => setVideoTitle(e.target.value)}
-          className="text-black"
+          onChange={handleVideoTitleChange}
+          className="mt-1 p-2 w-full border rounded-md"
         />
       </label>
-      <label>
+      <label className="font-bold flex flex-col">
         Video File:
-        <input type="file" onChange={handleFileChange} />
+        {videoFile ? (
+          <video
+            src={URL.createObjectURL(videoFile)}
+            width="auto"
+            controls
+            height="240"
+          ></video>
+        ) : (
+          <div className="mt-2">
+            <label className="w-full flex flex-col items-center px-4 py-6 bg-white text-blue-500 rounded-lg shadow-lg tracking-wide uppercase border border-slate-300 cursor-pointer hover:bg-blue-500 hover:text-white">
+              <svg
+                className="w-8 h-8"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+              </svg>
+              <span className="mt-2 text-base leading-normal">
+                Select a file
+              </span>
+              <input
+                type="file"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
+          </div>
+        )}
       </label>
-      <button className="border-2 px-2 rounded-sm" onClick={handleAddVideo}>
-        Add Video
-      </button>
     </div>
   );
 };

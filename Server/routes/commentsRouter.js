@@ -4,7 +4,7 @@ const router = express.Router();
 const verify = require("../middlewares/verify");
 
 router.post(
-  "/addComment/:course_id/",
+  "/addComment",
   verify.authorize,
   commentsController.addComment
 );

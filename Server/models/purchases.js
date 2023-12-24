@@ -88,8 +88,36 @@ const getPurchasedCoursesByUser = async (user_id) => {
   }
 };
 
+const checkPurchase = async (user_id, course_id) => {
+  const query = {
+    text: `
+      SELECT * FROM purchases
+      WHERE user_id = $1 AND $2 = ANY(purchased_courses);
+    `,
+    values: [user_id, course_id],
+  };
+
+  const result = await db.query(query);
+  return result.rows.length > 0;
+};
+
+const getPurchaseInfo = async (user_id, course_id) => {
+  const query = {
+    text: `
+      SELECT * FROM purchases
+      WHERE user_id = $1 AND $2 = ANY(purchased_courses);
+    `,
+    values: [user_id, course_id],
+  };
+
+  const result = await db.query(query);
+  return result.rows[0];
+};
+
 module.exports = {
   createPurchasesTable,
   checkoutAndSavePurchases,
   getPurchasedCoursesByUser,
+  checkPurchase,
+  getPurchaseInfo,
 };

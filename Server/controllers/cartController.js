@@ -3,7 +3,7 @@ const cartModel = require("../models/cart");
 exports.addToCart = async (req, res) => {
   try {
     const user_id = req.user.user_id;
-    const course_id = req.params.course_id;
+    const { course_id } = req.body;
 
     const cartItem = await cartModel.addToCart(user_id, course_id);
 
@@ -19,7 +19,7 @@ exports.addToCart = async (req, res) => {
 
 exports.deleteCartItem = async (req, res) => {
   try {
-    const { order_id } = req.params;
+    const { order_id } = req.body;
 
     const deletedCartItem = await cartModel.deleteCartItem(order_id);
 

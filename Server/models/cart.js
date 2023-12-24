@@ -20,18 +20,44 @@ const createCartTable = async () => {
   }
 };
 
+// const addToCart = async (user_id, course_id) => {
+//   const getTotalAmountQuery = {
+//     text: `
+//       SELECT SUM(course_price) AS total_amount
+//       FROM courses
+//       WHERE course_id = ANY($1::int[]);
+//     `,
+//     values: [course_id],
+//   };
+
+//   const totalAmountResult = await db.query(getTotalAmountQuery);
+//   const total_amount = totalAmountResult.rows[0].total_amount || 0;
+
+//   const insertCartItemQuery = {
+//     text: `
+//       INSERT INTO cart (user_id, course_id, total_amount)
+//       VALUES ($1, $2, $3)
+//       RETURNING *;
+//     `,
+//     values: [user_id, course_id, total_amount],
+//   };
+
+//   const result = await db.query(insertCartItemQuery);
+//   return result.rows[0];
+// };
+
 const addToCart = async (user_id, course_id) => {
   const getTotalAmountQuery = {
     text: `
-      SELECT SUM(course_price) AS total_amount
+      SELECT course_price
       FROM courses
-      WHERE course_id = ANY($1::int[]);
+      WHERE course_id = $1;
     `,
-    values: [[course_id]],
+    values: [course_id],
   };
 
   const totalAmountResult = await db.query(getTotalAmountQuery);
-  const total_amount = totalAmountResult.rows[0].total_amount || 0;
+  const total_amount = totalAmountResult.rows[0].course_price || 0;
 
   const insertCartItemQuery = {
     text: `

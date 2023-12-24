@@ -23,9 +23,18 @@ const videoLinkStorage = multer.diskStorage({
     cb(null, filename);
   },
 });
+// const videoLinkStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "videos");
+//   },
+//   filename: (req, file, cb) => {
+//     const videoId = Date.now();
+//     const extension = path.extname(file.originalname);
+//     cb(null, `${videoId}-${file.originalname}${extension}`);
+//   },
+// });
 
 const uploadImage = multer({ storage: imageStorage });
-// Update to accept an array of video links
 const uploadVideoLinks = multer({ storage: videoLinkStorage }).array(
   "video_links"
 );

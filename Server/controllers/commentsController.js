@@ -1,31 +1,47 @@
-const db = require("../models/index");
-const {
-  addComment,
-  updateComment,
-  deleteComment,
-  getComments,
-} = require("../models/comments");
+const commentsModel = require("../models/comments");
+const purchasesModel = require("../models/purchases");
 
 exports.addComment = async (req, res) => {
   try {
-    const { comment_content, comment_rate } = req.body;
-    const { course_id } = req.params;
-    const { user_id } = req.user.user_id;
+    const { comment_content, comment_rate, course_id } = req.body;
+    const user_id = req.user.user_id;
 
-    const newCommentId = await addComment({
+    if (!course_id) {
+      return res
+        .status(400)
+        .json({ error: "Course ID is required in the request body." });
+    }
+
+    // Check if the user has purchased the course
+    const hasPurchased = await purchasesModel.checkPurchase(user_id, course_id);
+
+    if (!hasPurchased) {
+      return res
+        .status(403)
+        .json({ error: "You haven't purchased this course." });
+    }
+
+    const purchaseInfo = await purchasesModel.getPurchaseInfo(
+      user_id,
+      course_id
+    );
+    const purchase_id = purchaseInfo.purchase_id;
+
+    const commentId = await commentsModel.addComment({
       comment_content,
       comment_rate,
       course_id,
       user_id,
+      purchase_id,
     });
 
     res.status(201).json({
       message: "Comment added successfully",
-      comment_id: newCommentId,
+      comment_id: commentId,
     });
   } catch (error) {
-    console.error("Failed to add the comment: ", error);
-    return res.status(500).json({ error: "Failed to add the comment" });
+    console.error("Failed to add comment: ", error);
+    res.status(500).json({ error: "Failed to add comment" });
   }
 };
 
@@ -34,7 +50,7 @@ exports.updateComment = async (req, res) => {
     const comment_id = req.params.comment_id;
     const { comment_content, comment_rate } = req.body;
 
-    const updatedCommentId = await updateComment({
+    const updatedCommentId = await commentsModel.updateComment({
       comment_id,
       comment_content,
       comment_rate,
@@ -54,7 +70,7 @@ exports.deleteComment = async (req, res) => {
   try {
     const comment_id = req.params.comment_id;
 
-    const deletedCommentId = await deleteComment(comment_id);
+    const deletedCommentId = await commentsModel.deleteComment(comment_id);
 
     res.status(200).json({
       message: "Comment soft-deleted successfully",
@@ -70,7 +86,7 @@ exports.getComments = async (req, res) => {
   try {
     const course_id = req.params.course_id;
 
-    const comments = await getComments(course_id);
+    const comments = await commentsModel.getComments(course_id);
 
     res.status(200).json({
       message: "Comments retrieved successfully",

@@ -5,10 +5,11 @@ const createCommentsTable = async () => {
     CREATE TABLE IF NOT EXISTS comments (
       comment_id SERIAL PRIMARY KEY,
       comment_content TEXT NOT NULL,
-      comment_author VARCHAR(255) NOT NULL,
       comment_rate INTEGER NOT NULL,
+      comment_author VARCHAR(255) NOT NULL,
       course_id INTEGER NOT NULL REFERENCES courses(course_id),
       user_id INTEGER NOT NULL REFERENCES users(user_id),
+      purchase_id INTEGER NOT NULL REFERENCES purchases(purchase_id),
       is_deleted BOOLEAN NOT NULL DEFAULT false
     );
   `;
@@ -27,6 +28,7 @@ const addComment = async ({
   comment_rate,
   course_id,
   user_id,
+  purchase_id,
 }) => {
   const userQuery = "SELECT firstname, lastname FROM users WHERE user_id = $1;";
   const userResult = await db.query(userQuery, [user_id]);
@@ -39,17 +41,18 @@ const addComment = async ({
   const comment_author = `${user.firstname} ${user.lastname}`;
 
   const insertQuery = `
-    INSERT INTO comments (comment_content, comment_author, comment_rate, course_id, user_id)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO comments (comment_content, comment_rate, comment_author, course_id, user_id, purchase_id)
+    VALUES ($1, $2, $3, $4, $5, $6)
     RETURNING comment_id;
   `;
 
   const result = await db.query(insertQuery, [
     comment_content,
-    comment_author,
     comment_rate,
+    comment_author,
     course_id,
     user_id,
+    purchase_id,
   ]);
   return result.rows[0].comment_id;
 };

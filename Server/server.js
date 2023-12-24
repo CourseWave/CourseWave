@@ -25,6 +25,9 @@ const purchasesRoute = require("./routes/purchasesRouter");
 //* liveSessions Router
 const liveSessionsRoute = require("./routes/liveSessionsRouter");
 
+//* Contact Us Router
+const contactUsRoute = require("./routes/contactUsRouter");
+
 app.use(cors());
 app.use(express.json());
 
@@ -35,6 +38,7 @@ app.use(commentsRoute);
 app.use(cartRoute);
 app.use(purchasesRoute);
 app.use(liveSessionsRoute);
+app.use(contactUsRoute);
 
 // Call the initialization function to create tables
 models.initializeModels();

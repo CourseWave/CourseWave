@@ -102,6 +102,19 @@ async function addCourse({
   }
 }
 
+async function updateCourseRate(course_id, averageRate) {
+  const query = {
+    text: `
+      UPDATE courses
+      SET course_rate = $1
+      WHERE course_id = $2;
+    `,
+    values: [averageRate, course_id],
+  };
+
+  await db.query(query);
+}
+
 async function updateCourse({
   course_id,
   course_title,
@@ -338,6 +351,7 @@ async function getTrainerCourses(trainer_id, page, pageSize) {
 module.exports = {
   createCoursesTable,
   addCourse,
+  updateCourseRate,
   updateCourse,
   deleteCourse,
   getCourses,

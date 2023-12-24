@@ -369,7 +369,7 @@ exports.addCourseVideos = async (req, res) => {
       }
       const videoData = videos.map((file, index) => ({
         video_title: video_titles[index],
-        video_link: `/videos/${file.filename}`, // Adjust path based on storage location
+        video_link: `/videos/${file.filename}`,
         course_section_id,
       }));
       console.log({ videoData });
@@ -389,6 +389,50 @@ exports.addCourseVideos = async (req, res) => {
     return res.status(500).json({ error: "Failed to add the course videos" });
   }
 };
+
+// exports.addCourseVideos = async (req, res) => {
+//   try {
+
+//     uploadVideoLinks(req, res, async function (err) {
+//       if (err) {
+//         console.error(err);
+//         return res.status(500).json({ error: "Video upload failed" });
+//       }
+
+//       if (!req.files || req.files.length === 0) {
+//         return res.status(400).json({ error: "No videos uploaded" });
+//       }
+//       const { video_titles, course_section_id } = req.body;
+
+//       if (
+//         !Array.isArray(video_titles) ||
+//         video_titles.length !== req.files.length
+//       ) {
+//         return res.status(400).json({ error: "Invalid video data" });
+//       }
+
+//       const videoData = req.files.map((file, index) => ({
+//         video_title: video_titles[index],
+//         video_link: `/videos/${file.filename}`,
+//         course_section_id,
+//       }));
+
+//       const newSectionVideos = await Promise.all(
+//         videoData.map((videoData) =>
+//           section_videosModel.addSectionVideo(videoData)
+//         )
+//       );
+
+//       res.status(201).json({
+//         message: "Course videos added successfully",
+//         video_ids: newSectionVideos.map((video) => video.video_id),
+//       });
+//     });
+//   } catch (error) {
+//     console.error("Failed to add the course videos:", error);
+//     return res.status(500).json({ error: "Failed to add the course videos" });
+//   }
+// };
 
 exports.updateCourseVideo = async (req, res) => {
   try {

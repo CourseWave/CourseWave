@@ -6,7 +6,7 @@ const createCartTable = async () => {
       order_id SERIAL PRIMARY KEY,
       user_id INTEGER REFERENCES users(user_id),
       course_id INTEGER REFERENCES courses(course_id),
-      amount DOUBLE PRECISION NOT NULL DEFAULT 0,
+      total_amount DOUBLE PRECISION NOT NULL DEFAULT 0,
       is_deleted BOOLEAN NOT NULL DEFAULT false
     );
   `;
@@ -58,6 +58,7 @@ const deleteCartItem = async (order_id) => {
   };
 
   const result = await db.query(query);
+  console.log(order_id);
   return result.rows[0];
 };
 

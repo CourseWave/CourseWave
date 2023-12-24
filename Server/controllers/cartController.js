@@ -22,7 +22,7 @@ exports.deleteCartItem = async (req, res) => {
     const { order_id } = req.params;
 
     const deletedCartItem = await cartModel.deleteCartItem(order_id);
-
+console.log(deletedCartItem);
     res.status(200).json({
       message: "Cart item deleted successfully",
       cartItem: deletedCartItem,

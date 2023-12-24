@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Define initial state
 const initialState = {
   loading: false,
   error: null,
@@ -43,7 +42,6 @@ const checkoutSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    // Handle the result of the checkoutAsync thunk
     builder.addCase(checkoutAsync.pending, (state) => {
       state.loading = true;
       state.error = null;
@@ -57,7 +55,6 @@ const checkoutSlice = createSlice({
       state.error = action.error.message;
     });
 
-    // Handle the result of the getPurchasedCoursesAsync thunk
     builder.addCase(getPurchasedCoursesAsync.pending, (state) => {
       state.loading = true;
       state.error = null;

@@ -1,4 +1,3 @@
-// CategoryPage.jsx
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "../Redux/CategoriesSlice";
@@ -6,23 +5,20 @@ import CourseCard from "../Components/CourseCard";
 import SearchBar from "../Components/SearchBar";
 import { fetchCourses } from "../Redux/CoursesSlice";
 import { useLocation } from "react-router-dom";
-import background from "../Assets/category-bg.mp4"
-
 
 const CategoryPage = () => {
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.Categories.categories);
   const courses = useSelector((state) => state.Courses.Courses);
-  const location = useLocation();  // Use useLocation to get the location object
+  const location = useLocation(); // Use useLocation to get the location object
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [filteredCourses, setFilteredCourses] = useState([]);
 
   const fetchData = () => {
-     dispatch(fetchCategories());
-     dispatch(fetchCourses());
-    
+    dispatch(fetchCategories());
+    dispatch(fetchCourses());
   };
 
   useEffect(() => {
@@ -31,79 +27,85 @@ const CategoryPage = () => {
 
   const handleSearch = (searchTerm) => {
     if (!searchTerm) {
+      setFilteredCourses(courses)
       return;
     }
+
     // Filter courses based on the search term
     const filtered = courses.filter((course) => {
-      const titleIncludesTerm = course.title?.toLowerCase().includes(searchTerm.toLowerCase());
-      const categoryIncludesTerm = course.category?.toLowerCase().includes(searchTerm.toLowerCase());
-  
+      const titleIncludesTerm = course.course_title
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+      const categoryIncludesTerm = course.category
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
       return titleIncludesTerm || categoryIncludesTerm;
       // Add more conditions if needed
     });
-  
+
     setFilteredCourses(filtered);
   };
-  
+
   useEffect(() => {
-    if (location.state && location.state.filteredCourses) {
-      // Use the filteredCourses from location state
-      setFilteredCourses(location.state.filteredCourses);
+    if (location.state?.searchTerm?.length && courses.length) {
+      const searchValue = location.state?.searchTerm;
+      
+      setSearchTerm(searchValue);
+
+      const filteredCourse = courses.filter((e) =>
+        e.course_title.toLowerCase().includes(searchValue.toLowerCase())
+      );
+
+      setFilteredCourses(filteredCourse || courses);
     } else {
       setFilteredCourses(courses);
     }
-  }, [courses, location.state]);
-
-  useEffect(() => {
-    if (!courses.length) return;
-    setFilteredCourses(courses);
-  }, [courses]);
+  }, [courses, location]);
 
   const handleCategoryClick = (categoryType) => {
-    const filtered = courses.filter((course) => course.type === categoryType);
-    setFilteredCourses(categoryType == "All" ? courses : filtered);
-    setSelectedCategory(categoryType);
+    // const filtered = courses.filter((course) => course.type === categoryType);
+    // setFilteredCourses(categoryType === "All" ? courses : filtered);
+    // setSelectedCategory(categoryType);
   };
 
   return (
-    <>
-      <div className="bg-gray-100 ">
-      <video
-        autoPlay
-        loop
-        muted
-        className="w-full h-[35rem] md:h-[45rem] xl:h-[40rem] object-cover"
-      >
-        <source src={background} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-        
-        <div className="bg-cover bg-center h-40 md:h-60 xl:h-96">
-          <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-96">
-            <SearchBar onSearch={handleSearch} />
-          </div>
+    <div className="flex h-full bg-white ">
+      {/* Sidebar */}
+      <div className="bg-gray-900 text-white py-16 md:w-1/4 lg:w-1/5">
+        <div className="px-2">
+          <SearchBar defaultValue={searchTerm} onValueChange={handleSearch} />
         </div>
-        <div className="bg-[#0F2355] text-white py-4 mt-[-11rem] md:mt-[-15rem] xl:mt-[-24rem] rounded-b-3xl">
-          <div className="flex items-center flex-wrap space-x-4 justify-around">
-            <button onClick={() => handleCategoryClick("All")}>
-              Filter: All
+        <div className="py-10 pl-5">
+          <button onClick={() => handleCategoryClick("All")}>
+            Filter: All
+          </button>
+          <h3 className="">Categories</h3>
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => handleCategoryClick(category.type)}
+            >
+              {category.title}
             </button>
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => handleCategoryClick(category.type)}
-              >
-                {category.title}
-              </button>
-            ))}
-          </div>
-        </div>
-        {/* Course Cards Section */}
-        <div className="">
-          <CourseCard courses={filteredCourses} />
+          ))}
         </div>
       </div>
-    </>
+
+   
+      {/* Course Cards Section */}
+      <div className="flex-1 p-8 bg-slate-200 h-[calc(100vh-65px)] overflow-y-auto">
+      {
+        filteredCourses.length === 0 && (<>
+        {
+          <p className="text-center text-3xl">No Result </p>
+        }
+        </>)
+      }
+        <CourseCard courses={filteredCourses} />
+      </div>
+    </div>
   );
 };
 

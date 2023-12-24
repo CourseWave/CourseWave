@@ -16,18 +16,22 @@ const StudentProfile = () => {
   return (
     <div className="flex">
       {/* Sidebar */}
-      <div className="w-[15rem] h-[70rem] dark:bg-gray-900 p-10  shadow-md flex flex-col">
+      <div className="md:w-1/4 lg:w-1/5 h-[70rem] dark:bg-gray-900 p-10  shadow-md flex flex-col">
         {/* Add user image or avatar here if needed */}
-        
+
         <button
-          className={`py-2 mb-2 rounded text-white ${activeTab === "userInfo" ? "bg-blue-300" : ""}`}
+          className={`py-2 mb-2 rounded text-white ${
+            activeTab === "userInfo" ? "bg-blue-300" : ""
+          }`}
           onClick={() => setActiveTab("userInfo")}
         >
           User Info
         </button>
 
         <button
-          className={`py-2 mb-2 rounded text-white ${activeTab === "myLearning" ? "bg-blue-300" : ""}`}
+          className={`py-2 mb-2 rounded text-white ${
+            activeTab === "myLearning" ? "bg-blue-300" : ""
+          }`}
           onClick={() => setActiveTab("myLearning")}
         >
           My Learning

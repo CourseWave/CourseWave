@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import HeroSection from "../Components/HeroSection";
 import StatisticsHome from "../Components/StatisticsHome";
 import LatestCourses from "../Components/LatestCourses";

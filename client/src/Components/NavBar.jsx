@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { emptyStudent } from "../Redux/UsersSlice";
 import { useDispatch } from "react-redux";
@@ -54,14 +54,14 @@ const Navbar = () => {
     <>
       <Link
         to="/LoginPage"
-        className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+        className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-[#00ffc2] md:p-0 dark:text-white md:dark:hover:text-[#00ffc2] dark:hover:text-white md:dark:hover:bg-transparent"
       >
         Login
       </Link>
       <span className="text-white mx-2">|</span>
       <Link
         to="/RegistrationPage"
-        className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+        className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-[#00ffc2] md:p-0 dark:text-white md:dark:hover:text-[#00ffc2] dark:hover:text-white md:dark:hover:bg-transparent"
       >
         Signup
       </Link>
@@ -110,62 +110,109 @@ const Navbar = () => {
           >
             <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
               <li>
-                <Link
+                <NavLink
                   to="/"
-                  className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+                  className="block py-2 px-3 rounded hover:bg-transparent md:border-0 hover:text-[#00ffc2] md:p-0 text-white hover:bg-gray-700"
                   aria-current="page"
                 >
                   Home
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link
+                <NavLink
+                  to="/LiveSessionPage"
+                  className="block py-2 px-3 rounded hover:bg-transparent md:border-0 hover:text-[#00ffc2] md:p-0 text-white hover:bg-gray-700"
+                  aria-current="page"
+                >
+                  Live Sessions
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
                   to="/CategoryPage"
-                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  className="block py-2 px-3 rounded hover:bg-transparent md:border-0 hover:text-[#00ffc2] md:p-0 text-white hover:bg-gray-700"
                   aria-current="page"
                 >
                   Category
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link
+                <NavLink
                   to="/AboutUsPage"
-                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  className="block py-2 px-3 rounded hover:bg-transparent md:border-0 hover:text-[#00ffc2] md:p-0 text-white hover:bg-gray-700"
                 >
                   About Us
-                </Link>
+                </NavLink>
               </li>
 
               <li>
-                <Link
+                <NavLink
                   to="/ContactUsPage"
-                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  className="block py-2 px-3 rounded hover:bg-transparent md:border-0 hover:text-[#00ffc2] md:p-0 text-white hover:bg-gray-700"
                 >
                   Contact Us
-                </Link>
+                </NavLink>
               </li>
 
               {navAfter}
 
-              <Link
-                to={profileType}
-                className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-              >
-                Profile
-              </Link>
-
-              <Link
+              <NavLink
                 to="/CartsPage"
-                className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                className="block py-2 px-3 rounded hover:bg-transparent md:border-0 hover:text-[#00ffc2] md:p-0 text-white hover:bg-gray-700"
               >
-                cart
-              </Link>
-              <Link
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="feather feather-shopping-cart w-6"
+                >
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 1.9 1.61H18a2 2 0 0 0 1.9-1.39L23 6H6" />
+                </svg>
+              </NavLink>
+
+              <NavLink
+                to={profileType}
+                className="block py-2 px-3 rounded hover:bg-transparent md:border-0 hover:text-[#00ffc2] md:p-0 text-white hover:bg-gray-700"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="feather feather-user w-7"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <image
+                    href="imageUrl"
+                    x="2"
+                    y="2"
+                    height="20"
+                    width="20"
+                    clipPath="url(#userClip)"
+                  />
+                  <defs>
+                    <clipPath id="userClip">
+                      <circle cx="12" cy="12" r="9" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </NavLink>
+
+              <NavLink
                 to="/Dashboard"
-                className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                className="block py-2 px-3 rounded hover:bg-transparent md:border-0 hover:text-[#00ffc2] md:p-0 text-white hover:bg-gray-700"
               >
                 Dasboard
-              </Link>
+              </NavLink>
 
               {signIn && (
                 <>

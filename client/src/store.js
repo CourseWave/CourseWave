@@ -4,6 +4,7 @@ import CategoriesSlice from './Redux/CategoriesSlice';
 import { userReducer } from './Redux/UsersSlice';
 import CartSlice from './Redux/CartSlice';
 import CheckoutSlice from './Redux/CheckoutSlice';
+import liveSessionsSlice from './Redux/liveSessionsSlice';
 const store = configureStore({
   reducer: {
     Courses: CoursesSlice,
@@ -11,6 +12,7 @@ const store = configureStore({
     user: userReducer,
     cart: CartSlice,
     checkout: CheckoutSlice,
+    liveSessions: liveSessionsSlice,
   },
 });
 

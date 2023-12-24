@@ -39,6 +39,8 @@ app.use(liveSessionsRoute);
 // Call the initialization function to create tables
 models.initializeModels();
 
+app.use('/videos', express.static('./videos'));
+app.use('/images', express.static('./images'));
 
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);

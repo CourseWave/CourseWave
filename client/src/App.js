@@ -1,6 +1,5 @@
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Footer from "./Components/Footer";
 import Navbar from "./Components/NavBar";
 import RegistrationPage from "./Pages/RegisterPage";
 import Home from "./Pages/Home";
@@ -14,6 +13,9 @@ import TeacherProfile from "./Pages/TeacherProfile";
 import { CartsPage } from "./Pages/CartPage";
 import PaymentPage from "./Pages/PaymentPage";
 import Dashboard from "./Pages/Dashboard";
+import MyLearning from "./Components/MyLearning";
+import CoursePreview from "./Pages/CoursePreview";
+import LiveSessionPage from "./Pages/LiveSessionPage";
 
 function App() {
   return (
@@ -33,6 +35,9 @@ function App() {
           <Route path="CartsPage" element={<CartsPage />} />
           <Route path="Dashboard" element={<Dashboard />} />
           <Route path="PaymentPage" element={<PaymentPage />} />
+          <Route path="MyLearning" element={< MyLearning/>} />
+          <Route path="CoursePreview/:courseId" element={<CoursePreview />} />
+          <Route path="LiveSessionPage" element={<LiveSessionPage />} />
         </Routes>
         {/* <Footer /> */}
       </BrowserRouter>

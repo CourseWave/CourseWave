@@ -184,6 +184,11 @@ export const fetchCourses = () => async (dispatch) => {
   }
 };
 
+export const getCourseById = async (courseId) => {
+  const result = (await axios.get(`http://localhost:5000/getCourse/${courseId}`))
+  return result?.data?.course || {} ;
+}
+
 // Async thunk for creating a new course
 export const createCourse = (courseData) => async (dispatch) => {
   try {
@@ -198,7 +203,7 @@ export const createCourse = (courseData) => async (dispatch) => {
     formData.append("course_length", courseData.course_length);
     formData.append("course_objectives", courseData.objectives);
     formData.append("course_requirements", courseData.requirements);
-    formData.append("course_rate", "1");
+    formData.append("course_rate", "5");
     formData.append("course_tagline", courseData.course_tagline);
 
     console.log("Sending course creation request with data:", courseData);

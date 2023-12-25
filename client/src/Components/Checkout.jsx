@@ -1,15 +1,13 @@
 import React from "react";
-import StripeCheckout from "../Pages/PaymentPage";
+import StripeCheckout from "../Pages/StripeCheckout";
 
 const Checkout = () => {
-
   return (
-    <div className="font-mono text-white text-opacity-70 font-[700] text-opacity-90 h-screen flex justify-center items-center">
-    
-         <div className='bg-white rounded-md p-12 bg-opacity-70'>
-          <StripeCheckout/>
-          </div>  
-        </div>
+    <div className="text-white font-[700] text-opacity-90 h-[calc(100vh-64px)] flex justify-center items-center">
+      <div className="bg-white rounded-md bg-opacity-70">
+        <StripeCheckout />
+      </div>
+    </div>
   );
 };
 

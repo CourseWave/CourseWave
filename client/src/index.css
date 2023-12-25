@@ -28,3 +28,15 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #434e53;
 }
+
+.custom-video {
+    height: 36rem !important;
+}
+.custom-video > video {
+    border-radius: 0.375rem/* 6px */ !important;
+}
+@media (min-width: 1540px){
+    .custom-video {
+        height: 100% !important;
+    }
+}

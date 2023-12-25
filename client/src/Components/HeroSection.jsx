@@ -25,6 +25,7 @@ const HeroSection = () => {
     // Redirect to the category page with the filtered courses
     navigate("/CategoryPage", { state: { searchTerm: searchTerm } });
   };
+
   return (
     <div className="relative bg-gray-900 h-[calc(100vh-120px)] flex items-center justify-center">
       <div className=" ">

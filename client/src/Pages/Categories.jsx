@@ -27,7 +27,7 @@ const CategoryPage = () => {
 
   const handleSearch = (searchTerm) => {
     if (!searchTerm) {
-      setFilteredCourses(courses)
+      setFilteredCourses(courses);
       return;
     }
 
@@ -51,7 +51,7 @@ const CategoryPage = () => {
   useEffect(() => {
     if (location.state?.searchTerm?.length && courses.length) {
       const searchValue = location.state?.searchTerm;
-      
+
       setSearchTerm(searchValue);
 
       const filteredCourse = courses.filter((e) =>
@@ -93,16 +93,11 @@ const CategoryPage = () => {
         </div>
       </div>
 
-   
       {/* Course Cards Section */}
       <div className="flex-1 p-8 bg-slate-200 h-[calc(100vh-65px)] overflow-y-auto">
-      {
-        filteredCourses.length === 0 && (<>
-        {
-          <p className="text-center text-3xl">No Result </p>
-        }
-        </>)
-      }
+        {filteredCourses.length === 0 && (
+          <>{<p className="text-center text-3xl">No Result </p>}</>
+        )}
         <CourseCard courses={filteredCourses} />
       </div>
     </div>

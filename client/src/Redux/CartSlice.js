@@ -101,7 +101,7 @@ export const addToCartAsync = (course_id) => async (dispatch) => {
   try {
     dispatch(addToCartPending());
     const response = await axios.post(
-      `http://localhost:5000/addToCart/${course_id}`
+      `http://localhost:5000/addToCart`, {course_id}
     );
     dispatch(addToCartFulfilled(response.data.cartItem));
   } catch (error) {
@@ -109,20 +109,12 @@ export const addToCartAsync = (course_id) => async (dispatch) => {
   }
 };
 
-// export const removeFromCartAsync = (order_id) => async (dispatch) => {
-//   try {
-//     dispatch(removeFromCartPending());
-//     const response = await axios.put(`http://localhost:5000/deleteCartItem/${order_id}`);
-//     dispatch(removeFromCartFulfilled(response.data.cartItem));
-//   } catch (error) {
-//     dispatch(removeFromCartRejected(error.response.data));
-//   }
-// };
+
 export const removeFromCartAsync = (order_id) => async (dispatch) => {
   try {
     dispatch(removeFromCartPending());
     const response = await axios.put(
-      `http://localhost:5000/deleteCartItem/${order_id}`
+      `http://localhost:5000/deleteCartItem`, {order_id}
     );
     dispatch(removeFromCartFulfilled(response.data.cartItem));
   } catch (error) {

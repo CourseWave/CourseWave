@@ -8,8 +8,14 @@ import {
 } from "../Redux/CoursesSlice";
 import { addToCartAsync } from "../Redux/CartSlice";
 import { fetchStudents, fetchTeachers } from "../Redux/UsersSlice";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 const CourseDetailPage = () => {
+  const toastId = "fetched-nationalities";
+  const navigate = useNavigate();
   const { courseId } = useParams();
   const courses = useSelector((state) => state.Courses.Courses);
   const sections = useSelector((state) => state.Courses.sections);
@@ -22,31 +28,31 @@ const CourseDetailPage = () => {
   const { status: userStatus, error: userError } = useSelector(
     (state) => state.user
   );
+  const [isTeacher, setIsTeacher] = useState(false);
+
+  const user = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!user) return;
+    let token = Cookies.get("userInfo");
+
+    if (!token) return;
+
+    token = JSON.parse(token);
+    if (token.trainer) {
+      setIsTeacher(true);
+    } else {
+      setIsTeacher(false);
+    }
+  }, [user]);
 
   useEffect(() => {
     // Dispatch the actions to fetch students, teachers, and courses
     dispatch(fetchStudents());
     dispatch(fetchTeachers());
   }, [dispatch]);
-
-  const handleAddToCart = async () => {
-    const courseToAdd = courses.find((c) => c.course_id === parseInt(courseId));
-
-    if (courseToAdd) {
-      try {
-        const courseToAddId = courseId;
-        await dispatch(addToCartAsync(courseToAddId));
-        alert("Course added to cart!");
-      } catch (error) {
-        console.error("Failed to add course to cart:", error);
-        alert("Failed to add course to cart");
-      }
-    } else {
-      alert("Course not found.");
-    }
-  };
 
   useEffect(() => {
     const fetchCoursesList = async () => {
@@ -116,6 +122,37 @@ const CourseDetailPage = () => {
     console.log("Section Videos:", sectionVideos); // Add this line to check the state
   };
 
+  const handleAddToCart = async () => {
+    const courseToAdd = courses.find((c) => c.course_id === parseInt(courseId));
+
+    if (courseToAdd) {
+      try {
+        const courseToAddId = courseId;
+        await dispatch(addToCartAsync(courseToAddId));
+        toast.success("Course added to cart!", {
+          position: toast.POSITION.TOP_RIGHT,
+          toastId,
+        });
+      } catch (error) {
+        console.error("Failed to add course to cart:", error);
+        toast.error("Failed to add course to cart", {
+          position: toast.POSITION.TOP_RIGHT,
+          toastId,
+        });
+      }
+    } else {
+      toast.error("Course not found.", {
+        position: toast.POSITION.TOP_RIGHT,
+        toastId,
+      });
+    }
+  };
+
+  const handleEnrollNow = async () => {
+    await handleAddToCart();
+    navigate(`/CartsPage`);
+  };
+
   function getCourseImg(image) {
     return encodeURI(`http://localhost:5000/${image.replace("\\", "/")}`);
   }
@@ -142,12 +179,12 @@ const CourseDetailPage = () => {
           </div>
 
           <div className="m-10 flex flex-col items-center z-10">
-          <h2 className="text-2xl font-bold mb-2 text-white">
+            <h2 className="text-2xl font-bold mb-2 text-white">
               Course Description
             </h2>
             <p className="text-white">{course.course_description}</p>
           </div>
-          
+
           <div className="m-10 flex flex-col items-center z-10">
             <h2 className="text-2xl font-bold mb-2 text-white">
               What You Will Learn
@@ -254,28 +291,30 @@ const CourseDetailPage = () => {
       {/* Sidebar */}
       <div className="flex flex-col p-10  md:w-1/4 lg:w-1/5 bg-gray-900 gap-8 border-t-2 border-gray-600 z-10">
         <div className="flex flex-col p-5 gap-5">
-          <h1 className="text-3xl font-bold text-white">
+          <h2 className="text-3xl font-bold text-white">
             {course.course_title}
-          </h1>
+          </h2>
           <span className="text-white">Rating: {course.course_rating}</span>
           <span className="text-white">Price: ${course.course_price}</span>
         </div>
-
-        <div className="flex justify-center flex-col gap-5">
-          <button
-            className="text-white bg-[#00ffc2] rounded-lg h-10 hover:scale-105 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
-            onClick={handleAddToCart}
-            disabled={userStatus === "failed"}
-          >
-            Add to Cart
-          </button>
-          <button
-            className="text-white bg-[#1e293b] rounded-lg h-10 hover:scale-105 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
-            disabled={userStatus === "failed"}
-          >
-            Enroll Now
-          </button>
-        </div>
+        {!isTeacher && (
+          <div className="flex justify-center flex-col gap-5">
+            <button
+              className="text-white bg-[#00ffc2] rounded-lg h-10 hover:scale-105 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+              onClick={handleAddToCart}
+              disabled={userStatus === "failed"}
+            >
+              Add to Cart
+            </button>
+            <button
+              className="text-white bg-[#1e293b] rounded-lg h-10 hover:scale-105 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+              onClick={handleEnrollNow}
+              disabled={userStatus === "failed"}
+            >
+              Enroll Now
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

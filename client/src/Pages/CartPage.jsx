@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
 import { getCartItemsAsync, removeFromCartAsync } from "../Redux/CartSlice";
+import { useNavigate } from "react-router-dom";
 
 export const CartsPage = () => {
   const cartItems = useSelector((state) => state.cart.cartItems);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const removeCourse = async (order_id) => {
     try {
@@ -18,6 +19,7 @@ export const CartsPage = () => {
   useEffect(() => {
     dispatch(getCartItemsAsync());
   }, [dispatch]);
+
   const calculateTotal = () => {
     return cartItems.reduce(
       (total, course) => total + course.total_amount * (course.quantity || 1),
@@ -25,6 +27,14 @@ export const CartsPage = () => {
     );
   };
 
+  const handleCheckout = (amount) => {
+    if (!amount) {
+      return;
+    }
+
+    // Redirect to the Payment Page  with the amount value
+    navigate("/PaymentPage", { state: { amount } });
+  };
   return (
     <>
       <div className="bg-white pt-20">
@@ -86,11 +96,15 @@ export const CartsPage = () => {
               </div>
             </div>
 
-            <Link to="/PaymentPage" state={{ amount: calculateTotal() }}>
-              <button className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600 hover:scale-105 transition-all">
-                Check out
-              </button>
-            </Link>
+            <button
+              onClick={() => {
+                handleCheckout(calculateTotal());
+              }}
+              disabled={calculateTotal() === 0}
+              className="mt-6 w-full disabled:cursor-not-allowed disabled:bg-opacity-80 rounded-md bg-blue-500 py-1.5 font-medium text-blue-50 hover:bg-blue-600 hover:scale-105 transition-all"
+            >
+              Check out
+            </button>
           </div>
         </div>
       </div>

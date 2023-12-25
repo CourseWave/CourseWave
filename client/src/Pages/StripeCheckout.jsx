@@ -4,21 +4,23 @@ import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "../Components/CheckoutForm";
 import { useLocation } from "react-router-dom";
 
-const stripePromise = loadStripe("pk_test_51OGNBPDlih6GygpiYrOv1hgRK6Y4AwH0RNTYKziZOdqTFmj79FBOZX9hxHQwE9NbJkx81ZSrk8qBuHKjkky68nGq00AwJL4G6X");
+const stripePromise = loadStripe(
+  "pk_test_51OGNBPDlih6GygpiYrOv1hgRK6Y4AwH0RNTYKziZOdqTFmj79FBOZX9hxHQwE9NbJkx81ZSrk8qBuHKjkky68nGq00AwJL4G6X"
+);
 
 export default function StripeCheckout() {
-const location = useLocation();
+  const location = useLocation();
+  const [isReady, setIsReady] = useState(false);
 
   const [clientSecret, setClientSecret] = useState("");
-console.log(location);
   useEffect(() => {
-    if(!location.state.amount){
+    if (!location.state.amount) {
       return;
     }
     fetch("http://localhost:5000/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount: location.state.amount}),
+      body: JSON.stringify({ amount: location.state.amount }),
     })
       .then((res) => {
         if (!res.ok) {
@@ -37,12 +39,23 @@ console.log(location);
   };
 
   return (
-    <div>
+    <>
+      {!isReady && !clientSecret && (
+        <div className="p-5 rounded-md text-black">
+          <p>loading...</p>
+        </div>
+      )}
       {clientSecret && (
         <Elements options={options} stripe={stripePromise}>
-          <CheckoutForm />
+          <div
+            className={`p-5 rounded-md text-black ${
+              isReady ? "shadow-md" : ""
+            }`}
+          >
+            <CheckoutForm isReady={isReady} setIsReady={setIsReady} />
+          </div>
         </Elements>
       )}
-    </div>
+    </>
   );
 }

@@ -7,13 +7,15 @@ import {
 import { useDispatch } from "react-redux";
 import { checkoutAsync } from "../Redux/CheckoutSlice";
 
-function CheckoutForm() {
+function CheckoutForm({ setIsReady, isReady }) {
   const stripe = useStripe();
   const elements = useElements();
 
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
   const dispatch = useDispatch();
+
   useEffect(() => {
     if (!stripe) {
       return;
@@ -64,26 +66,33 @@ function CheckoutForm() {
 
   const handlePaynowClick = async (e) => {
     e.preventDefault();
-        try {
+    try {
       await dispatch(checkoutAsync());
-            setMessage("Payment successful!"); 
+      setMessage("Payment successful!");
     } catch (error) {
-      setMessage("Error processing payment. Please try again."); 
+      setMessage("Error processing payment. Please try again.");
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <p className="text-black mb-4">Complete your payment here!</p>
-      <PaymentElement />
-      <button
-        className="bg-black rounded-xl text-white p-2 mt-6 mb-2"
-        disabled={isLoading || !stripe || !elements}
-        onClick={handlePaynowClick}
-      >
-        {isLoading ? "Loading..." : "Pay now"}
-      </button>
-      {message && <div>{message}</div>}
+      <PaymentElement
+        onReady={(e) => {
+          setIsReady(true);
+        }}
+      />
+      {isReady && (
+        <>
+          <button
+            className="bg-black rounded-xl text-white p-2 mt-6 mb-2"
+            disabled={isLoading || !stripe || !elements}
+            onClick={handlePaynowClick}
+          >
+            {isLoading ? "Loading..." : "Pay now"}
+          </button>
+          {message && <div>{message}</div>}
+        </>
+      )}
     </form>
   );
 }

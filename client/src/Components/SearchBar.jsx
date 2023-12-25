@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 
-const SearchBar = ({ onSearch, defaultValue , onValueChange }) => {
+const SearchBar = ({ onSearch, defaultValue, onValueChange }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -17,10 +17,10 @@ const SearchBar = ({ onSearch, defaultValue , onValueChange }) => {
 
   return (
     <form className="w-full" onSubmit={handleSearch}>
-      <div className="relative text-gray-500">
+      <div className="relative text-gray-500 group">
         <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none ">
           <svg
-            className="w-4 h-4"
+            className="w-4 h-4 group-hover:text-white group-focus:text-white"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -38,16 +38,17 @@ const SearchBar = ({ onSearch, defaultValue , onValueChange }) => {
         <input
           type="search"
           id="default-search"
-          className="block w-full p-4 ps-10 text-sm bg-transparent border-b-2 border-white hover:border-[#00ffc2] focus:border-[#00ffc2] focus:text-[#00ffc2] ring-0 focus-visible:outline-none"
+          className="block w-full p-4 ps-10 text-md bg-transparent border-b-2 border-white hover:border-[#00ffc2] focus:border-[#00ffc2] focus:text-[#fff] ring-0 focus-visible:outline-none"
           placeholder="Search Mockups, Logos..."
           value={searchTerm}
           onChange={(e) => {
-            setSearchTerm(e.target.value)
-            onValueChange(e.target.value)
+            setSearchTerm(e.target.value);
+            onValueChange && onValueChange(e.target.value);
           }}
           required
           autoComplete={"off"}
         />
+    
       </div>
     </form>
   );

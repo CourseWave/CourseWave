@@ -31,10 +31,6 @@ const Courses = () => {
       setCurrentPage(currentPage - 1);
     }
   };
-  const handleCourseClick = (courseId) => {
-    // Navigate to the CourseDetailPage with the course ID
-    navigate(`/CourseDetailPage/${courseId}`);
-  };
 
   return (
     <div className="mx-auto mt-9 bg-[#0f172a] text-white h-auto p-6 pt-0 relative">
@@ -42,7 +38,7 @@ const Courses = () => {
         CHECK OUT THE COURSES
       </h2>
       <div className="flex flex-wrap gap-8 mx-[6rem] mt-8 pb-5 justify-center">
-        <CourseCard courses={currentItems}/>
+        <CourseCard courses={currentItems} />
       </div>
 
       {/* Pagination with central arrows */}

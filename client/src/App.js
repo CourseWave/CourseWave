@@ -11,11 +11,12 @@ import CourseDetailPage from "./Pages/CourseDetailPage";
 import StudentProfile from "./Pages/StudentProfile";
 import TeacherProfile from "./Pages/TeacherProfile";
 import { CartsPage } from "./Pages/CartPage";
-import PaymentPage from "./Pages/PaymentPage";
+import PaymentPage from "./Pages/StripeCheckout";
 import Dashboard from "./Pages/Dashboard";
 import MyLearning from "./Components/MyLearning";
 import CoursePreview from "./Pages/CoursePreview";
 import LiveSessionPage from "./Pages/LiveSessionPage";
+import Checkout from "./Components/Checkout";
 
 function App() {
   return (
@@ -25,23 +26,25 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="RegistrationPage" element={<RegistrationPage />} />
-          <Route path="LoginPage" element={<LoginPage/>} />
-          <Route path="CategoryPage" element={< CategoryPage/>} />
+          <Route path="LoginPage" element={<LoginPage />} />
+          <Route path="CategoryPage" element={<CategoryPage />} />
           <Route path="AboutUsPage" element={<AboutUsPage />} />
           <Route path="ContactUsPage" element={<ContactUsPage />} />
-          <Route path="/CourseDetailPage/:courseId" element={<CourseDetailPage />} />
+          <Route
+            path="/CourseDetailPage/:courseId"
+            element={<CourseDetailPage />}
+          />
           <Route path="StudentProfile" element={<StudentProfile />} />
           <Route path="TeacherProfile" element={<TeacherProfile />} />
           <Route path="CartsPage" element={<CartsPage />} />
           <Route path="Dashboard" element={<Dashboard />} />
-          <Route path="PaymentPage" element={<PaymentPage />} />
-          <Route path="MyLearning" element={< MyLearning/>} />
+          <Route path="PaymentPage" element={<Checkout />} />
+          <Route path="MyLearning" element={<MyLearning />} />
           <Route path="CoursePreview/:courseId" element={<CoursePreview />} />
           <Route path="LiveSessionPage" element={<LiveSessionPage />} />
         </Routes>
         {/* <Footer /> */}
       </BrowserRouter>
-
     </>
   );
 }

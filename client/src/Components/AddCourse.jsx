@@ -1,15 +1,12 @@
 // AddCourse.jsx
 import React, { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  createCourse,
-  addCourseSection,
-} from "../Redux/CoursesSlice";
+import { createCourse, addCourseSection } from "../Redux/CoursesSlice";
 import "react-toastify/dist/ReactToastify.css";
 import { Slide, ToastContainer, toast } from "react-toastify";
 
 const AddCourse = () => {
-  const toastId = "fetched-nationalities";
+  const toastId = "add-course";
   const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(1);
   const courses = useSelector((state) => state.Courses);

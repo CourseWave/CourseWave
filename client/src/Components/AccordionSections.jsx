@@ -35,7 +35,6 @@ const AccordionSections = ({ id }) => {
   };
 
   const handleAddVideoClick = (section) => {
-    console.log("helloo");
     setSelectedSection(section);
 
     if (videosList && videosList[section.course_section_id]) {
@@ -63,11 +62,9 @@ const AccordionSections = ({ id }) => {
   };
 
   const handleSubmitVideo = (section) => {
-    console.log({ section, videosList });
 
     videosList[section.course_section_id].forEach(
       ({ sectionId, videoTitle, videoFile }) => {
-        console.log({ sectionId, videoTitle, videoFile });
         if (
           sectionId !== undefined &&
           videoTitle !== "" &&
@@ -77,13 +74,6 @@ const AccordionSections = ({ id }) => {
           formData.append("course_section_id", sectionId);
           formData.append("video_titles[]", videoTitle);
           formData.append("video_links", videoFile);
-
-          console.log("Request Payload:", {
-            course_section_id: sectionId,
-            video_titles: videoTitle,
-            video: videoFile,
-          });
-
           // Dispatch an action to add the video to the section
           dispatch(addCourseVideos(formData));
         }
@@ -138,9 +128,10 @@ const AccordionSections = ({ id }) => {
               <span>{section.section_name}</span>
               <svg
                 data-accordion-icon
-                className={`w-3 h-3 rotate-180 shrink-0 ${
+                className={`w-3 h-3 shrink-0 rotate-0 ${
                   selectedSection === section ? "rotate-0" : ""
                 }`}
+
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"

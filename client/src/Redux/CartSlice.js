@@ -44,7 +44,6 @@ const CartSlice = createSlice({
       state.status = "loading";
     },
     removeFromCartFulfilled: (state, action) => {
-      console.log(action);
       state.status = "succeeded";
       state.cartItems = state.cartItems.filter(
         (item) => item.order_id !== action.payload.order_id
@@ -59,7 +58,6 @@ const CartSlice = createSlice({
       state.status = "loading";
     },
     getCartItemsFulfilled: (state, action) => {
-      console.log(action.payload);
       state.status = "succeeded";
       state.cartItems = action.payload;
     },

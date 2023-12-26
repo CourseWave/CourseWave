@@ -8,7 +8,10 @@ exports.createCetegory = async (req, res) => {
     );
     res.status(201).json({
       message: "Course catagory created successfully",
-      category_id: newCategoryId,
+      category: {
+        category_id: newCategoryId,
+        category_name: category_name
+      },
     });
   } catch (error) {
     console.error("Failed to create course category: ", error);
@@ -50,7 +53,7 @@ exports.updateCategory = async (req, res) => {
 exports.deleteCategory = async (req, res) => {
   try {
     const { category_id } = req.params;
-    const deletedCategory = await courseCategoriesModel.deleteCatagory(
+    const deletedCategory = await courseCategoriesModel.deleteCategory(
       category_id
     );
     res.status(200).json({

@@ -7,7 +7,6 @@ const VideoForm = ({ sectionId, onChange }) => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      console.log({ file });
       setVideoFile(file);
       onChange({ file: file, title: videoTitle });
     }

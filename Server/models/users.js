@@ -104,6 +104,7 @@ const getUsers = async (page, pageSize) => {
   const query = {
     text: `
       SELECT * FROM users
+      WHERE role_id = 2 AND is_deleted = false
       ORDER BY user_id
     `,
   };

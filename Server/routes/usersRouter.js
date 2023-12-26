@@ -18,30 +18,20 @@ router.put(
 );
 
 router.put(
-  "/deleteUser",
+  "/deleteUser/:user_id",
   verify.authorize,
   role.hasRole(1),
   userController.deleteUser
 );
 router.put(
-  "/deleteTrainer",
+  "/deleteTrainer/:trainer_id",
   verify.authorize,
   role.hasRole(1),
   userController.deleteTrainer
 );
 
-router.get(
-  "/getUsers",
-  verify.authorize,
-  //role.hasRole(3), Can't login as admin
-  userController.getAllUsers
-);
+router.get("/getUsers", verify.authorize, userController.getAllUsers);
 
-router.get(
-  "/getTrainers",
-  verify.authorize,
-  // role.hasRole(3), Can't login as admin
-  userController.getAllTrainers
-);
+router.get("/getTrainers", verify.authorize, userController.getAllTrainers);
 
 module.exports = router;

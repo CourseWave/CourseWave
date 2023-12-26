@@ -30,7 +30,7 @@ const addCourseSection = async (courseId, sections) => {
       text: `
         INSERT INTO course_sections (section_name, course_id)
         VALUES ($1, $2)
-        RETURNING course_section_id;
+        RETURNING *;
       `,
       values: [section, courseId],
     };
@@ -38,7 +38,7 @@ const addCourseSection = async (courseId, sections) => {
 
   try {
     const results = await Promise.all(queries.map((query) => db.query(query)));
-    return results.map((result) => result.rows[0].course_section_id);
+    return results.map((result) => result.rows[0]);
   } catch (error) {
     console.error("Error adding course sections:", error);
     throw error;
@@ -46,30 +46,36 @@ const addCourseSection = async (courseId, sections) => {
 };
 
 // Update course section details
-async function updateCourseSection(course_section_id, sectionData) {
-  const { section_name } = sectionData;
-
-  await db.query({
-    text: "UPDATE course_sections SET section_name = $1 WHERE course_section_id = $2",
+async function updateCourseSection(courseData) {
+  const { course_section_id, section_name } = courseData;
+  const query = {
+    text: `
+    UPDATE course_sections SET section_name = $1 WHERE course_section_id = $2;
+    `,
     values: [section_name, course_section_id],
-  });
+  };
+  const result = await db.query(query);
+  return result.rows[0];
 }
 
 // Soft delete a course section
 async function deleteCourseSection(course_section_id) {
   try {
-    await db.query(
-      "UPDATE course_sections SET is_deleted = true WHERE course_section_id = $1",
-      [course_section_id]
-    );
-
     // Soft delete related videos
     await db.query(
       "UPDATE section_videos SET is_deleted = true WHERE course_section_id = $1",
       [course_section_id]
     );
 
-    return true; // Success
+    const query = {
+      text: `
+      UPDATE course_sections SET is_deleted = true WHERE course_section_id = $1
+      `,
+      values: [course_section_id],
+    };
+
+    const result = await db.query(query);
+    return result.rows[0];
   } catch (error) {
     console.error(
       "Error soft-deleting course section and related videos: ",
@@ -85,7 +91,6 @@ async function getCourseSections(course_id) {
     text: "SELECT * FROM course_sections WHERE course_id = $1 AND is_deleted = false",
     values: [course_id],
   });
-  console.log(result.rows)
   return result.rows;
 }
 

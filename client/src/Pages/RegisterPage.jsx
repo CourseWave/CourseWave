@@ -11,7 +11,7 @@ const RegistrationPage = () => {
 
   return (
     <div className="container mx-auto h-full">
-      <div className="flex justify-center mt-5 mb-0">
+      <div className="flex justify-center mt-5 mb-0 flex-wrap">
         <button
           className={`px-4 py-2 ${
             registrationType === "student"

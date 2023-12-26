@@ -18,7 +18,6 @@ export const fetchStudents = createAsyncThunk(
   "user/fetchStudents",
   async () => {
     const response = await axios.get(" http://localhost:5000/getUsers");
-    console.log(response.data.users);
     return response.data.users;
   }
 );
@@ -28,7 +27,6 @@ export const fetchTeachers = createAsyncThunk(
   "user/fetchTeachers",
   async () => {
     const response = await axios.get("http://localhost:5000/getTrainers");
-    console.log(response.data);
     return response.data.trainers;
   }
 );
@@ -105,7 +103,9 @@ export const updateTrainerAsync = createAsyncThunk(
 export const deleteUserAsync = createAsyncThunk(
   "user/deleteUser",
   async (deleteData) => {
-    const response = await axios.put("/deleteUser", deleteData);
+    const response = await axios.put(
+      `http://localhost:5000/deleteUser/${deleteData}`
+    );
     return response.data;
   }
 );
@@ -114,7 +114,9 @@ export const deleteUserAsync = createAsyncThunk(
 export const deleteTrainerAsync = createAsyncThunk(
   "user/deleteTrainer",
   async (deleteData) => {
-    const response = await axios.put("/deleteTrainer", deleteData);
+    const response = await axios.put(
+      `http://localhost:5000/deleteTrainer/${deleteData}`
+    );
     return response.data;
   }
 );
@@ -194,13 +196,18 @@ const userSlice = createSlice({
         state.status = "succeeded";
         state.user = action.payload;
       })
-      .addCase(deleteUserAsync.fulfilled, (state) => {
+      .addCase(deleteUserAsync.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.user = null; // Reset user data after deletion
+        state.students = state.students.filter(
+          (student) => student.user_id !== parseInt(action.payload.user_id)
+        );
       })
-      .addCase(deleteTrainerAsync.fulfilled, (state) => {
+      .addCase(deleteTrainerAsync.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.user = null; // Reset user data after deletion
+        state.teachers = state.teachers.filter(
+          (teacher) =>
+            teacher.trainer_id !== parseInt(action.payload.trainer_id)
+        );
       })
       .addCase(emptyStudent.fulfilled, (state) => {
         state.status = "succeeded";

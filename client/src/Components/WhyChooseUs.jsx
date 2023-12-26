@@ -8,7 +8,7 @@ const WhyChooseUs = () => {
   }, []);
 
   return (
-    <div className="container mx-auto mt-8">
+    <div className="container mx-auto mt-8 overflow-hidden">
       <h2 className="text-3xl font-bold mb-4 flex justify-center">
         Why Choose Us?
       </h2>
@@ -19,7 +19,9 @@ const WhyChooseUs = () => {
           className="flex mx-10 items-center justify-between md:flex-row flex-col"
         >
           <div className="flex flex-col w-full md:w-1/2">
-            <h2 className="font-bold mt-4 text-2xl">Access For Unlimited Growth</h2>
+            <h2 className="font-bold mt-4 text-2xl">
+              Access For Unlimited Growth
+            </h2>
             <p className="mt-2">
               Unlock endless possibilities with our platform, offering unlimited
               access to a vast array of courses for your personal and

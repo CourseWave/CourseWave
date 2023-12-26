@@ -75,7 +75,7 @@ async function addCourse({
         INSERT INTO courses
         (course_author, course_title, course_description, course_price, course_rate, course_length, course_image, course_objectives, course_requirements, course_tagline, course_category, category_id, trainer_id)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-        RETURNING course_id;
+        RETURNING *;
       `,
       values: [
         course_author,
@@ -95,7 +95,7 @@ async function addCourse({
     };
 
     const result = await db.query(query);
-    return result.rows[0].course_id;
+    return result.rows[0];
   } catch (error) {
     console.error("Failed to add course: ", error);
     throw error;
@@ -125,21 +125,10 @@ async function updateCourse({
   course_tagline,
   course_objectives,
   course_requirements,
+  course_rate,
+  category_id,
 }) {
   try {
-    // Calculate average rating from comments for the course
-    const averageRatingQuery = {
-      text: `
-        SELECT COALESCE(AVG(comment_rate), 0) AS average_rating
-        FROM comments
-        WHERE course_id = $1 AND is_deleted = false;
-      `,
-      values: [course_id],
-    };
-
-    const averageRatingResult = await db.query(averageRatingQuery);
-    const averageRating = averageRatingResult.rows[0].average_rating;
-
     // Update course details including the calculated average rating
     const updateCourseQuery = {
       text: `
@@ -153,7 +142,8 @@ async function updateCourse({
           course_tagline = $7,
           course_objectives = $8,
           course_requirements = $9,
-          course_rate = $10
+          course_rate = $10,
+          category_id = $11
         WHERE course_id = $1
         RETURNING course_id;
       `,
@@ -167,7 +157,8 @@ async function updateCourse({
         course_tagline,
         course_objectives,
         course_requirements,
-        averageRating,
+        course_rate,
+        category_id,
       ],
     };
 

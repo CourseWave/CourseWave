@@ -37,3 +37,19 @@ exports.getPurchasedCoursesByUser = async (req, res) => {
       .json({ error: "Failed to retrieve purchased courses" });
   }
 };
+
+exports.getPurchasedCourses = async (req, res) => {
+  try {
+    const courses = await purchasesModel.getPurchasedCourses();
+
+    res.status(200).json({
+      message: "Purchased courses retrieved successfully",
+      courses,
+    });
+  } catch (error) {
+    console.error("Failed to retrieve purchased courses: ", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to retrieve purchased courses" });
+  }
+};

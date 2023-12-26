@@ -15,7 +15,6 @@ const StudentProfile = () => {
 
   return (
     <div className="flex">
-      {/* Sidebar */}
       <div className="md:w-1/4 lg:w-1/5 h-[70rem] dark:bg-gray-900 p-10  shadow-md flex flex-col">
         {/* Add user image or avatar here if needed */}
 

@@ -6,6 +6,7 @@ const initialState = {
   error: null,
   checkoutResult: null,
   purchasedCourses: [],
+  allPurchasedCourses: []
 };
 
 export const checkoutAsync = createAsyncThunk(
@@ -35,6 +36,21 @@ export const getPurchasedCoursesAsync = createAsyncThunk(
     }
   }
 );
+
+export const getAllPurchasedCoursesAsync = createAsyncThunk(
+  "checkout/getAllPurchasedCoursesAsync",
+  async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/getAllUserCourses"
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  }
+);
+
 
 // Create the Checkout slice
 const checkoutSlice = createSlice({
@@ -67,11 +83,21 @@ const checkoutSlice = createSlice({
       state.loading = false;
       state.error = action.error.message;
     });
+
+    builder.addCase(getAllPurchasedCoursesAsync.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(getAllPurchasedCoursesAsync.fulfilled, (state, action) => {
+      state.loading = false;
+      state.allPurchasedCourses = action.payload.courses;
+    });
+    builder.addCase(getAllPurchasedCoursesAsync.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    });
   },
 });
-
-// Export actions
-// export { checkoutAsync, getPurchasedCoursesAsync };
 
 // Export reducer
 export default checkoutSlice.reducer;

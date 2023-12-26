@@ -52,12 +52,10 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 
   app.post("/create-payment-intent", async (req, res) => {
-    console.log(req);
     if(!req.body.amount){
       return;
     }
     const { amount } = req.body;
-  console.log(req);
     const paymentIntent = await stripe.paymentIntents.create({
 
       amount:3000,
@@ -67,7 +65,6 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
         enabled: true,
       },
     });
-    console.log();
   
     res.send({
       clientSecret: paymentIntent.client_secret,

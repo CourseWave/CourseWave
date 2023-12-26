@@ -13,7 +13,7 @@ router.put(
 );
 
 router.put(
-  "/deleteCatagory/:catagory_id",
+  "/deleteCategory/:category_id",
   courseCategoriesController.deleteCategory
 );
 

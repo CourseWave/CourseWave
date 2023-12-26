@@ -98,7 +98,6 @@ const liveSessionsSlice = createSlice({
       })
       .addCase(createLiveSession.fulfilled, (state, action) => {
         state.status = "succeeded";
-        console.log(action.payload);
         state.liveSessions.push(action.payload.session);
       })
       .addCase(createLiveSession.rejected, (state, action) => {

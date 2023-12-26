@@ -16,7 +16,6 @@ const createCommentsTable = async () => {
 
   try {
     await db.query(query);
-    console.log("Comments table created successfully");
   } catch (error) {
     console.error("Error creating comments table:", error);
     throw error;

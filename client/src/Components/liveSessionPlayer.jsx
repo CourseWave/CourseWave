@@ -8,7 +8,7 @@ import {
 import ReactPlayer from "react-player";
 import Hls from "hls.js";
 
-const LiveSessionPlayer = ({ mode, onSessionStopped, sessionName }) => {
+  const LiveSessionPlayer = ({ mode, onSessionStopped, sessionName }) => {
   if (!mode) return;
   console.log({ sessionName });
   return (
@@ -21,7 +21,7 @@ const LiveSessionPlayer = ({ mode, onSessionStopped, sessionName }) => {
         mode,
       }}
       joinWithoutUserInteraction
-      token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIzODM0ZWExMS1iZTNjLTQ0MGItOWY4ZS00MDE3Nzc5YzE3MmYiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcwMzQzMzMwMiwiZXhwIjoxNzAzNTE5NzAyfQ.BfNwuIFMwSQTbQ51HlLq-zm3I6MP2Eb7SIt1rvbeZv4"
+      token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIzODM0ZWExMS1iZTNjLTQ0MGItOWY4ZS00MDE3Nzc5YzE3MmYiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcwMzU0ODg1NiwiZXhwIjoxNzAzNjM1MjU2fQ.A_8RkfUfi4uPwEQtP1pA55N-BDTa-ML8ronoFdBKaLs"
     >
       {mode === Constants.modes.CONFERENCE ? (
         <SpeakerView onSessionStopped={onSessionStopped} />
@@ -197,7 +197,6 @@ function ViewerView({ onSessionStopped }) {
       mMeetingRef.current.localParticipant.pin();
     },
     onHlsStateChanged: (data) => {
-      console.log(data);
       if (data.status === "HLS_STOPPED") {
         leave();
       }

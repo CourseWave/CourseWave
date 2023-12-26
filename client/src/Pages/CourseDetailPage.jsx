@@ -12,6 +12,8 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { getPurchasedCoursesAsync } from "../Redux/CheckoutSlice";
+import { useGetUserType } from "../hooks/useGetUserType";
 
 const CourseDetailPage = () => {
   const toastId = "fetched-nationalities";
@@ -22,31 +24,33 @@ const CourseDetailPage = () => {
 
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [sectionVideos, setSectionVideos] = useState({});
-
+  const [isAlreadyPurchased, setIsAlreadyPurchased] = useState(false);
   const [course, setCourse] = useState(null);
   const [activeSection, setActiveSection] = useState(null);
   const { status: userStatus, error: userError } = useSelector(
     (state) => state.user
   );
-  const [isTeacher, setIsTeacher] = useState(false);
+  const { userType } = useGetUserType();
 
   const user = useSelector((state) => state.user);
+
+  const purchasedCourses = useSelector(
+    (state) => state.checkout.purchasedCourses
+  );
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!user) return;
-    let token = Cookies.get("userInfo");
+    // Fetch the purchased courses when the component mounts
+    dispatch(getPurchasedCoursesAsync());
+  }, [dispatch]);
 
-    if (!token) return;
-
-    token = JSON.parse(token);
-    if (token.trainer) {
-      setIsTeacher(true);
-    } else {
-      setIsTeacher(false);
-    }
-  }, [user]);
+  useEffect(() => {
+    const myCourses = purchasedCourses.some(
+      (e) => parseInt(e.course_id) === parseInt(courseId)
+    );
+    setIsAlreadyPurchased(myCourses);
+  }, [purchasedCourses, courseId]);
 
   useEffect(() => {
     // Dispatch the actions to fetch students, teachers, and courses
@@ -119,7 +123,6 @@ const CourseDetailPage = () => {
           }));
         });
     }
-    console.log("Section Videos:", sectionVideos); // Add this line to check the state
   };
 
   const handleAddToCart = async () => {
@@ -153,6 +156,10 @@ const CourseDetailPage = () => {
     navigate(`/CartsPage`);
   };
 
+  const handleWatchCourse = () => {
+    navigate(`/CoursePreview/${courseId}`);
+  };
+
   function getCourseImg(image) {
     return encodeURI(`http://localhost:5000/${image.replace("\\", "/")}`);
   }
@@ -160,15 +167,15 @@ const CourseDetailPage = () => {
   return (
     <div className="flex flex-wrap font-[Poppins]">
       {/* Main Content */}
-      <div className="flex flex-col container md:w-3/4 lg:w-4/5 ">
+      <div className="flex flex-col w-full">
         <div
-          className="flex flex-col relative after:fixed after:w-full after:h-[calc(100vh-64px)] after:bg-[#0707078a] h-[calc(100vh-64px)] bg-fixed w-[100%] bg-cover bg-center overflow-y-auto scroll-smooth"
+          className="flex flex-col relative after:fixed after:w-full after:h-[calc(100vh-64px)] after:bg-[#070707b7] h-[calc(100vh-64px)] bg-fixed w-[100%] bg-cover bg-center overflow-y-auto scroll-smooth"
           style={{
             backgroundImage: `url(${getCourseImg(course.course_image)})`,
           }}
         >
-          <div className="text-white z-10 m-auto my-[25%]">
-            <h2 className="text-8xl font-bold first-letter:uppercase border-b">
+          <div className="text-white z-10 m-auto my-[25%] xl:my-[10rem]">
+            <h2 className="text-4xl md:text-6xl lg:text-8xl font-bold first-letter:uppercase border-b">
               {course.course_title}
             </h2>
             <div className="pl-2 flex flex-col gap-2 mt-2">
@@ -176,13 +183,44 @@ const CourseDetailPage = () => {
                 By: {course.course_author}
               </p>
             </div>
+            <div className="pl-2 flex gap-2 mt-8 flex-wrap">
+              {userType === "student" &&
+                (!isAlreadyPurchased ? (
+                  <div className="flex justify-center space-y-4 md:space-y-0 space-x-0 md:space-x-4 w-full flex-wrap">
+                    <button
+                      className="text-white w-full md:w-1/3 px-2 bg-[#00ffc2] rounded-lg h-10 hover:scale-105 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                      onClick={handleAddToCart}
+                      disabled={userStatus === "failed"}
+                    >
+                      Add to Cart
+                    </button>
+                    <button
+                      className="text-white w-full md:w-1/3 px-2 bg-[#1e293b] rounded-lg h-10 hover:scale-105 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                      onClick={handleEnrollNow}
+                      disabled={userStatus === "failed"}
+                    >
+                      Enroll Now
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="text-white w-full px-2 bg-[#00ffc2] rounded-lg h-10 hover:scale-105 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                    onClick={handleWatchCourse}
+                    disabled={userStatus === "failed"}
+                  >
+                    Watch Course
+                  </button>
+                ))}
+            </div>
           </div>
 
           <div className="m-10 flex flex-col items-center z-10">
             <h2 className="text-2xl font-bold mb-2 text-white">
               Course Description
             </h2>
-            <p className="text-white">{course.course_description}</p>
+            <p className="text-white text-center">
+              {course.course_description}
+            </p>
           </div>
 
           <div className="m-10 flex flex-col items-center z-10">
@@ -202,30 +240,27 @@ const CourseDetailPage = () => {
           <div className="m-10 flex flex-col items-center z-10 text-white">
             <h2 className="text-2xl font-bold mb-2">Course Content</h2>
             {sections && (
-              <div className="mb-4 w-[30rem]">
+              <div className="mb-4 w-[15rem] md:w-[20rem] lg:w-[30rem]">
                 {sections.map((section) => (
                   <div
                     key={section.course_section_id}
                     className={`flex flex-col m-3 rounded-lg bg-[#1e293b] font-medium text-gray-500 shadow-lg focus:ring-0 dark:text-black hover:bg-[#314360] ${
-                      activeSection === section.course_section_id
-                        ? "bg-blue-100 "
-                        : ""
+                      activeSection === section.course_section_id ? " " : ""
                     }`}
                   >
                     <button
                       type="button"
-                      className="flex items-center justify-between w-full p-3 font-medium rtl:text-right text-gray-500 rounded-t-xl  dark:border-gray-700 dark:text-gray-400"
+                      className="flex items-center justify-between w-full p-3 font-medium text-gray-500 rounded-t-xl  dark:border-gray-700 dark:text-gray-400"
                       onClick={() => onShowContent(section.course_section_id)}
                     >
                       <span>{section.section_name}</span>
                       <svg
-                        className={`w-3 h-3 rotate-180 shrink-0 ${
+                        className={`w-3 h-3  shrink-0 ${
                           activeSection === section.course_section_id
-                            ? "rotate-180"
-                            : ""
+                            ? "rotate-0"
+                            : "rotate-180"
                         }`}
                         aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 10 6"
                       >
@@ -246,20 +281,15 @@ const CourseDetailPage = () => {
                             {sectionVideos[section.course_section_id].map(
                               (video) => (
                                 <li key={video.video_id}>
-                                  <video width="320" height="240" controls>
-                                    <source
-                                      src={video.video_link}
-                                      type="video/mp4"
-                                    />
-                                    Your browser does not support the video tag.
-                                  </video>
-                                  <p>{video.video_title}</p>
+                                  <p className="text-white">
+                                    {video.video_title}
+                                  </p>
                                 </li>
                               )
                             )}
                           </ul>
                         ) : (
-                          <p>No videos available.</p>
+                          <p className="text-white">No videos available.</p>
                         )}
                       </div>
                     )}
@@ -280,41 +310,9 @@ const CourseDetailPage = () => {
                 ))}
             </ul>
           </div>
-          <div className="m-10 flex justify-center z-10 text-white">
-            <h2 className="text-2xl font-bold mb-2">Student Interaction</h2>
-            {/* Additional sections for student interaction can be added here */}
-          </div>
         </div>
 
         {/* Course Content */}
-      </div>
-      {/* Sidebar */}
-      <div className="flex flex-col p-10  md:w-1/4 lg:w-1/5 bg-gray-900 gap-8 border-t-2 border-gray-600 z-10">
-        <div className="flex flex-col p-5 gap-5">
-          <h2 className="text-3xl font-bold text-white">
-            {course.course_title}
-          </h2>
-          <span className="text-white">Rating: {course.course_rating}</span>
-          <span className="text-white">Price: ${course.course_price}</span>
-        </div>
-        {!isTeacher && (
-          <div className="flex justify-center flex-col gap-5">
-            <button
-              className="text-white bg-[#00ffc2] rounded-lg h-10 hover:scale-105 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
-              onClick={handleAddToCart}
-              disabled={userStatus === "failed"}
-            >
-              Add to Cart
-            </button>
-            <button
-              className="text-white bg-[#1e293b] rounded-lg h-10 hover:scale-105 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
-              onClick={handleEnrollNow}
-              disabled={userStatus === "failed"}
-            >
-              Enroll Now
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

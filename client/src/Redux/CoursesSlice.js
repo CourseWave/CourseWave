@@ -35,8 +35,6 @@ const CoursesSlice = createSlice({
       state.sections = action.payload;
     },
     fetchSectionsRejected: (state, action) => {
-      console.log("BATATATATA");
-      console.log({ action });
       state.status = "failed";
       state.error = action.payload;
     },
@@ -45,40 +43,87 @@ const CoursesSlice = createSlice({
     },
     createCourseFulfilled: (state, action) => {
       state.status = "succeeded";
-      state.Courses.push(action.payload);
+      state.Courses.push(action.payload.course);
     },
     createCourseRejected: (state, action) => {
       state.status = "failed";
       state.error = action.payload;
     },
-
+    createCourseSectionPending: (state) => {
+      state.status = "loading";
+    },
+    createCourseSectionFulfilled: (state, action) => {
+      state.status = "succeeded";
+      action.payload.forEach((e) => {
+        state.sections.push(e);
+      });
+    },
+    createCourseSectionRejected: (state, action) => {
+      state.status = "failed";
+      state.error = action.payload;
+    },
     updateCoursePending: (state) => {
       state.status = "loading";
       state.error = null; // Clear any previous errors when starting the update
     },
+
+    updateCourseSectionPending: (state) => {
+      state.status = "loading";
+      state.error = null; // Clear any previous errors when starting the update
+    },
+    updateCourseSectionFulfilled: (state, action) => {
+      state.status = "succeeded";
+      const index = state.sections.findIndex(
+        (course) =>
+          course.course_section_id === action.payload.course_section_id
+      );
+
+      if (index !== -1) {
+        state.sections[index].section_name = action.payload.section_name; // Update the course in the array
+      }
+    },
     updateCourseFulfilled: (state, action) => {
       state.status = "succeeded";
-      // Assuming that the state.Courses array contains the list of courses
+      const updatedData = {};
+      const courseData = action.payload.courseData;
+      updatedData["course_id"] = action.payload.courseId;
+      updatedData["course_image"] = courseData.image;
+      updatedData["course_title"] = courseData.title;
+      updatedData["course_description"] = courseData.description;
+      updatedData["course_price"] = courseData.price;
+      updatedData["category_id"] = courseData.category_id;
+      updatedData["course_length"] = courseData.course_length;
+      updatedData["course_objectives"] = courseData.objectives;
+      updatedData["course_requirements"] = courseData.requirements;
+      updatedData["course_rate"] = "5";
+      updatedData["course_tagline"] = courseData.course_tagline;
+      updatedData["course_category"] = courseData.course_category;
+
       const index = state.Courses.findIndex(
-        (course) => course.id === action.payload.id
+        (course) => course.course_id === action.payload.courseId
       );
+
       if (index !== -1) {
-        state.Courses[index] = action.payload; // Update the course in the array
+        state.Courses[index] = updatedData; // Update the course in the array
       }
     },
     updateCourseRejected: (state, action) => {
       state.status = "failed";
       state.error = action.payload;
     },
-
+    updateCourseSectionRejected: (state, action) => {
+      state.status = "failed";
+      state.error = action.payload;
+    },
     deleteCoursePending: (state) => {
       state.status = "loading";
       state.error = null;
     },
+
     deleteCourseFulfilled: (state, action) => {
       state.status = "succeeded";
       state.Courses = state.Courses.filter(
-        (course) => course.id !== action.payload
+        (course) => course.course_id !== action.payload
       );
     },
     deleteCourseRejected: (state, action) => {
@@ -86,27 +131,43 @@ const CoursesSlice = createSlice({
       state.error = action.payload;
     },
 
+    deleteCourseSectionPending: (state) => {
+      state.status = "loading";
+      state.error = null;
+    },
+
+    deleteCourseSectionFulfilled: (state, action) => {
+      state.status = "succeeded";
+      state.sections = state.sections.filter(
+        (course) => course.course_section_id !== action.payload
+      );
+    },
+
+    deleteCourseSectionRejected: (state, action) => {
+      state.status = "failed";
+      state.error = action.payload;
+    },
+
     fetchSectionVideosPending: (state) => {
       state.status = "loading"; // Update the status to loading while fetching videos
     },
-    
+
     fetchSectionVideosFulfilled: (state, action) => {
       const { course_section_id, videos } = action.payload;
       const section = state.sections.find(
         (section) => section.id === course_section_id
       );
-    
+
       if (section) {
         section.videos = videos;
         state.status = "succeeded"; // Update the status to succeeded after fetching videos
       }
     },
-    
+
     fetchSectionVideosRejected: (state, action) => {
       state.status = "failed";
       state.error = action.payload; // Store the error message in the state
     },
-    
   },
   extraReducers: (builder) => {
     builder.addCase(fetchSectionsFulfilled, (state, action) => {
@@ -118,7 +179,6 @@ const CoursesSlice = createSlice({
       }
     });
     builder.addCase(fetchSectionsRejected, (state, action) => {
-      console.log({ action });
     });
     builder.addCase(addCourseVideos.pending, (state) => {
       state.status = "loading";
@@ -171,6 +231,15 @@ export const {
   fetchSectionVideosPending,
   fetchSectionVideosFulfilled,
   fetchSectionVideosRejected,
+  updateCourseSectionPending,
+  updateCourseSectionFulfilled,
+  updateCourseSectionRejected,
+  deleteCourseSectionPending,
+  deleteCourseSectionFulfilled,
+  deleteCourseSectionRejected,
+  createCourseSectionFulfilled,
+  createCourseSectionPending,
+  createCourseSectionRejected,
 } = CoursesSlice.actions;
 
 export const fetchCourses = () => async (dispatch) => {
@@ -185,9 +254,9 @@ export const fetchCourses = () => async (dispatch) => {
 };
 
 export const getCourseById = async (courseId) => {
-  const result = (await axios.get(`http://localhost:5000/getCourse/${courseId}`))
-  return result?.data?.course || {} ;
-}
+  const result = await axios.get(`http://localhost:5000/getCourse/${courseId}`);
+  return result?.data?.course || {};
+};
 
 // Async thunk for creating a new course
 export const createCourse = (courseData) => async (dispatch) => {
@@ -199,14 +268,13 @@ export const createCourse = (courseData) => async (dispatch) => {
     formData.append("course_title", courseData.title);
     formData.append("course_description", courseData.description);
     formData.append("course_price", courseData.price);
-    // formData.append("course_catagory", courseData.course_catagory);
+    formData.append("category_id", parseInt(courseData.category_id));
     formData.append("course_length", courseData.course_length);
     formData.append("course_objectives", courseData.objectives);
     formData.append("course_requirements", courseData.requirements);
     formData.append("course_rate", "5");
     formData.append("course_tagline", courseData.course_tagline);
 
-    console.log("Sending course creation request with data:", courseData);
 
     const response = await axios.post(
       "http://localhost:5000/addCourse",
@@ -218,7 +286,6 @@ export const createCourse = (courseData) => async (dispatch) => {
       }
     );
 
-    console.log("Response from createCourse:", response.data);
 
     const newCourse = response.data;
     dispatch(createCourseFulfilled(newCourse));
@@ -229,17 +296,47 @@ export const createCourse = (courseData) => async (dispatch) => {
   }
 };
 
+export const addCourseSection = (sectionData) => async (dispatch) => {
+  try {
+    dispatch(createCourseSectionPending());
+
+    const response = await axios.post(
+      `http://localhost:5000/addCourseSection`,
+      {
+        courseId: sectionData.courseId,
+        sections: sectionData.sections.map((e) => e.title),
+      }
+    );
+    const newCourse = response.data?.newCourseSection;
+    dispatch(createCourseSectionFulfilled(newCourse));
+    return newCourse;
+  } catch (error) {
+    console.error("Error creating course:", error.message);
+    dispatch(createCourseSectionRejected(error.message));
+  }
+};
+
 export const updateCourse =
-  ({ courseId, updatedData }) =>
+  ({ courseId, courseData }) =>
   async (dispatch) => {
     try {
       dispatch(updateCoursePending());
-      const response = await axios.put(
-        `http://localhost:5000/updateCourse/${courseId}`,
-        updatedData
-      );
-      console.log(response);
-      dispatch(updateCourseFulfilled({ courseId, updatedData }));
+      const obj = {};
+      obj["course_title"] = courseData.title;
+      obj["course_description"] = courseData.description;
+      obj["course_price"] = courseData.price;
+      obj["course_category"] = courseData.course_category;
+      obj["category_id"] = parseInt(courseData.category_id);
+      obj["course_length"] = courseData.course_length;
+      obj["course_objectives"] = courseData.objectives;
+      obj["course_requirements"] = courseData.requirements;
+      obj["course_rate"] = "5";
+      obj["course_tagline"] = courseData.course_tagline;
+
+      await axios.put(`http://localhost:5000/updateCourse/${courseId}`, {
+        ...obj,
+      });
+      dispatch(updateCourseFulfilled({ courseId, courseData }));
     } catch (error) {
       dispatch(updateCourseRejected(error.message));
     }
@@ -254,28 +351,6 @@ export const deleteCourse = (courseId) => async (dispatch) => {
     dispatch(deleteCourseRejected(error.message));
   }
 };
-
-export const addCourseSection = createAsyncThunk(
-  "courses/addCourseSection",
-  async (sectionData) => {
-    const formData = new FormData();
-
-    formData.append("courseId", sectionData.courseId);
-    formData.append(
-      "sections",
-      sectionData.sections.map((e) => e.title)
-    );
-    console.table({ formData });
-    const response = await axios.post(
-      `http://localhost:5000/addCourseSection`,
-      {
-        courseId: sectionData.courseId,
-        sections: sectionData.sections.map((e) => e.title),
-      }
-    );
-    return response.data;
-  }
-);
 
 export const fetchSections = (course_id) => async (dispatch) => {
   try {
@@ -292,10 +367,38 @@ export const fetchSections = (course_id) => async (dispatch) => {
   }
 };
 
+export const updateCourseSection =
+  ({ course_section_id, section_name }) =>
+  async (dispatch) => {
+    try {
+      dispatch(updateCourseSectionPending());
+      await axios.put(
+        `http://localhost:5000/updateCourseSection/${course_section_id}`,
+        { section_name }
+      );
+      dispatch(
+        updateCourseSectionFulfilled({ course_section_id, section_name })
+      );
+    } catch (error) {
+      dispatch(updateCourseSectionRejected(error.message));
+    }
+  };
+
+export const deleteCourseSection = (course_section_id) => async (dispatch) => {
+  try {
+    dispatch(deleteCourseSectionPending());
+    await axios.put(
+      `http://localhost:5000/deleteCourseSection/${course_section_id}`
+    );
+    dispatch(deleteCourseSectionFulfilled(course_section_id));
+  } catch (error) {
+    dispatch(deleteCourseSectionRejected(error.message));
+  }
+};
+
 export const addCourseVideos = createAsyncThunk(
   "courses/addCourseVideos",
   async (data) => {
-    console.log(data);
     try {
       const response = await axios.post(
         `http://localhost:5000/addCourseVideos`,
@@ -306,7 +409,6 @@ export const addCourseVideos = createAsyncThunk(
           },
         }
       );
-      console.log(data);
       return response.data;
     } catch (error) {
       throw error;
@@ -324,10 +426,12 @@ export const fetchSectionVideos = createAsyncThunk(
         `http://localhost:5000/getSectionVideos/${course_section_id}`
       );
 
-      dispatch(fetchSectionVideosFulfilled({
-        course_section_id,
-        videos: response.data.videos,
-      }));
+      dispatch(
+        fetchSectionVideosFulfilled({
+          course_section_id,
+          videos: response.data.videos,
+        })
+      );
 
       return response.data;
     } catch (error) {
@@ -337,7 +441,5 @@ export const fetchSectionVideos = createAsyncThunk(
     }
   }
 );
-
-
 
 export default CoursesSlice.reducer;

@@ -13,7 +13,6 @@ async function createContactUsTable() {
 
   try {
     await db.query(query);
-    console.log("Contact us table created successfully");
   } catch (error) {
     console.error("Error creating contact us table:", error);
     throw error;
@@ -35,7 +34,7 @@ const addMessage = async (message_author, author_email, message_content) => {
     const result = await db.query(query);
     return result.rows[0].message_id;
   } catch (error) {
-    console.log(error)
+    console.log(error);
     console.error("Failed to add message: ", error);
     throw error;
   }

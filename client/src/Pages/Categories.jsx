@@ -5,16 +5,22 @@ import CourseCard from "../Components/CourseCard";
 import SearchBar from "../Components/SearchBar";
 import { fetchCourses } from "../Redux/CoursesSlice";
 import { useLocation } from "react-router-dom";
+import { useClickAway } from "@uidotdev/usehooks";
 
 const CategoryPage = () => {
   const dispatch = useDispatch();
-  const categories = useSelector((state) => state.Categories.categories);
   const courses = useSelector((state) => state.Courses.Courses);
-  const location = useLocation(); // Use useLocation to get the location object
+  const location = useLocation();
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [sortBy, setSortBy] = useState("name");
+
   const [filteredCourses, setFilteredCourses] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const ref = useClickAway(() => {
+    setIsDropdownOpen(false);
+  });
 
   const fetchData = () => {
     dispatch(fetchCategories());
@@ -37,7 +43,7 @@ const CategoryPage = () => {
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase());
 
-      const categoryIncludesTerm = course.category
+      const categoryIncludesTerm = course.course_category
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase());
 
@@ -54,8 +60,10 @@ const CategoryPage = () => {
 
       setSearchTerm(searchValue);
 
-      const filteredCourse = courses.filter((e) =>
-        e.course_title.toLowerCase().includes(searchValue.toLowerCase())
+      const filteredCourse = courses.filter(
+        (e) =>
+          e.course_title.toLowerCase().includes(searchValue.toLowerCase()) ||
+          e.course_category.toLowerCase().includes(searchValue.toLowerCase())
       );
 
       setFilteredCourses(filteredCourse || courses);
@@ -64,41 +72,136 @@ const CategoryPage = () => {
     }
   }, [courses, location]);
 
-  const handleCategoryClick = (categoryType) => {
-    // const filtered = courses.filter((course) => course.type === categoryType);
-    // setFilteredCourses(categoryType === "All" ? courses : filtered);
-    // setSelectedCategory(categoryType);
-  };
-
   return (
-    <div className="flex h-full bg-white ">
-      {/* Sidebar */}
-      <div className="bg-gray-900 text-white py-16 md:w-1/4 lg:w-1/5">
-        <div className="px-2">
-          <SearchBar defaultValue={searchTerm} onValueChange={handleSearch} />
-        </div>
-        <div className="py-10 pl-5">
-          <button onClick={() => handleCategoryClick("All")}>
-            Filter: All
-          </button>
-          <h3 className="">Categories</h3>
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => handleCategoryClick(category.type)}
-            >
-              {category.title}
-            </button>
-          ))}
-        </div>
-      </div>
+    <div>
+      <div className="h-full bg-slate-200">
+        <div className="flex-1 xl:p-10">
+          <div className="px-10">
+            <div className="flex gap-4 items-center flex-wrap">
+              <div className="flex flex-1">
+                <SearchBar
+                  defaultValue={searchTerm}
+                  onValueChange={handleSearch}
+                />
+              </div>
+              <div className="relative mt-6" ref={ref}>
+                <button
+                  className="text-black bg-gray-100 hover:bg-gray-200 focus:ring-0 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
+                  type="button"
+                  onClick={() => {
+                    setIsDropdownOpen((prev) => !prev);
+                  }}
+                >
+                  Sort By
+                  <svg
+                    className="w-2.5 h-2.5 ms-3"
+                    aria-hidden="true"
+                    fill="none"
+                    viewBox="0 0 10 6"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="m1 1 4 4 4-4"
+                    />
+                  </svg>
+                </button>
 
-      {/* Course Cards Section */}
-      <div className="flex-1 p-8 bg-slate-200 h-[calc(100vh-65px)] overflow-y-auto">
-        {filteredCourses.length === 0 && (
-          <>{<p className="text-center text-3xl">No Result </p>}</>
-        )}
-        <CourseCard courses={filteredCourses} />
+                <div
+                  id="dropdown"
+                  className={`z-10 bg-white right-0 absolute divide-y divide-gray-100 rounded-lg shadow w-44 ${
+                    isDropdownOpen ? "block" : "hidden"
+                  }`}
+                >
+                  <ul
+                    className="py-2 text-sm text-gray-700"
+                    aria-labelledby="dropdownDefaultButton"
+                  >
+                    <li>
+                      <button
+                        href="#"
+                        className={`block px-4 py-2 hover:bg-gray-100 w-full ${
+                          sortBy === "name" ? "text-blue-400" : ""
+                        }`}
+                        onClick={() => {
+                          setSortBy("name");
+                          setFilteredCourses(
+                            courses
+                              .filter((e) => !!e)
+                              .sort((a, b) =>
+                                a.course_title.localeCompare(b.course_title)
+                              )
+                          );
+                        }}
+                      >
+                        Name
+                      </button>
+                    </li>
+
+                    <li>
+                      <button
+                        href="#"
+                        className={`block px-4 py-2 hover:bg-gray-100 w-full ${
+                          sortBy === "category" ? "text-blue-400" : ""
+                        }`}
+                        onClick={() => {
+                          setSortBy("category");
+                          setFilteredCourses(
+                            filteredCourses
+                              .filter((e) => !!e)
+                              .sort((a, b) =>
+                                a.course_category.localeCompare(
+                                  b.course_category
+                                )
+                              )
+                          );
+                        }}
+                      >
+                        Category Name
+                      </button>
+                    </li>
+
+                    <li>
+                      <button
+                        href="#"
+                        className={`block px-4 py-2 hover:bg-gray-100 w-full ${
+                          sortBy === "teacher" ? "text-blue-400" : ""
+                        }`}
+                        onClick={() => {
+                          setSortBy("teacher");
+                          setFilteredCourses(
+                            filteredCourses
+                              .filter((e) => !!e)
+                              .sort((a, b) =>
+                                a.course_author.localeCompare(b.course_author)
+                              )
+                          );
+                        }}
+                      >
+                        Teacher Name
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {filteredCourses.length === 0 && (
+              <>
+                {<p className="text-center text-2xl mt-10">No Result Found </p>}
+              </>
+            )}
+            <div className="mt-10 xl:px-20 overflow-y-auto">
+              <CourseCard
+                courses={filteredCourses
+                  .filter((e) => !!e)
+                  .sort((a, b) => a.course_title.localeCompare(b.course_title))}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

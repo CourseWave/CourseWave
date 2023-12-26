@@ -6,6 +6,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { useDispatch } from "react-redux";
 import { checkoutAsync } from "../Redux/CheckoutSlice";
+import { useNavigate } from "react-router-dom";
 
 function CheckoutForm({ setIsReady, isReady }) {
   const stripe = useStripe();
@@ -15,6 +16,7 @@ function CheckoutForm({ setIsReady, isReady }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!stripe) {
@@ -69,6 +71,7 @@ function CheckoutForm({ setIsReady, isReady }) {
     try {
       await dispatch(checkoutAsync());
       setMessage("Payment successful!");
+      navigate(`/MyLearning`);
     } catch (error) {
       setMessage("Error processing payment. Please try again.");
     }

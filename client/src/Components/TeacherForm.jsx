@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { signupTrainerAsync } from "../Redux/UsersSlice";
 import { useDispatch } from "react-redux";
 import ForTeacherForm from "../Assets/ForTeacherForm.png";
+import { useNavigate } from "react-router-dom";
 
 const TeacherForm = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const TeacherForm = () => {
   });
   const dispatch = useDispatch();
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,7 +55,7 @@ const TeacherForm = () => {
 
     if (!passwordRegex.test(formData.password.trim())) {
       newErrors.password =
-        "Password is required and must meet the specified criteria";
+        "At least one lowercase letter, uppercase letter, digit,  special characters and Length between 6 and 30 characters";
       isValid = false;
     }
 
@@ -90,17 +92,18 @@ const TeacherForm = () => {
         field: "",
       });
       setErrors({});
+      navigate(`/Login`);
     }
   };
 
   return (
-    <div className="flex m-2 ">
-      <div className="w-1/2 flex justify-center items-center">
+    <div className="flex m-2">
+      <div className="lg:w-1/2 w-full flex justify-center items-center">
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-4 text-center">
             Create your teacher account
           </h2>
-          <form className="flex flex-col w-96">
+          <form className="flex flex-col">
             <div className="flex gap-2 mb-4">
               <div className="flex-1">
                 <label
@@ -120,9 +123,7 @@ const TeacherForm = () => {
                   } rounded-md px-3 py-2 w-full`}
                 />
                 {errors.firstname && (
-                  <p className="text-red-500 text-sm mt-2">
-                    {errors.firstname}
-                  </p>
+                  <p className="text-red-500 text-sm">{errors.firstname}</p>
                 )}
               </div>
               <div className="flex-1">
@@ -143,13 +144,11 @@ const TeacherForm = () => {
                   } rounded-md px-3 py-2 w-full`}
                 />
                 {errors.lastname && (
-                  <p className="text-red-500 text-sm mt-2">
-                    {errors.lastname}
-                  </p>
+                  <p className="text-red-500 text-sm">{errors.lastname}</p>
                 )}
               </div>
             </div>
-            <div className="mb-4">
+            <div className="">
               <label
                 htmlFor="email"
                 className="block text-gray-700 font-bold mb-2"
@@ -167,11 +166,11 @@ const TeacherForm = () => {
                 } rounded w-full py-2 px-3`}
               />
               {errors.email && (
-                <p className="text-red-500 text-sm mt-2">{errors.email}</p>
+                <p className="text-red-500 text-sm">{errors.email}</p>
               )}
             </div>
 
-            <div className="flex gap-2 mb-4">
+            <div className="flex gap-2 mt-2">
               <div className="flex-1">
                 <label
                   htmlFor="password"
@@ -190,9 +189,7 @@ const TeacherForm = () => {
                   } rounded w-full py-2 px-3`}
                 />
                 {errors.password && (
-                  <p className="text-red-500 text-sm mt-2">
-                    {errors.password}
-                  </p>
+                  <p className="text-red-500 text-sm">{errors.password}</p>
                 )}
               </div>
               <div className="flex-1">
@@ -215,36 +212,38 @@ const TeacherForm = () => {
                   } rounded w-full py-2 px-3`}
                 />
                 {errors.confirm_password && (
-                  <p className="text-red-500 text-sm mt-2">
+                  <p className="text-red-500 text-sm">
                     {errors.confirm_password}
                   </p>
                 )}
               </div>
             </div>
 
-            <label
-              htmlFor="degree"
-              className="text-gray-700 text-sm font-bold mb-2"
-            >
-              Degree
-            </label>
-            <input
-              type="text"
-              id="degree"
-              name="degree"
-              value={formData.degree}
-              onChange={handleChange}
-              className={`border ${
-                errors.degree ? "border-red-500" : "border-gray-300"
-              } rounded-md px-3 py-2 mb-4`}
-            />
-            {errors.degree && (
-              <p className="text-red-500 text-sm mt-2">{errors.degree}</p>
-            )}
+            <div>
+              <label
+                htmlFor="degree"
+                className="block text-gray-700 font-bold my-2"
+              >
+                Degree
+              </label>
+              <input
+                type="text"
+                id="degree"
+                name="degree"
+                value={formData.degree}
+                onChange={handleChange}
+                className={`border ${
+                  errors.degree ? "border-red-500" : "border-gray-300"
+                } rounded-md px-3 py-2 w-full`}
+              />
+              {errors.degree && (
+                <p className="text-red-500 text-sm">{errors.degree}</p>
+              )}
+            </div>
 
             <label
               htmlFor="field"
-              className="text-gray-700 text-sm font-bold mb-2"
+              className="text-gray-700 text-sm font-bold my-2"
             >
               Field of Profession
             </label>
@@ -256,15 +255,15 @@ const TeacherForm = () => {
               onChange={handleChange}
               className={`border ${
                 errors.field ? "border-red-500" : "border-gray-300"
-              } rounded-md px-3 py-2 mb-4`}
+              } rounded-md px-3 py-2`}
             />
             {errors.field && (
-              <p className="text-red-500 text-sm mt-2">{errors.field}</p>
+              <p className="text-red-500 text-sm">{errors.field}</p>
             )}
 
             <button
               type="button"
-              className="bg-indigo-700 hover:bg-indigo-500 text-white px-4 py-2 rounded-md"
+              className="bg-indigo-700 hover:bg-indigo-500 text-white px-4 py-2 rounded-md mt-2"
               onClick={handleSubmit}
             >
               Register
@@ -272,7 +271,7 @@ const TeacherForm = () => {
           </form>
         </div>
       </div>
-      <div className="w-1/2 flex items-center">
+      <div className="lg:w-1/2 w-full hidden md:flex items-center">
         <img src={ForTeacherForm} alt="Teacher Form" />
       </div>
     </div>

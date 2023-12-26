@@ -34,7 +34,6 @@ const LiveSessionPage = () => {
     let token = Cookies.get("userInfo");
     if (!token) return;
     token = JSON.parse(token);
-    console.log({ token });
     if (token.trainer) {
       setIsTeacher(true);
       setTeacherObject(token.trainer);

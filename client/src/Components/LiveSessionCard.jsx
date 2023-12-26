@@ -17,7 +17,7 @@ const LiveSessionCard = ({
       (course) => course.trainer_id === trainer_id
     );
 
-    return courseAuth?.course_author || 'Unknown';
+    return courseAuth?.course_author || "Unknown";
   }
 
   const formatDate = (date) => {
@@ -26,15 +26,15 @@ const LiveSessionCard = ({
 
   return (
     <>
-      <div className="p-4 group text-white flex w-[200px] basis-1/3 h-[200px] justify-between cursor-pointer transition-all hover:scale-105">
-        <div className="border rounded-lg rounded-tr-none rounded-br-none font-[Poppins]  bg-white group-hover:blur-[1.2px] group-hover:bg-white group-hover:brightness-75 text-black  flex flex-col justify-center text-center items-center p-2 border-r w-1/3">
+      <div className="p-4 group text-white flex min-w-[200px] md:basis-1/2 xl:w-[200px] xl:basis-1/3 h-[200px] justify-between cursor-pointer transition-all hover:scale-105">
+        <div className="basis-1/2 w-[120px] border rounded-lg rounded-tr-none rounded-br-none font-[Poppins] bg-white group-hover:blur-[1.2px] group-hover:bg-white group-hover:brightness-75 text-black  flex flex-col justify-center text-center items-center p-2 border-r">
           <p className="text-2xl font-bold">{session_title}</p>
           <p className="text-sm mt-2">
             by {courseAuthor ? courseAuthor : getTeacherName()}
           </p>
         </div>
 
-        <div className="flex border border-l-0 flex-col p-4 justify-between bg-[#1e293b] rounded-lg group-hover:blur-[1.2px] rounded-tl-none rounded-bl-none  w-2/3">
+        <div className="flex flex-wrap basis-1/2 w-[180px] border border-l-0 flex-col p-4 justify-between bg-[#1e293b] rounded-lg group-hover:blur-[1.2px] rounded-tl-none rounded-bl-none">
           <div className="border-b h-1/2">
             <p className="font-bold">Date</p>
             <p>{formatDate(session_date)}</p>

@@ -18,7 +18,6 @@ const ContactUsPage = () => {
         message,
       });
 
-      console.log("Form submitted successfully:", response.data);
       // Add any additional logic or UI changes upon successful submission
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -28,15 +27,13 @@ const ContactUsPage = () => {
 
   return (
     <div className=" mx-auto mb-5">
-      <div className="bg-gray-800 h-[35rem] text-white flex flex-col">
+      <div className="bg-gray-800 h-[30rem] text-white flex flex-col">
         <div className="flex justify-center flex-col lg:px-40 mx-5 mt-36">
-          <h1 className="text-4xl lg:text-9xl flex w-full lg:w-48 text-[#00ffc2]">
-            Contact Us
-          </h1>
+          <h1 className="text-7xl md:text-8xl flex w-48 text-[#00ffc2]">Contact Us</h1>
           <img
             src={ContactUs}
             alt="img"
-            className="hidden lg:block lg:absolute lg:h-[30rem] lg:w-[35rem] right-[6rem] top-36 lg:top-[12rem]"
+            className="hidden lg:w-80 md:w-72 md:h-72 lg:h-80 lg:top-[10rem] md:block md:absolute xl:h-[30rem] xl:w-[35rem] lg:right-[6rem] md:right-[2rem]  xl:top-[7rem]"
           />
         </div>
       </div>

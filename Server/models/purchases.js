@@ -88,6 +88,22 @@ const getPurchasedCoursesByUser = async (user_id) => {
   }
 };
 
+const getPurchasedCourses = async () => {
+  try {
+    const query = {
+      text: `
+        SELECT * FROM purchases
+      `,
+    };
+
+    const result = await db.query(query);
+    return result.rows;
+  } catch (error) {
+    console.error("Error retrieving purchased courses: ", error);
+    throw error;
+  }
+};
+
 const checkPurchase = async (user_id, course_id) => {
   const query = {
     text: `
@@ -120,4 +136,5 @@ module.exports = {
   getPurchasedCoursesByUser,
   checkPurchase,
   getPurchaseInfo,
+  getPurchasedCourses
 };

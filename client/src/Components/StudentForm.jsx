@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { signupUserAsync } from "../Redux/UsersSlice";
 import { useDispatch } from "react-redux";
-import ForStudentForm from "../Assets/ForStudentForm.png"
+import ForStudentForm from "../Assets/ForStudentForm.png";
+import { useNavigate } from "react-router-dom";
 
 const StudentForm = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const StudentForm = () => {
   });
   const dispatch = useDispatch();
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,7 +53,11 @@ const StudentForm = () => {
 
     if (!passwordRegex.test(formData.password.trim())) {
       newErrors.password =
-        "Password is required and must meet the specified criteria";
+        "At least one lowercase letter, uppercase letter, digit,  special characters and Length between 6 and 30 characters";
+      isValid = false;
+    }
+    if (formData.password !== formData.confirm_password) {
+      newErrors.confirm_password = "Passwords do not match";
       isValid = false;
     }
 
@@ -72,23 +78,21 @@ const StudentForm = () => {
         confirm_password: "",
       });
       setErrors({});
+      navigate(`/Login`);
     }
   };
 
   return (
     <div className="flex m-2">
-      <div className="w-1/2 flex items-center">
-        <img
-          src={ForStudentForm}
-          alt="img"
-        />
+      <div className="lg:w-1/2 w-full items-center hidden md:flex">
+        <img src={ForStudentForm} alt="img" />
       </div>
-      <div className="w-1/2 flex justify-center items-center">
+      <div className="lg:w-1/2 w-full flex justify-center items-center">
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-4 text-center">
             Create your account
           </h2>
-          <form className="flex flex-col w-96">
+          <form className="flex flex-col">
             <label
               htmlFor="firstname"
               className="text-gray-700 text-sm font-bold mb-2"
@@ -103,15 +107,15 @@ const StudentForm = () => {
               onChange={handleChange}
               className={`border ${
                 errors.firstname ? "border-red-500" : "border-gray-300"
-              } rounded-md px-3 py-2 mb-4`}
+              } rounded-md px-3 py-2`}
             />
             {errors.firstname && (
-              <p className="text-red-500 text-sm mt-2">{errors.firstname}</p>
+              <p className="text-red-500 text-sm">{errors.firstname}</p>
             )}
 
             <label
               htmlFor="lastname"
-              className="text-gray-700 text-sm font-bold mb-2"
+              className="text-gray-700 text-sm font-bold my-2"
             >
               Last Name
             </label>
@@ -123,15 +127,15 @@ const StudentForm = () => {
               onChange={handleChange}
               className={`border ${
                 errors.lastname ? "border-red-500" : "border-gray-300"
-              } rounded-md px-3 py-2 mb-4`}
+              } rounded-md px-3 py-2`}
             />
             {errors.lastname && (
-              <p className="text-red-500 text-sm mt-2">{errors.lastname}</p>
+              <p className="text-red-500 text-sm">{errors.lastname}</p>
             )}
 
             <label
               htmlFor="email"
-              className="text-gray-700 text-sm font-bold mb-2"
+              className="text-gray-700 text-sm font-bold my-2"
             >
               Email
             </label>
@@ -143,15 +147,15 @@ const StudentForm = () => {
               onChange={handleChange}
               className={`border ${
                 errors.email ? "border-red-500" : "border-gray-300"
-              } rounded-md px-3 py-2 mb-4`}
+              } rounded-md px-3 py-2`}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-2">{errors.email}</p>
+              <p className="text-red-500 text-sm">{errors.email}</p>
             )}
 
             <label
               htmlFor="password"
-              className="text-gray-700 text-sm font-bold mb-2"
+              className="text-gray-700 text-sm font-bold my-2"
             >
               Password
             </label>
@@ -163,15 +167,15 @@ const StudentForm = () => {
               onChange={handleChange}
               className={`border ${
                 errors.password ? "border-red-500" : "border-gray-300"
-              } rounded-md px-3 py-2 mb-4`}
+              } rounded-md px-3 py-2`}
             />
             {errors.password && (
-              <p className="text-red-500 text-sm mt-2">{errors.password}</p>
+              <p className="text-red-500 text-sm mb-2">{errors.password}</p>
             )}
             <div className="mb-4">
               <label
                 htmlFor="confirm_password"
-                className="block text-gray-700 font-bold mb-2"
+                className="block text-gray-700 font-bold my-2"
               >
                 Confirm Password
               </label>
@@ -186,7 +190,7 @@ const StudentForm = () => {
                 } rounded w-full py-2 px-3`}
               />
               {errors.confirm_password && (
-                <p className="text-red-500 text-sm mt-2">
+                <p className="text-red-500 text-sm">
                   {errors.confirm_password}
                 </p>
               )}

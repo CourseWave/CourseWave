@@ -1,16 +1,19 @@
-// AddCourse.jsx
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createCourse, addCourseSection } from "../Redux/CoursesSlice";
+import {
+  createCourse,
+  addCourseSection,
+  updateCourse,
+} from "../Redux/CoursesSlice";
 import "react-toastify/dist/ReactToastify.css";
-import { Slide, ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
+import { fetchCategories } from "../Redux/CategoriesSlice";
 
-const AddCourse = () => {
+const AddCourse = ({ courseObject, onSubmit }) => {
   const toastId = "add-course";
   const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(1);
-  const courses = useSelector((state) => state.Courses);
-
+  const categories = useSelector((state) => state.Categories.categories);
   const [sectionData, setSectionData] = useState({
     sections: [
       {
@@ -18,21 +21,68 @@ const AddCourse = () => {
       },
     ],
   });
-
   const [courseData, setCourseData] = useState({
     title: "",
     course_tagline: "",
-    // course_catagory: "",
+    category_id: 0,
     objectives: [],
     requirements: [],
     description: "",
     price: 0,
-    // videos: [],
     course_length: 0,
     image: null,
   });
-  const [createdCourseId, setCreatedCourseId] = useState(null); // State to store created course id
   const [loading, setLoading] = useState(false); // State to track loading state
+
+  const fetchData = () => {
+    dispatch(fetchCategories());
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (!courseObject || !Object.keys(courseObject).length) return;
+
+    setCourseData({
+      title: courseObject.course_title,
+      course_tagline: courseObject.course_tagline,
+      category_id: courseObject.category_id,
+      objectives: courseObject.course_objectives,
+      requirements: courseObject.course_requirements,
+      description: courseObject.course_description,
+      price: courseObject.course_price,
+      course_length: courseObject.course_length,
+      image: courseObject.image_url?.replace("\\", "/"),
+    });
+    const sectionsObj = courseObject.sections.map((e) => ({
+      title: e.section_name,
+    }));
+    setSectionData({ sections: [...sectionsObj] });
+  }, [courseObject]);
+
+  const resetForm = () => {
+    setCourseData({
+      title: "",
+      course_tagline: "",
+      category_id: 0,
+      objectives: [],
+      requirements: [],
+      description: "",
+      price: 0,
+      course_length: 0,
+      image: null,
+    });
+    setSectionData({
+      sections: [
+        {
+          title: "",
+        },
+      ],
+    });
+    setCurrentStep(1);
+  };
 
   const handleChange = (e, index, field) => {
     const { value } = e.target;
@@ -125,7 +175,7 @@ const AddCourse = () => {
     let isValid = false;
 
     const requiredFields = [
-      // "course_catagory",
+      "category_id",
       "title",
       "course_tagline",
       "image",
@@ -154,21 +204,38 @@ const AddCourse = () => {
     const isFormValid = validateFields();
     if (!isFormValid) return;
 
-    if (currentStep === 1) {
+    if (!courseObject?.course_title && currentStep === 1) {
       setCurrentStep(2);
       return;
     }
 
     try {
       setLoading(true);
-      console.log("Dispatching createCourse action with data:", courseData);
+
+      if (courseObject?.course_title) {
+        const dataToSave = { ...courseData };
+        dataToSave["course_category"] = categories.find(
+          (e) => e.category_id === parseInt(courseData.category_id)
+        ).category_name;
+
+        await dispatch(
+          updateCourse({
+            courseId: courseObject.course_id,
+            courseData: dataToSave,
+          })
+        );
+        toast.success("Course Updated Successfully");
+        resetForm();
+        onSubmit();
+        return;
+      }
 
       const response = await dispatch(createCourse(courseData));
-      console.log("Response from createCourse:", response.course_id);
-      setCreatedCourseId(response.course_id);
-
-      if (response.course_id) {
-        await submitCourseSection(response.course_id);
+      if (response?.course) {
+        await submitCourseSection(response.course.course_id);
+        toast.success("Course Added Successfully");
+        resetForm();
+        onSubmit();
       }
     } catch (error) {
       console.error("Error creating course:", error);
@@ -186,11 +253,8 @@ const AddCourse = () => {
         courseId: courseId,
       };
       const response = await dispatch(addCourseSection(courseDataWithVideos));
-      console.log(response);
-      return response.course_section_id;
-      // setCreatedCourseId(response.course_section_id);
+      return response;
     } catch (error) {
-      console.error("Error adding videos:", error);
       toast.error("Failed to add videos. Please try again.");
     } finally {
       setLoading(false); // Reset loading state
@@ -204,9 +268,12 @@ const AddCourse = () => {
   };
 
   return (
-    <div className="container mx-auto p-8 bg-gray-200 rounded-lg shadow-lg border">
+    <div className="container overflow-y-auto max-h-[32rem] mx-auto p-8 bg-gray-200 rounded-lg shadow-lg border">
       <h2 className="text-2xl font-bold mb-4 text-indigo-700">
-        Add New Course - step {currentStep}
+        {courseObject?.course_title
+          ? "Edit " + courseObject?.course_title
+          : "Add New Course"}
+        - step {currentStep}
       </h2>
       <form className="w-[]" onSubmit={handleSubmit}>
         {/*------------------------ First Step -------------------------- */}
@@ -242,21 +309,33 @@ const AddCourse = () => {
                 required
               />
             </div>
-
-            {/* <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">
-                Course Catagory
+            <div className="mb-4">
+              <label
+                htmlFor="category_id"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Category
               </label>
-              <input
-                type="text"
-                name="course_catagory"
-                value={courseData.course_catagory}
+              <select
+                id="category_id"
+                name="category_id"
+                value={courseData.category_id}
                 onChange={(e) => {
-                  handleChange(e, 0, "course_catagory");
+                  handleChange(e, 0, "category_id");
                 }}
-                className="mt-1 p-2 w-full border rounded-md"
-              />
-            </div> */}
+                className="bg-white border-gray-300 text-gray-900 text-sm mt-1 p-2 w-full border rounded-md"
+              >
+                <option>Select Category</option>
+                {categories.map((category) => (
+                  <option
+                    key={category.category_id}
+                    value={category.category_id}
+                  >
+                    {category.category_name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
                 Course Length
@@ -361,43 +440,50 @@ const AddCourse = () => {
                 className="mt-1 p-2 w-full border rounded-md"
               />
             </div>
-            <div className="mb-4 border-2 border-black rounded-md p-5">
-              <label className="block text-lg font-medium text-black">
-                Image
-              </label>
-              <p className="text-sm text-gray-700">
-                This Image will be shown in the card as a featured Image
-              </p>
-              {courseData.image && (
-                <div className="mb-2">
-                  <img
-                    src={URL.createObjectURL(courseData.image)}
-                    alt="Course Preview"
-                    className="mb-2 max-w-full h-auto rounded-md"
-                  />
-                  <button
-                    type="button"
-                    className="m-2 p-2 rounded-md bg-red-500 text-white"
-                    onClick={handleRemoveImage}
-                  >
-                    Delete Image
-                  </button>
-                </div>
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="mt-1 p-2 w-full border rounded-md"
-              />
-            </div>
+            {!courseObject && (
+              <div className="mb-4 border-2 border-black rounded-md p-5">
+                <label className="block text-lg font-medium text-black">
+                  Image
+                </label>
+                <p className="text-sm text-gray-700">
+                  This Image will be shown in the card as a featured Image
+                </p>
+                {courseData.image && (
+                  <div className="mb-2">
+                    <img
+                      src={URL.createObjectURL(courseData.image)}
+                      alt="Course Preview"
+                      className="mb-2 max-w-full h-auto rounded-md"
+                    />
+                    <button
+                      type="button"
+                      className="m-2 p-2 rounded-md bg-red-500 text-white"
+                      onClick={handleRemoveImage}
+                    >
+                      Delete Image
+                    </button>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="mt-1 p-2 w-full border rounded-md"
+                />
+              </div>
+            )}
 
             <div className="flex justify-end">
               <button
-                className="bg-indigo-700 text-white py-2 px-4 rounded-md hover:bg-indigo-600"
+                className="bg-indigo-700 text-white py-2 px-4 rounded-md hover:bg-indigo-600 disabled:bg-indigo-800 disabled:opacity-25 disabled:cursor-not-allowed"
                 type="submit"
+                disabled={loading}
               >
-                Next
+                {loading
+                  ? "loading..."
+                  : courseObject?.course_title
+                  ? "Submit"
+                  : "Next"}
               </button>
             </div>
           </>
@@ -455,10 +541,11 @@ const AddCourse = () => {
                 Back
               </button>
               <button
-                className="bg-indigo-700 text-white py-2 px-4 rounded-md hover:bg-indigo-600"
+                className="bg-indigo-700 disabled:bg-indigo-800 disabled:opacity-25 disabled:cursor-not-allowed text-white py-2 px-4 rounded-md hover:bg-indigo-600"
                 type="submit"
+                disabled={loading}
               >
-                Add Course
+                {loading ? "loading..." : "Submit"}
               </button>
             </div>
           </>

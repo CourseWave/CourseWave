@@ -13,7 +13,6 @@ const createCartTable = async () => {
 
   try {
     await db.query(query);
-    console.log("Cart table created successfully");
   } catch (error) {
     console.error("Error creating cart table:", error);
     throw error;
@@ -84,7 +83,6 @@ const deleteCartItem = async (order_id) => {
   };
 
   const result = await db.query(query);
-  console.log(order_id);
   return result.rows[0];
 };
 

@@ -48,7 +48,7 @@ export const CartsPage = () => {
             {cartItems.map((course) => (
               <div
                 key={course.order_id}
-                className="flex items-center bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 gap-2 mb-2"
+                className="flex items-center bg-white flex-wrap border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 gap-2 mb-2"
               >
                 <img
                   src={encodeURI(
@@ -58,9 +58,9 @@ export const CartsPage = () => {
                     )}`
                   )}
                   alt={course.course_title}
-                  className="object-cover w-52 rounded-l-lg h-52 md:h-52"
+                  className="object-cover w-full lg:w-52 rounded-l-lg h-52 md:h-52"
                 />
-                <div className="flex flex-col justify-between p-4 w-60 leading-normal">
+                <div className="flex flex-col justify-between p-4  leading-normal w-full lg:w-60 items-center">
                   <h5 className="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
                     {course.course_title}
                   </h5>

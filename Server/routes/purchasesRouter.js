@@ -14,4 +14,10 @@ router.get(
   purchasesController.getPurchasedCoursesByUser
 );
 
+router.get(
+  "/getAllUserCourses",
+  verify.authorize,
+  purchasesController.getPurchasedCourses
+);
+
 module.exports = router;

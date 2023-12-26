@@ -136,7 +136,6 @@ async function loginUser(req, res) {
 
   try {
     const user = await findUserByEmail(email);
-
     if (user) {
       let passwordMatch;
 
@@ -178,7 +177,6 @@ async function loginUser(req, res) {
           },
           token,
         });
-        console.log(`Token = ${token}`);
       } else {
         res.status(401).json({ error: "Invalid email or password" });
       }
@@ -229,7 +227,6 @@ async function loginTrainer(req, res) {
           },
           token,
         });
-        console.log(`Token = ${token}`);
       } else {
         res.status(401).json({ error: "Invalid email or password" });
       }
@@ -361,7 +358,7 @@ const updateTrainerHandler = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     // Extract user_id from the token
-    const user_id = req.user.user_id;
+    const { user_id } = req.params;
 
     const recDeleted = await softDeleteUser(user_id);
 
@@ -381,7 +378,7 @@ const deleteUser = async (req, res) => {
 const deleteTrainer = async (req, res) => {
   try {
     // Extract trainer_id from the token
-    const trainer_id = req.user.trainer_id;
+    const { trainer_id } = req.params;
 
     const recDeleted = await softDeleteTrainer(trainer_id);
 

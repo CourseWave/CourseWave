@@ -3,6 +3,8 @@ import StatisticsHome from "../Components/StatisticsHome";
 import LatestCourses from "../Components/LatestCourses";
 import WhyChooseUs from "../Components/WhyChooseUs";
 import TopCategories from "../Components/TopCategories";
+import Footer from "../Components/Footer";
+
 const Home = () => {
   return (
     <>
@@ -11,6 +13,7 @@ const Home = () => {
       <WhyChooseUs />
       <LatestCourses />
       <TopCategories />
+      <Footer />
     </>
   );
 };

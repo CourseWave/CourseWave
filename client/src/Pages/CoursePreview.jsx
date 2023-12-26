@@ -50,6 +50,9 @@ const CoursePreview = () => {
   const playFirstVideo = (id) => {
     const firstVideo = sectionVideos[id];
     if (firstVideo?.length) setVideoObject(firstVideo[0]);
+    else {
+      setVideoObject({});
+    }
   };
 
   const getSectionVideos = (courseSectionId) => {
@@ -86,19 +89,19 @@ const CoursePreview = () => {
             </span>
           </div>
           <div>
-            <p>Belal Attallah</p>
+            <p>Haitham Alzyoud</p>
           </div>
         </div>
 
         <div className="p-4 pl-11">
-          <p>A very long comment 👏</p>
+          <p>Great Course 👏</p>
         </div>
       </div>
     );
   };
   return (
-    <div className="flex justify-between font-[Poppins]">
-      <div className="p-2 shadow-md bg-[#27364e] text-gray-500 w-full h-[calc(100vh-64px)] overflow-y-auto">
+    <div className="flex justify-between font-[Poppins] flex-wrap flex-col lg:flex-row">
+      <div className="order-2 lg:order-1 p-2 shadow-md bg-[#27364e] text-gray-500 flex-1 h-[calc(100vh-64px)] overflow-y-auto">
         <VideoPlayer
           videoTitle={`${course.course_title} - ${videoObject?.video_title}`}
           key={videoObject.video_link}
@@ -122,7 +125,7 @@ const CoursePreview = () => {
         </div>
       </div>
 
-      <div className="w-[30rem]">
+      <div className="order-1 lg:order-2 w-full lg:w-[20rem]">
         {sections && (
           <div className="flex flex-col h-full bg-[#1e293b] font-medium overflow-y-auto shadow-lg focus:ring-0 ">
             {sections.map((section) => (

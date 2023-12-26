@@ -30,7 +30,7 @@ exports.addCourse = async (req, res) => {
       const course_image = req.file.path;
       const trainer_id = req.user.trainer_id;
 
-      const courseId = await coursesModel.addCourse({
+      const course = await coursesModel.addCourse({
         course_title,
         course_description,
         course_price,
@@ -46,7 +46,7 @@ exports.addCourse = async (req, res) => {
 
       res.status(201).json({
         message: "Course created successfully",
-        course_id: courseId,
+        course,
       });
     });
   } catch (error) {
@@ -63,9 +63,11 @@ exports.updateCourse = async (req, res) => {
       course_description,
       course_price,
       course_length,
-      course_catagory,
+      course_category,
       course_objectives,
       course_requirements,
+      course_tagline,
+      category_id,
     } = req.body;
 
     const updatedCourseId = await coursesModel.updateCourse({
@@ -74,9 +76,11 @@ exports.updateCourse = async (req, res) => {
       course_description,
       course_price,
       course_length,
-      course_catagory,
+      course_category,
       course_objectives,
       course_requirements,
+      course_tagline,
+      category_id,
     });
 
     res.status(200).json({
@@ -285,14 +289,14 @@ exports.updateCourseSection = async (req, res) => {
     const { section_name } = req.body;
     const course_section_id = req.params.course_section_id;
 
-    // Update course section details
-    await course_sectionsModel.updateCourseSection({
-      course_section_id,
+    const result = await course_sectionsModel.updateCourseSection({
+      course_section_id: parseInt(course_section_id),
       section_name,
     });
 
     res.status(200).json({
       message: "Course section updated successfully",
+      section: result,
     });
   } catch (error) {
     console.error("Failed to update the course section: ", error);
@@ -307,10 +311,13 @@ exports.deleteCourseSection = async (req, res) => {
     const course_section_id = req.params.course_section_id;
 
     // Soft delete course section and associated videos
-    await course_sectionsModel.deleteCourseSection(course_section_id); // Updated function name
+    const deletedCourseSection = await course_sectionsModel.deleteCourseSection(
+      course_section_id
+    );
 
     res.status(200).json({
       message: "Course section and associated videos soft-deleted successfully",
+      section: deletedCourseSection,
     });
   } catch (error) {
     console.error("Failed to delete the course section: ", error);
@@ -322,7 +329,6 @@ exports.deleteCourseSection = async (req, res) => {
 
 exports.getCourseSections = async (req, res) => {
   const course_id = req.params.course_id;
-  console.log(course_id);
   try {
     // Get course section details
     const courseSection = await course_sectionsModel.getCourseSections(
@@ -372,7 +378,6 @@ exports.addCourseVideos = async (req, res) => {
         video_link: `/videos/${file.filename}`,
         course_section_id,
       }));
-      console.log({ videoData });
       const newSectionVideos = await Promise.all(
         videoData.map((videoData) =>
           section_videosModel.addSectionVideo(videoData)

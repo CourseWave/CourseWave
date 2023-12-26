@@ -119,6 +119,7 @@ const getTrainers = async (page, pageSize) => {
   const query = {
     text: `
       SELECT * FROM trainers
+      WHERE is_deleted = false
       ORDER BY trainer_id;
     `,
   };

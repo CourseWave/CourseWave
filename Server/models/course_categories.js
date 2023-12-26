@@ -62,7 +62,7 @@ const deleteCategory = async (category_id) => {
     text: `
       UPDATE course_categories
       SET is_deleted = true
-      WHERE catagory_id = $1
+      WHERE category_id = $1
       RETURNING *;
     `,
     values: [category_id],

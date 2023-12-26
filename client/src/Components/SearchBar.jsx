@@ -2,14 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 
-const SearchBar = ({ onSearch, defaultValue, onValueChange }) => {
+const SearchBar = ({ onSearch, defaultValue, onValueChange, isHomePage }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     setSearchTerm(defaultValue);
   }, [defaultValue]);
 
-  console.log({ searchTerm });
   const handleSearch = (e) => {
     e.preventDefault();
     onSearch(searchTerm);
@@ -20,7 +19,9 @@ const SearchBar = ({ onSearch, defaultValue, onValueChange }) => {
       <div className="relative text-gray-500 group">
         <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none ">
           <svg
-            className="w-4 h-4 group-hover:text-white group-focus:text-white"
+            className={`w-4 h-4  ${
+              isHomePage ? "group-hover:text-white group-focus:text-white" : ""
+            }`}
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -38,8 +39,12 @@ const SearchBar = ({ onSearch, defaultValue, onValueChange }) => {
         <input
           type="search"
           id="default-search"
-          className="block w-full p-4 ps-10 text-md bg-transparent border-b-2 border-white hover:border-[#00ffc2] focus:border-[#00ffc2] focus:text-[#fff] ring-0 focus-visible:outline-none"
-          placeholder="Search Mockups, Logos..."
+          className={`block w-full p-4 ps-10 text-md bg-transparent border-b-2 ring-0 focus-visible:outline-none ${
+            isHomePage
+              ? "border-white hover:border-[#00ffc2] focus:border-[#00ffc2] focus:text-[#fff]"
+              : "border-slate-800"
+          }`}
+          placeholder="Search By Course Name, Category..."
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
@@ -48,7 +53,6 @@ const SearchBar = ({ onSearch, defaultValue, onValueChange }) => {
           required
           autoComplete={"off"}
         />
-    
       </div>
     </form>
   );

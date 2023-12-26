@@ -80,7 +80,7 @@ const LiveSessionPage = () => {
         {isTeacher && (
           <button
             onClick={() => setIsOpen(true)}
-            className="bg-cyan-700 hover:bg-cyan-800 px-2 text-white rounded-lg h-10 mr-8"
+            className="bg-cyan-700 hover:bg-cyan-800 px-2 text-white rounded-lg py-2 mr-8"
           >
             Create Session
           </button>

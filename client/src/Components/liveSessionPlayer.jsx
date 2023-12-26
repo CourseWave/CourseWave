@@ -128,7 +128,7 @@ function ParticipantView(props) {
           playing
           url={videoStream}
           style={{}}
-          className="!w-full bg-black custom-video !object-cover !rounded-md !shadow-lg"
+          className="!w-full bg-black custom-video !object-contain !rounded-md !shadow-lg"
           onError={(err) => {
             console.log(err, "participant video error");
           }}
@@ -256,7 +256,7 @@ function ViewerView({ onSessionStopped }) {
                 id="hlsPlayer"
                 autoPlay
                 controls
-                className="w-full h-[36rem] 2xl:h-full object-cover rounded-md shadow-lg"
+                className="w-full h-[36rem] 2xl:h-full object-contain rounded-md shadow-lg"
                 playsinline
                 muted
                 playing

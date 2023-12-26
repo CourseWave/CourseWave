@@ -17,7 +17,7 @@ export const VideoPlayer = ({ videoUrl , videoTitle}) => {
       </h3>
       <video
         ref={videoRef}
-        className="w-full h-full object-cover rounded-md shadow-lg"
+        className="w-full h-full object-contain rounded-md shadow-lg"
         src={encodeURI(`http://localhost:5000${videoUrl}`)}
         controls
       >

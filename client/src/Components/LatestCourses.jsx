@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCourses } from "../Redux/CoursesSlice";
-import { useNavigate } from "react-router-dom";
 import CourseCard from "./CourseCard";
 
 const Courses = () => {
@@ -9,8 +8,7 @@ const Courses = () => {
   const Courses = useSelector((state) => state.Courses.Courses);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
-  const navigate = useNavigate();
+  const itemsPerPage = 4;
 
   useEffect(() => {
     dispatch(fetchCourses());
@@ -18,7 +16,7 @@ const Courses = () => {
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = Courses.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = Courses?.slice(indexOfFirstItem, indexOfLastItem);
 
   const nextPage = () => {
     if (currentPage < Math.ceil(Courses.length / itemsPerPage)) {
@@ -31,6 +29,10 @@ const Courses = () => {
       setCurrentPage(currentPage - 1);
     }
   };
+
+  if(!Courses.length){
+    return <></>
+  }
 
   return (
     <div className="mx-auto mt-9 bg-[#0f172a] text-white h-auto p-6 pt-0 relative">

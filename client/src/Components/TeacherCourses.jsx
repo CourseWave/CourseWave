@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 
 const TeacherCourses = ({
@@ -44,6 +44,9 @@ const TeacherCourses = ({
               </th>
             </tr>
           </thead>
+          {courses?.filter((e) => e.trainer_id === teacherObject.trainer_id).length === 0 && (
+            <p className="text-2xl text-black w-full">No Courses Available</p>
+          )}
           <tbody>
             {courses
               ?.filter((e) => e.trainer_id === teacherObject.trainer_id)

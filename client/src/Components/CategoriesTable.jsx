@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchCategories,
   createCategory,
   deleteCategory,
   updateCategory,
@@ -17,10 +16,6 @@ const CategoriesTable = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editObject, setEditObject] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    dispatch(fetchCategories());
-  }, [dispatch]);
 
   const handleEdit = (category) => {
     setIsEditMode(true);

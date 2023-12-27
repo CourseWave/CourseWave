@@ -50,7 +50,13 @@ export const TeacherStatistics = ({ teacherObject }) => {
 
   return (
     <div className="flex mb-2 overflow-hidden gap-4 items-center justify-center flex-wrap">
-      <StatisticsCard label="Number Of Courses" value={courses?.length} />
+      <StatisticsCard
+        label="Number Of Courses"
+        value={
+          courses?.filter((e) => e.trainer_id === teacherObject.trainer_id)
+            ?.length
+        }
+      />
       <StatisticsCard
         label="Number Of Purchased Courses"
         value={purchasedCourseCount}

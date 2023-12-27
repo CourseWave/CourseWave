@@ -1,27 +1,34 @@
 import React from "react";
-import axios from "axios";
 import ContactUs from "../Assets/ContactUs.png";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+
+import { sendMessage } from "../Redux/ContactUsSlice";
 
 const ContactUsPage = () => {
+  const dispatch = useDispatch();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(e.target);
+    const form = e.target;
+    const formData = new FormData(form);
     const fullName = formData.get("fullName");
     const email = formData.get("email");
     const message = formData.get("message");
 
     try {
-      const response = await axios.post("http://example.com/api/contact", {
-        fullName,
-        email,
-        message,
-      });
-
-      // Add any additional logic or UI changes upon successful submission
+      await dispatch(
+        sendMessage({
+          message_author: fullName,
+          author_email: email,
+          message_content: message,
+        })
+      );
+      form.reset();
+      toast.success("Thank You for your feedback 😍");
     } catch (error) {
       console.error("Error submitting form:", error);
-      // Handle errors or show user-friendly messages
     }
   };
 
@@ -29,7 +36,9 @@ const ContactUsPage = () => {
     <div className=" mx-auto mb-5">
       <div className="bg-gray-800 h-[30rem] text-white flex flex-col">
         <div className="flex justify-center flex-col lg:px-40 mx-5 mt-36">
-          <h1 className="text-7xl md:text-8xl flex w-48 text-[#00ffc2]">Contact Us</h1>
+          <h1 className="text-7xl md:text-8xl flex w-48 text-[#00ffc2]">
+            Contact Us
+          </h1>
           <img
             src={ContactUs}
             alt="img"
@@ -92,6 +101,7 @@ const ContactUsPage = () => {
               <button
                 type="submit"
                 className="hover:shadow-form rounded-md bg-gray-800 py-3 px-8 text-base font-semibold text-white outline-none hover:scale-105 transition-all"
+                onSubmit={handleSubmit}
               >
                 Submit
               </button>

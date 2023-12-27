@@ -21,8 +21,8 @@ import Hls from "hls.js";
         mode,
       }}
       joinWithoutUserInteraction
-      token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIzODM0ZWExMS1iZTNjLTQ0MGItOWY4ZS00MDE3Nzc5YzE3MmYiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcwMzU0ODg1NiwiZXhwIjoxNzAzNjM1MjU2fQ.A_8RkfUfi4uPwEQtP1pA55N-BDTa-ML8ronoFdBKaLs"
-    >
+      token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIzODM0ZWExMS1iZTNjLTQ0MGItOWY4ZS00MDE3Nzc5YzE3MmYiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcwMzYxMjA0NywiZXhwIjoxNzAzNjk4NDQ3fQ.5h_c50kqXygaVg4CZbod00WiQ5J1GbJRoCFBi4ZBmAM"
+      >
       {mode === Constants.modes.CONFERENCE ? (
         <SpeakerView onSessionStopped={onSessionStopped} />
       ) : (

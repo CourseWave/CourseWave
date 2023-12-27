@@ -5,6 +5,8 @@ import { userReducer } from './Redux/UsersSlice';
 import CartSlice from './Redux/CartSlice';
 import CheckoutSlice from './Redux/CheckoutSlice';
 import liveSessionsSlice from './Redux/liveSessionsSlice';
+import CommentSlice from './Redux/CommentSlice';
+import ContactUsSlice from './Redux/ContactUsSlice';
 const store = configureStore({
   reducer: {
     Courses: CoursesSlice,
@@ -13,6 +15,9 @@ const store = configureStore({
     cart: CartSlice,
     checkout: CheckoutSlice,
     liveSessions: liveSessionsSlice,
+    comments: CommentSlice,
+    contactUs: ContactUsSlice,
+
   },
 });
 

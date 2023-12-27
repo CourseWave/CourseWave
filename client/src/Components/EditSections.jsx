@@ -56,7 +56,7 @@ const SectionCard = ({ section, sectionsCount }) => {
         />
 
         <button
-          className="mx-2 p-2 h-full rounded-md text-white"
+          className="mx-2 p-2 h-full rounded-md text-green-600 font-bold text-lg"
           type="button"
           onClick={() => {
             handleSubmit(section.course_section_id, sectionName);

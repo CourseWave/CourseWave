@@ -35,17 +35,17 @@ const StatisticsHome = () => {
         {userStatus === "succeeded" && (
           <>
           <div>
-          <p className="text-white text-4xl">+{students.length}  </p>
+          <p className="text-white text-4xl">+{students?.length}  </p>
           <p className="text-white text-lg">Students</p>
           </div>
 
           <div>
-          <p className="text-white text-4xl">+{courses.length}  </p>
+          <p className="text-white text-4xl">+{courses?.length}  </p>
           <p className="text-white text-lg">Courses</p>
           </div>
 
           <div>
-          <p className="text-white text-4xl">+{teachers.length}  </p>
+          <p className="text-white text-4xl">+{teachers?.length}  </p>
           <p className="text-white text-lg">Tutors</p>
           </div>
           </>

@@ -8,6 +8,9 @@ import TeachersTable from "../Components/TeachersTable";
 import StudentsTable from "../Components/StudentsTable";
 import CategoriesTable from "../Components/CategoriesTable";
 import CoursesTable from "../Components/CoursesTable";
+import ContactUsTable from "../Components/ContactUsTable";
+import { fetchMessages } from "../Redux/ContactUsSlice";
+import { fetchCategories } from "../Redux/CategoriesSlice";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
@@ -18,27 +21,26 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("teachers");
 
   useEffect(() => {
-    // Fetch the purchased courses when the component mounts
-    dispatch(getAllPurchasedCoursesAsync());
-  }, []);
-
-  useEffect(() => {
-    const fetchCoursesList = async () => {
+    const fetchAllData = async () => {
       try {
         await dispatch(fetchCourses());
+        await dispatch(fetchMessages());
+        await dispatch(fetchCategories());
+        await dispatch(getAllPurchasedCoursesAsync());
       } catch (error) {
         console.log("Error fetching data", error.message);
       }
     };
 
-    fetchCoursesList();
-  }, [dispatch]);
+    fetchAllData();
+  }, []);
 
   const tabs = {
     teachers: <TeachersTable />,
     students: <StudentsTable />,
     courses: <CoursesTable />,
     categories: <CategoriesTable />,
+    contactUs: <ContactUsTable />,
   };
   return (
     <div className="relative sm:rounded-lg mb-6 overflow-y-auto h-full">
@@ -106,6 +108,18 @@ const AdminDashboard = () => {
                 }}
               >
                 Courses
+              </button>
+            </li>
+            <li role="presentation">
+              <button
+                className={`inline-block p-4 transition-all delay-100  text-lg border-b-2 rounded-t-lg hover:border-blue-600 hover:text-blue-500 ${
+                  activeTab === "contactUs" && "border-blue-400 text-blue-600"
+                }`}
+                onClick={() => {
+                  setActiveTab("contactUs");
+                }}
+              >
+                Contact Us
               </button>
             </li>
           </ul>

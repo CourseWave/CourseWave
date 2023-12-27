@@ -27,7 +27,7 @@ exports.addComment = async (req, res) => {
     );
     const purchase_id = purchaseInfo.purchase_id;
 
-    const commentId = await commentsModel.addComment({
+    const comment = await commentsModel.addComment({
       comment_content,
       comment_rate,
       course_id,
@@ -37,7 +37,7 @@ exports.addComment = async (req, res) => {
 
     res.status(201).json({
       message: "Comment added successfully",
-      comment_id: commentId,
+      comment,
     });
   } catch (error) {
     console.error("Failed to add comment: ", error);

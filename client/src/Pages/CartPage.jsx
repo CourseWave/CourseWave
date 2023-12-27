@@ -45,42 +45,43 @@ export const CartsPage = () => {
         </div>
         <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
           <div className="gap-6">
-            {cartItems.map((course) => (
-              <div
-                key={course.order_id}
-                className="flex items-center bg-white flex-wrap border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 gap-2 mb-2"
-              >
-                <img
-                  src={encodeURI(
-                    `http://localhost:5000/${course.course_image?.replace(
-                      "\\",
-                      "/"
-                    )}`
-                  )}
-                  alt={course.course_title}
-                  className="object-cover w-full lg:w-52 rounded-l-lg h-52 md:h-52"
-                />
-                <div className="flex flex-col justify-between p-4  leading-normal w-full lg:w-60 items-center">
-                  <h5 className="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    {course.course_title}
-                  </h5>
-                  <p className="mb-3 font-normal text-gray-200">
-                    ${course.total_amount}
-                  </p>
-                  <p className="mb-3 font-normal text-gray-200">
-                    {/* Rating:{course.course.rate} */}
-                  </p>
-                  <div className="mt-10 ">
-                    <button
-                      onClick={() => removeCourse(course.order_id)}
-                      className="cursor-pointer rounded-l w-36  bg-gray-100 py-1 px-3.5 duration-100 hover:scale-105 transition-all"
-                    >
-                      Remove
-                    </button>
+            {cartItems?.length > 0 &&
+              cartItems.map((course) => (
+                <div
+                  key={course.order_id}
+                  className="flex items-center bg-white flex-wrap border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 gap-2 mb-2"
+                >
+                  <img
+                    src={encodeURI(
+                      `http://localhost:5000/${course.course_image?.replace(
+                        "\\",
+                        "/"
+                      )}`
+                    )}
+                    alt={course.course_title}
+                    className="object-cover w-full lg:w-52 rounded-l-lg h-52 md:h-52"
+                  />
+                  <div className="flex flex-col justify-between p-4  leading-normal w-full lg:w-60 items-center">
+                    <h5 className="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                      {course.course_title}
+                    </h5>
+                    <p className="mb-3 font-normal text-gray-200">
+                      ${course.total_amount}
+                    </p>
+                    <p className="mb-3 font-normal text-gray-200">
+                      {/* Rating:{course.course.rate} */}
+                    </p>
+                    <div className="mt-10 ">
+                      <button
+                        onClick={() => removeCourse(course.order_id)}
+                        className="cursor-pointer rounded-l w-36  bg-gray-100 py-1 px-3.5 duration-100 hover:scale-105 transition-all"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
           <div className="mt-6 h-full rounded-lg border bg-gray-800 p-6 shadow-md md:mt-0 md:w-1/3">
             <div className="flex justify-between">

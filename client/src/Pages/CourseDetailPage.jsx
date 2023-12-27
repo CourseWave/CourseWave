@@ -6,7 +6,7 @@ import {
   fetchSections,
   fetchSectionVideos,
 } from "../Redux/CoursesSlice";
-import { addToCartAsync } from "../Redux/CartSlice";
+import { addToCartAsync, getCartItemsAsync } from "../Redux/CartSlice";
 import { fetchStudents, fetchTeachers } from "../Redux/UsersSlice";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -21,6 +21,7 @@ const CourseDetailPage = () => {
   const { courseId } = useParams();
   const courses = useSelector((state) => state.Courses.Courses);
   const sections = useSelector((state) => state.Courses.sections);
+  const cartItems = useSelector((state) => state.cart.cartItems);
 
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [sectionVideos, setSectionVideos] = useState({});
@@ -41,11 +42,6 @@ const CourseDetailPage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Fetch the purchased courses when the component mounts
-    dispatch(getPurchasedCoursesAsync());
-  }, [dispatch]);
-
-  useEffect(() => {
     const myCourses = purchasedCourses.some(
       (e) => parseInt(e.course_id) === parseInt(courseId)
     );
@@ -53,7 +49,8 @@ const CourseDetailPage = () => {
   }, [purchasedCourses, courseId]);
 
   useEffect(() => {
-    // Dispatch the actions to fetch students, teachers, and courses
+    dispatch(getPurchasedCoursesAsync());
+    dispatch(getCartItemsAsync());
     dispatch(fetchStudents());
     dispatch(fetchTeachers());
   }, [dispatch]);
@@ -129,6 +126,16 @@ const CourseDetailPage = () => {
     const courseToAdd = courses.find((c) => c.course_id === parseInt(courseId));
 
     if (courseToAdd) {
+      const courseExists = cartItems.some(
+        (e) => e.course_id === parseInt(courseId)
+      );
+      if (courseExists) {
+        toast.info("Course already added!", {
+          position: toast.POSITION.TOP_RIGHT,
+          toastId,
+        });
+        return;
+      }
       try {
         const courseToAddId = courseId;
         await dispatch(addToCartAsync(courseToAddId));

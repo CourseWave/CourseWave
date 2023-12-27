@@ -12,7 +12,6 @@ export function useGetCurrentUser() {
     let token = Cookies.get("userInfo");
     if (!token) return;
     token = JSON.parse(token);
-    console.log({ token });
     if (token.trainer) {
       setCurrentUser(
         user.teachers.find(

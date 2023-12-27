@@ -1,5 +1,4 @@
 // SearchBar.js
-
 import React, { useState, useEffect } from "react";
 
 const SearchBar = ({ onSearch, defaultValue, onValueChange, isHomePage }) => {

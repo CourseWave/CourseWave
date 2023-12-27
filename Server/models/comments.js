@@ -42,7 +42,7 @@ const addComment = async ({
   const insertQuery = `
     INSERT INTO comments (comment_content, comment_rate, comment_author, course_id, user_id, purchase_id)
     VALUES ($1, $2, $3, $4, $5, $6)
-    RETURNING comment_id;
+    RETURNING *;
   `;
 
   const result = await db.query(insertQuery, [
@@ -53,7 +53,7 @@ const addComment = async ({
     user_id,
     purchase_id,
   ]);
-  return result.rows[0].comment_id;
+  return result.rows[0];
 };
 
 const updateComment = async ({ comment_id, comment_content, comment_rate }) => {

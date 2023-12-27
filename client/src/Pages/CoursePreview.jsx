@@ -156,13 +156,15 @@ const CoursePreview = () => {
           courseName={course.course_title}
         />
 
-        <div className="p-5 rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 ease-in-out">
+        <div className="p-5 rounded-lg  shadow-sm hover:shadow-lg transition-shadow duration-300 ease-in-out">
           <h3 className="text-2xl text-white mt-4 font-semibold border-b border-gray-600 pb-2">
             Description
           </h3>
-          <p className="text-white mt-4 text-sm leading-relaxed">
-            {course.course_description}
-          </p>
+          <div className="max-h-32 overflow-y-auto">
+            <p className="text-white mt-4 text-sm leading-relaxed">
+              {course.course_description}
+            </p>
+          </div>
         </div>
 
         <div className="p-5 rounded-lg hover:shadow-lg transition-shadow duration-300 ease-in-out">

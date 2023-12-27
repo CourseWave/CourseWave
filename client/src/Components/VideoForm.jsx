@@ -27,7 +27,7 @@ const VideoForm = ({ sectionId, onChange }) => {
           name="videoTitle"
           value={videoTitle}
           onChange={handleVideoTitleChange}
-          className="mt-1 p-2 w-full border rounded-md"
+          className="mt-1 p-2 w-full border rounded-md font-normal"
         />
       </label>
       <label className="font-bold flex flex-col">
@@ -55,6 +55,7 @@ const VideoForm = ({ sectionId, onChange }) => {
               </span>
               <input
                 type="file"
+                accept="video/*"
                 className="hidden"
                 onChange={handleFileChange}
               />

@@ -4,6 +4,7 @@ import { fetchCourses, fetchSections } from "../Redux/CoursesSlice";
 import { fetchSectionVideos } from "../Redux/CoursesSlice";
 import VideoForm from "./VideoForm";
 import { addCourseVideos } from "../Redux/CoursesSlice";
+import { toast } from "react-toastify";
 
 const AccordionSections = ({ id }) => {
   const dispatch = useDispatch();
@@ -76,6 +77,7 @@ const AccordionSections = ({ id }) => {
           formData.append("video_links", videoFile);
           // Dispatch an action to add the video to the section
           dispatch(addCourseVideos(formData));
+          toast.success("Videos Uploaded");
         }
       }
     );
@@ -128,8 +130,8 @@ const AccordionSections = ({ id }) => {
               <span>{section.section_name}</span>
               <svg
                 data-accordion-icon
-                className={`w-3 h-3 shrink-0 rotate-0 ${
-                  selectedSection === section ? "rotate-0" : ""
+                className={`w-3 h-3 shrink-0 ${
+                  selectedSection === section ? "rotate-0" : "rotate-180"
                 }`}
 
                 aria-hidden="true"

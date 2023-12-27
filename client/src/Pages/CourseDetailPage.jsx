@@ -34,7 +34,11 @@ const CourseDetailPage = () => {
   const { userType } = useGetUserType();
 
   const user = useSelector((state) => state.user);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
+  const handleToggleDescription = () => {
+    setIsDescriptionExpanded(!isDescriptionExpanded);
+  };
   const purchasedCourses = useSelector(
     (state) => state.checkout.purchasedCourses
   );
@@ -190,19 +194,19 @@ const CourseDetailPage = () => {
                 By: {course.course_author}
               </p>
             </div>
-            <div className="pl-2 flex gap-2 mt-8 flex-wrap">
+            <div className="pl-2 flex gap-2 mt-8 flex-wrap justify-center">
               {userType === "student" &&
                 (!isAlreadyPurchased ? (
-                  <div className="flex justify-center space-y-4 md:space-y-0 space-x-0 md:space-x-4 w-full flex-wrap">
+                  <div className="flex flex-col justify-center items-center space-y-4  space-x-0 sm:space-x-2 w-full">
                     <button
-                      className="text-white w-full md:w-1/3 px-2 bg-[#00ffc2] rounded-lg h-10 hover:scale-105 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                      className="text-white w-full px-2 bg-[#00ffc2] rounded-lg h-10 hover:scale-105 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
                       onClick={handleAddToCart}
                       disabled={userStatus === "failed"}
                     >
                       Add to Cart
                     </button>
                     <button
-                      className="text-white w-full md:w-1/3 px-2 bg-[#1e293b] rounded-lg h-10 hover:scale-105 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
+                      className="text-white w-full px-2 bg-[#1e293b] rounded-lg h-10 hover:scale-105 transition-all disabled:opacity-20 disabled:cursor-not-allowed"
                       onClick={handleEnrollNow}
                       disabled={userStatus === "failed"}
                     >
@@ -225,9 +229,11 @@ const CourseDetailPage = () => {
             <h2 className="text-2xl font-bold mb-2 text-white">
               Course Description
             </h2>
-            <p className="text-white text-center">
-              {course.course_description}
-            </p>
+            <div className="text-white text-center max-h-32 overflow-y-auto">
+              <p className={`text-white text-center `}>
+                {course.course_description}
+              </p>
+            </div>
           </div>
 
           <div className="m-10 flex flex-col items-center z-10">
